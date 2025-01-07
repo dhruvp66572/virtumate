@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Navigate, Link, useNavigate } from 'react-router-dom'
-import { useAuth } from '../../contex/AuthProvider'
-import { doCreateUserWithEmailAndPassword } from '../../config/auth'
+// import { useAuth } from '../../contex/AuthProvider'
+// import { doCreateUserWithEmailAndPassword } from '../../config/auth'
 
 const Register = () => {
 

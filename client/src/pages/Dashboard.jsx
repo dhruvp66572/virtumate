@@ -137,11 +137,6 @@
 import React from 'react';
 import { Bell, Calendar, MessageSquare, Play, Gift, HelpCircle, Search, Clock } from 'lucide-react';
 
-const DashboardCard = ({ children, className = '' }) => (
-  <div className={`bg-white rounded-lg shadow-sm p-6 ${className}`}>
-    {children}
-  </div>
-);
 
 const Dashboard = () => {
   const upcomingEvents = [

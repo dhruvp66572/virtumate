@@ -7,6 +7,7 @@ import Login from './components/auth/Login';
 import Register from './components/auth/Register';
 import { Home } from 'lucide-react';
 import Dashboard from './pages/Dashboard';
+import Profile from './pages/Profile';
 
 function App() {
 
@@ -25,7 +26,8 @@ function App() {
         <Route path="/register" element={<Register />} />  
         <Route path="/home" element={<HomePage />} />  
         <Route path="/dashboard" element={<Dashboard />} />  
-        
+        <Route path="/profile" element={<Profile />} />  
+         
       </Routes>
    
     </>
