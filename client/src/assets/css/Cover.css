@@ -1,0 +1,140 @@
+/* General Reset */
+/* * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+
+} */
+
+/* body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #f9f9f9;
+  color: #333;
+ 
+} */
+
+
+/* Full-Screen Header with Transparent Overlay */
+.header {
+  position: relative;
+  height: 100vh;
+   overflow-x: hidden;
+  background: url("/cover.jpg") no-repeat center center/cover;
+  z-index: 0;
+  
+}
+header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(128, 128, 128, 0.5); /* grey with 50% opacity */
+  z-index: 1; /* to ensure the overlay is above the image */
+}
+
+
+.navbar {
+  position: absolute; /* Allow absolute placement */
+  top: 20px; /* Adjust the vertical position */
+  right: 20px; /* Push the navbar to the right side */
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  z-index: 2; /* Ensure it's above the overlay */
+}
+
+
+.nav-links {
+  list-style: none;
+  display: flex;
+}
+
+.nav-links li {
+  margin-left: 25px;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: #fff;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.nav-links a:hover {
+  color: #ffc107;
+}
+
+
+.header-content {
+  display: flex;
+  flex-direction: column; /* Stack items vertically */
+  justify-content: center; /* Center vertically */
+  align-items: center; /* Center horizontally */
+  text-align: center; /* Center text within each element */
+  height: 100%; /* Ensure it takes the full height of the parent */
+  z-index: 2; /* Ensure it appears above the overlay */
+  color: white; /* Text color */
+}
+
+.title {
+  font-size: 3rem; /* Adjust title size */
+  font-weight: 700; /* Make it bold */
+  margin-bottom: 20px; /* Space below the title */
+  text-transform: uppercase; /* Optional: Make the text uppercase */
+  line-height: 1.2; /* Adjust line height for readability */
+}
+
+
+.content {
+  text-align: center;
+  color: #fff;
+  padding: 0 20px;
+  margin: auto;
+  z-index: 2;
+}
+
+.content h1 {
+  font-size: 3.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 20px;
+}
+
+.content p {
+  font-size: 1.3rem;
+  margin-bottom: 20px;
+}
+
+/* .buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 20px;
+} */
+
+/* .button {
+  text-decoration: none;
+  padding: 15px 35px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  background: #007bff;
+  border-radius: 25px;
+  transition: background 0.3s;
+} */
+
+/* .button:hover {
+  background: #0056b3;
+} */
+
+/* Footer Section */
+.footer {
+  text-align: center;
+  padding: 15px 0;
+  background: #222;
+  color: #fff;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+}
