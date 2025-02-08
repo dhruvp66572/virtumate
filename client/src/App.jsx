@@ -1,37 +1,32 @@
-import './App.css'
-import Cover from './pages/Cover'
-import HomePage from './pages/HomePage';
+import { Routes, Route, Navigate } from "react-router-dom";
+import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
+import Layout from "./components/Layout";
 
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Login from './components/auth/Login'; 
-import Register from './components/auth/Register';
-import { Home } from 'lucide-react';
-import Dashboard from './pages/Dashboard';
-import Profile from './pages/Profile';
+// Function to check if user is authenticated
+const isAuthenticated = () => {
+  return !!localStorage.getItem("token");
+};
 
-function App() {
-
+const App = () => {
   return (
-    <>
-      {/* <h1 className="text-center text-4xl font-bold text-blue-500">
-        Virtumate
-      </h1> */}
-      {/* <div>
-       <Cover/>
-    </div> */}
-   
-      <Routes>
-        <Route path="/" element={<Cover />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />  
-        <Route path="/home" element={<HomePage />} />  
-        <Route path="/dashboard" element={<Dashboard />} />  
-        <Route path="/profile" element={<Profile />} />  
-         
-      </Routes>
-   
-    </>
-  )
-}
+    <Routes>
+      {/* Public Routes */}
+      <Route path="/login" element={<Login />} />
+      <Route path="/" element={<Navigate to="/login" />} />
 
-export default App
+      {/* Protected Routes */}
+      <Route
+        path="/"
+        element={isAuthenticated() ? <Layout /> : <Navigate to="/login" />}
+      >
+        <Route
+          path="/dashboard"
+          element={isAuthenticated() ? <Dashboard /> : <Navigate to="/login" />}
+        />
+      </Route>
+    </Routes>
+  );
+};
+
+export default App;
