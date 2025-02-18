@@ -1,4 +1,4 @@
-const {User} = require('../models/schema');
+const {User} = require('../models/User');
 const {createJWT , hashPassword, comparePassword} = require('../module/auth');
 
 const createUser = async (req, res) => {
