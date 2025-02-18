@@ -10,7 +10,12 @@ const app = express();
 const server = http.createServer(app);
 const io = setupSocket(server);
 
-app.use(cors());
+app.use(cors(
+  {
+    origin: "http://localhost:5173",
+    methods: ['GET', 'POST'],
+  }
+));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

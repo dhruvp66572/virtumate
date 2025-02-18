@@ -1,7 +1,7 @@
 const setupSocket = (server) => {
   const io = require("socket.io")(server, {
     cors: {
-      origin: "*",
+      origin: "http://localhost:5173",
       methods: ["GET", "POST"],
     },
   });
@@ -17,13 +17,20 @@ const setupSocket = (server) => {
         users[roomId] = [];
       }
 
+      console.log(`User joined room: ${roomId}`);
+
       users[roomId].push({ id: socket.id, userId, userName });
       socketToRoom[socket.id] = roomId;
       socket.join(roomId);
 
+      console.log(users[roomId]);
+
       const usersInRoom = users[roomId].filter((user) => user.id !== socket.id);
       socket.emit("all-users", usersInRoom);
 
+      console.log(`Users in room: `);
+      console.log(usersInRoom);
+    
       socket
         .to(roomId)
         .emit("user-connected", { id: socket.id, userId, userName });

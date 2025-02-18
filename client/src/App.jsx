@@ -4,6 +4,7 @@ import Dashboard from "./pages/Dashboard";
 import Layout from "./components/Layout";
 import Register from "./pages/Register";
 import Room from "./pages/Room";
+import LandingPage from "./pages/LandingPage";
 
 // Function to check if user is authenticated
 const isAuthenticated = () => {
@@ -16,7 +17,7 @@ const App = () => {
       {/* Public Routes */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route path="/" element={<Navigate to="/login" />} />
+      <Route path="/" element={<LandingPage />} />
 
       {/* Protected Routes */}
       <Route
