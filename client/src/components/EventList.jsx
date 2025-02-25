@@ -43,12 +43,12 @@ const EventList = ({ events, onEdit, onDelete }) => {
               >
                 Date & Time
               </th>
-              <th
+              {/* <th
                 scope="col"
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
               >
-                Location
-              </th>
+                
+              </th> */}
               <th
                 scope="col"
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -94,9 +94,9 @@ const EventList = ({ events, onEdit, onDelete }) => {
                   <div className="text-sm text-gray-500">{event.time}</div>
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-500">
-                  {event.location}
+                  {event.status}
                 </td>
-                <td className="px-6 py-4">
+                {/* <td className="px-6 py-4">
                   <span
                     className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
                     style={{
@@ -106,7 +106,7 @@ const EventList = ({ events, onEdit, onDelete }) => {
                   >
                     {event.type}
                   </span>
-                </td>
+                </td> */}
                 <td className="px-6 py-4 text-right text-sm font-medium">
                   <button
                     className="text-indigo-600 hover:text-indigo-900 mr-4 transition-colors"

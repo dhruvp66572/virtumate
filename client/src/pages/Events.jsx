@@ -4,7 +4,7 @@ import EventCalendar from "../components/EventCalendar";
 import EventList from "../components/EventList";
 import { createEvent, deleteEventById, getallEvents, updateEventById } from "../handlers/event_handler";
 import AuthContext from "../context/AuthContext";
-import ViewEventModal from "../components/modals/ViewEventModal";
+// import ViewEventModal from "../components/modals/ViewEventModal";
 
 const Events = () => {
   // State for events and UI
@@ -23,6 +23,7 @@ const Events = () => {
     try {
       const response = await getallEvents();
       if (response && response.data) {
+        console.log(response.data);
         setEvents(response.data); // Update the events state
       } else {
         console.error(
