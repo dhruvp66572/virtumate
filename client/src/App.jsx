@@ -23,16 +23,16 @@ const App = () => {
       {/* Protected Routes */}
       <Route
         path="/"
-        element={isAuthenticated() ? <Layout /> : <Navigate to="/login" />}
+        element={isAuthenticated() ? <Layout /> : <Navigate to="/" />}
       >
         <Route
           path="/dashboard"
-          element={isAuthenticated() ? <Dashboard /> : <Navigate to="/login" />}
+          element={isAuthenticated() ? <Dashboard /> : <Navigate to="/" />}
         />
 
         <Route
           path="/room/:roomId"
-          element={isAuthenticated() ? <Room /> : <Navigate to="/login" />}
+          element={isAuthenticated() ? <Room /> : <Navigate to="/" />}
         />
 
         <Route path="/events" element={<Events />} />

@@ -5,6 +5,13 @@ import { Bell, LogOut, User } from "lucide-react";
 
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
+
+  const handlelogout = () => {
+    console.log("Logging out...");
+    logout();
+    
+  }
+
 console.log(user);
   return (
     <header className="bg-white shadow-md sticky top-0 z-10">
@@ -18,7 +25,7 @@ console.log(user);
           <button className="p-2 text-gray-500 hover:text-gray-700">
             <Bell size={20} />
           </button>
-          <button onClick={logout} className="p-2 text-gray-500 hover:text-gray-700">
+          <button onClick={handlelogout} className="p-2 text-gray-500 hover:text-gray-700">
             <LogOut size={20} />
           </button>
         </div>

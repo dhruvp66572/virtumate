@@ -4,6 +4,7 @@ import EventCalendar from "../components/EventCalendar";
 import EventList from "../components/EventList";
 import { createEvent, deleteEventById, getallEvents, updateEventById } from "../handlers/event_handler";
 import AuthContext from "../context/AuthContext";
+import ViewEventModal from "../components/modals/ViewEventModal";
 
 const Events = () => {
   // State for events and UI
@@ -112,7 +113,7 @@ const Events = () => {
       meetingLink: generateMeetingLink(),
       status: "upcoming",
       attendees: updatednewEvent.attendees,
-    }, selectedEvent.id);
+    }, selectedEvent._id);
 
     console.log(data)
 
@@ -122,8 +123,8 @@ const Events = () => {
 
   // Delete event
   const handleDeleteEvent = async () => {
-    console.log(await selectedEvent.id)
-    const deletedEvenet = deleteEventById(selectedEvent.id);     
+    console.log(selectedEvent)
+    const deletedEvenet = await deleteEventById(selectedEvent._id);     
     console.log(deletedEvenet)
     fetchData();
     setIsDeleteModalOpen(false);

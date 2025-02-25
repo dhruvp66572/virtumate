@@ -65,7 +65,6 @@ const deleteEventById = async (id) => {
     `http://localhost:5000/api/events/${id}`,
     {
       headers: {
-        "Content-Type": "application/json",
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     }

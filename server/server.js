@@ -30,13 +30,17 @@ const port = 5000;
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
-
-    methods: ["GET", "POST"],
-
-    credentials: true, // Allow credentials (important for Socket.io)
+    origin: ["http://localhost:5173", "http://localhost:3000"], // Allow frontend
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Allow these HTTP methods
+    allowedHeaders: ["Content-Type", "Authorization"], // Allow these headers
+    credentials: true, // Allow cookies if needed
   })
 );
+app.options("*", cors()); // Handle preflight requests
+app.use((req, res, next) => {
+  console.log(`Incoming request: ${req.method} ${req.url}`);
+  next();
+});
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 env.config();
