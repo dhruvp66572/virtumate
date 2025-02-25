@@ -2,12 +2,14 @@ import { createContext, useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
+import { useNavigate } from "react-router-dom";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem("token"));
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (token) {
@@ -31,6 +33,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("token");
     setToken(null);
     setUser(null);
+    navigate("/login");
   };
 
   return (

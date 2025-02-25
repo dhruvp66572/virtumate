@@ -15,7 +15,7 @@ body {
 .dashboard-container {
   display: flex;
   justify-content: center;
-  padding: 40px;
+  padding: 10px;
 }
 
 .dashboard-wrapper {
