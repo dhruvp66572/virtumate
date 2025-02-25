@@ -1,10 +1,32 @@
-import  { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/Home.css"; 
+import "../styles/Home.css";
+import EventForm from "./EventForm";
+import { getallEvents } from "../handlers/event_handler";
+import AuthContext from "../context/AuthContext";
 
 export const Dashboard = () => {
+  const [events, setEvents] = useState([]);
   const [roomId, setRoomId] = useState("");
+  const [showForm, setShowForm] = useState(false);
+  
   const navigate = useNavigate();
+  const { user } = useContext(AuthContext);
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const response = await getallEvents();
+        if (response && response.data) {
+          setEvents(response.data); // Update the events state
+        } else {
+          console.error("Failed to fetch events: response is undefined or invalid");
+        }
+      } catch (error) {
+        console.error("Error fetching events:", error);
+      }
+    }
+    fetchData();
+  }, []);
 
   const createMeeting = async () => {
     const generatedRoomId = Math.random().toString(36).substring(2, 15);
@@ -24,7 +46,7 @@ export const Dashboard = () => {
         <header className="dashboard-header">
           <div>
             <h1 className="dashboard-title">Virtual Event Dashboard</h1>
-            <p className="dashboard-subtitle">Welcome back</p>
+            <p className="dashboard-subtitle">Welcome back {user ? user.username : "Guest"} </p>
           </div>
           <div className="header-actions">
             <button className="icon-button">🔔</button>
@@ -44,7 +66,7 @@ export const Dashboard = () => {
           <div className="stat-card">
             <span className="stat-icon">📅</span>
             <div>
-              <p className="stat-number">12</p>
+              <p className="stat-number">{events.length}</p>
               <p className="stat-label">Active Events</p>
             </div>
           </div>
@@ -69,40 +91,50 @@ export const Dashboard = () => {
           {/* UPCOMING EVENTS */}
           <div className="events-section">
             <h2 className="section-title">Upcoming Events</h2>
-            <div className="event-card">
-              <h3 className="event-title">Tech Conference 2024</h3>
-              <span className="event-badge badge-blue">Tomorrow</span>
-              <p className="event-info">500 registered attendees</p>
-            </div>
-            <div className="event-card">
-              <h3 className="event-title">Digital Marketing Summit</h3>
-              <span className="event-badge badge-green">Next Week</span>
-              <p className="event-info">320 registered attendees</p>
-            </div>
+            {events.map((event) => (
+              <div className="event-card" key={event._id}>
+                <h3 className="event-title">{event.title}</h3>
+                <span className="event-badge badge-green">
+                  {event.eventDate}
+                </span>
+                <p className="event-info">{event.description}</p>
+              </div>
+            ))}
           </div>
 
           {/* QUICK ACTIONS */}
           <div className="quick-actions">
             <h2 className="section-title">Quick Actions</h2>
             <div className="actions-list">
-              
               <button className="action-button secondary">View Reports</button>
-              <button className="action-button primary" onClick={createMeeting}>Create New Event</button>
+              <button
+                className="action-button primary"
+                onClick={() => setShowForm(true)}
+              >
+                Create New Event
+              </button>
+              {showForm && <EventForm onClose={() => setShowForm(false)} />}
               <div className="input-group">
-            <input
-              type="text"
-              value={roomId}
-              onChange={(e) => setRoomId(e.target.value)}
-              placeholder="Enter Room ID"
-              className="input-field"
-            />
-            <button className="btn join-btn" onClick={joinMeeting}>
-              Join Meeting
-            </button>
+                <input
+                  type="text"
+                  value={roomId}
+                  onChange={(e) => setRoomId(e.target.value)}
+                  placeholder="Enter Room ID"
+                  className="input-field"
+                />
+                <button className="btn join-btn" onClick={joinMeeting}>
+                  Join Meeting
+                </button>
+                <button
+                  className="action-button primary"
+                  onClick={createMeeting}
+                >
+                  New Meeting
+                </button>
+                <div className="input-group"></div>
+              </div>
             </div>
           </div>
-        </div>  
-       
         </div>
       </div>
     </div>

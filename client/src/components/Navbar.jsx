@@ -1,28 +1,29 @@
 import { useContext } from "react";
 import { Link } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
+import { Bell, LogOut, User } from "lucide-react";
 
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
-  // console.log(user);
+console.log(user);
   return (
-    <nav className="flex justify-between bg-gray-800 p-4 text-white">
-      <h1 className="text-xl">VirtuMate</h1>
-      <h2 className="text-xl">Welcome, {user ? user.username : "Guest"}!</h2>
-      <div>
-        {user ? (
-          <>
-            <span className="mr-4">{user.name}</span>
-            <button onClick={logout} className="bg-red-500 px-4 py-2">Logout</button>
-          </>
-        ) : (
-          <>
-            <Link to="/login" className="mr-4">Login</Link>
-            <Link to="/register">Register</Link>
-          </>
-        )}
+    <header className="bg-white shadow-md sticky top-0 z-10">
+      <div className="flex items-center justify-between px-6 py-4">
+        <h2 className="text-2xl font-bold text-gray-800">Dashboard</h2>
+        <div className="flex items-center space-x-6">
+          <div className="flex items-center space-x-2">
+            <User size={20} className="text-gray-500" />
+            <span className="text-gray-700 font-medium">{user ? user.username : "Guest"}</span>
+          </div>
+          <button className="p-2 text-gray-500 hover:text-gray-700">
+            <Bell size={20} />
+          </button>
+          <button onClick={logout} className="p-2 text-gray-500 hover:text-gray-700">
+            <LogOut size={20} />
+          </button>
+        </div>
       </div>
-    </nav>
+    </header>
   );
 };
 

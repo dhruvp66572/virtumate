@@ -3,8 +3,9 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Layout from "./components/Layout";
 import Register from "./pages/Register";
-import Room from "./pages/Room";
 import LandingPage from "./pages/LandingPage";
+import Room from "./pages/Room";
+import Events from "./pages/Events";
 
 // Function to check if user is authenticated
 const isAuthenticated = () => {
@@ -33,6 +34,16 @@ const App = () => {
           path="/room/:roomId"
           element={isAuthenticated() ? <Room /> : <Navigate to="/login" />}
         />
+
+        <Route path="/events" element={<Events />} />
+        <Route path="/attendees" element={<h1>Attendees</h1>} />
+        <Route path="/messages" element={<h1>Messages</h1>} />
+        <Route path="/analytics" element={<h1>Analytics</h1>} />
+        <Route path="/settings" element={<h1>Settings</h1>} />
+        <Route path="/help" element={<h1>Help</h1>} />
+
+        <Route path="*" element={<Navigate to="/dashboard" />} />
+        
       </Route>
     </Routes>
   );

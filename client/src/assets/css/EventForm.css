@@ -1,0 +1,199 @@
+/* EventForm.css */
+
+/* Modal Overlay with Backdrop Blur */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  /* Modal Content with Animation */
+  .modal-content {
+    background-color: white;
+    padding: 2.5rem;
+    border-radius: 12px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    transform: translateY(0);
+    transition: transform 0.3s ease-in-out;
+    position: relative;
+  }
+  
+  .modal-content.entering {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  
+  .modal-content.entered {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  
+  /* Form Styling */
+  .event-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+  }
+  
+  .form-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    color: #1a1a1a;
+    position: relative;
+  }
+  
+  .form-title::after {
+    content: '';
+    position: absolute;
+    bottom: -0.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background-color: #2563eb;
+    border-radius: 2px;
+  }
+  
+  /* Form Groups */
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+  
+  .form-group label {
+    font-weight: 600;
+    color: #374151;
+    font-size: 0.95rem;
+    margin-bottom: 0.25rem;
+  }
+  
+  /* Input Styling */
+  .form-input,
+  .form-select,
+  .form-textarea {
+    padding: 0.75rem 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.2s ease-in-out;
+    background-color: #f9fafb;
+  }
+  
+  .form-input:hover,
+  .form-select:hover,
+  .form-textarea:hover {
+    border-color: #d1d5db;
+  }
+  
+  .form-input:focus,
+  .form-select:focus,
+  .form-textarea:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    background-color: white;
+  }
+  
+  .form-textarea {
+    resize: vertical;
+    min-height: 120px;
+  }
+  
+  /* Button Styling */
+  .form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 2rem;
+  }
+  
+  .btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    border: none;
+    font-size: 1rem;
+  }
+  
+  .btn-primary {
+    background-color: #2563eb;
+    color: white;
+    box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+  }
+  
+  .btn-primary:hover {
+    background-color: #1d4ed8;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);
+  }
+  
+  .btn-secondary {
+    background-color: #f3f4f6;
+    color: #4b5563;
+    border: 2px solid #e5e7eb;
+  }
+  
+  .btn-secondary:hover {
+    background-color: #e5e7eb;
+    color: #374151;
+  }
+  
+  /* File Input Styling */
+  input[type="file"] {
+    padding: 0.5rem 0;
+  }
+  
+  input[type="file"]::file-selector-button {
+    padding: 0.625rem 1rem;
+    margin-right: 1rem;
+    border-radius: 6px;
+    border: 2px solid #e5e7eb;
+    background-color: #f3f4f6;
+    color: #374151;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+  }
+  
+  input[type="file"]::file-selector-button:hover {
+    background-color: #e5e7eb;
+    border-color: #d1d5db;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 640px) {
+    .modal-content {
+      width: 95%;
+      padding: 1.5rem;
+    }
+    
+    .form-actions {
+      flex-direction: column;
+    }
+    
+    .form-actions button {
+      width: 100%;
+    }
+    
+    .btn {
+      padding: 0.875rem;
+    }
+  }

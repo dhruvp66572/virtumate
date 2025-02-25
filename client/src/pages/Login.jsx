@@ -66,7 +66,7 @@ const Login = ({ isOpen, toggleModal }) => {
           toggleModal(); // Close modal
           navigate("/dashboard"); // Redirect to profile page
           //window.location.reload(); // Reload page to update UI
-        }, 1500);
+        }, 2000);
       } else {
         setMessage("Invalid email or password. Please try again.");
       }

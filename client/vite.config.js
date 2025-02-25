@@ -12,4 +12,14 @@ export default defineConfig({
   define: {
     global:{}
   },
+  server: {
+    host: "localhost",
+    port: 5173,
+    strictPort: true,
+    hmr: {
+      protocol: "ws",
+      host: "localhost",
+    },
+  },
+  
 })
