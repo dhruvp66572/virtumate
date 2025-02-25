@@ -8,7 +8,7 @@ const setupSocket = require('./config/socket');
 
 const app = express();
 const server = http.createServer(app);
-const io = setupSocket(server);
+// const io = setupSocket(server);
 
 app.use(cors(
   {
@@ -23,15 +23,18 @@ app.get("/", (req, res) => {
   res.json({ message: "Hello From Server" });
 });
 
+setupSocket(server);
+
+
 // Pass io to routes
-app.use((req, res, next) => {
-  req.io = io; // Attach io instance to request object
-  next();
-});
+// app.use((req, res, next) => {
+//   req.io = io; // Attach io instance to request object
+//   next();
+// });
 
 app.use("/api/auth/", user_api);
 app.use("/api/events/", event_api);
-app.use("/api/meetings/", meeting_api);
+//app.use("/api/meetings/", meeting_api);
 
 app.use((err, req, res, next) => {
   if (res.headersSent) {
