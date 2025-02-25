@@ -37,9 +37,10 @@ env.config();
 app.get("/", (req, res) => {
   res.json({ message: "Hello From Server" });
 });
+setupSocket(server);
 app.use("/api/auth/", user_api);
 app.use("/api/events/", event_api);
-app.use("/api/meetings/", meeting_api);
+//app.use("/api/meetings/", meeting_api);
 
 app.use((err, req, res, next) => {
   if (res.headersSent) {
