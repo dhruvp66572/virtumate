@@ -6,7 +6,6 @@ const EventFormModal = ({ title, event = {}, onSubmit, onClose }) => {
     description: event.description || "",
     date: event.date || new Date().toISOString().split("T")[0],
     time: event.time || "09:00",
-    location: event.location || "",
     type: event.type || "Meeting",
     attendees: event.attendees || [],
   });
@@ -131,7 +130,7 @@ const EventFormModal = ({ title, event = {}, onSubmit, onClose }) => {
                 </div>
               </div>
 
-              <div>
+              {/* <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Location
                 </label>
@@ -143,7 +142,7 @@ const EventFormModal = ({ title, event = {}, onSubmit, onClose }) => {
                   className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                   placeholder="Enter location"
                 />
-              </div>
+              </div> */}
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">

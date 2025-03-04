@@ -1,75 +1,50 @@
-const router = require("express").Router();
-
+const express = require('express');
+const router = express.Router();
+const { protect } = require('../module/auth');
 const {
+  getAllEvents,
   createEvent,
-  getEvents,
   getEventById,
-  updateEventById,
-  deleteEventById,
-  getEventsByOrganizer,
-  attendEvent,
-  cancelAttendance,
-  getAttendees,
-  getEventMeetings,
-  createMeeting,
-  getMeetingById,
-  updateMeetingById,
-  deleteMeetingById,
-  getMeetingsByHost,
-  getMeetingsByParticipant,
+  updateEvent,
+  deleteEvent,
+  getEventAttendees,
+  registerForEvent,
+  cancelRegistration,
+  getEventRecording,
   startEvent,
-} = require("../handlers/Event");
-const { protect } = require("../module/auth");
+  endEvent
+} = require('../handlers/eventhandler');
 
-// Create a new event
-router.post("/", protect, createEvent);
+// Middleware to check if user is organizer
+const isOrganizer = (req, res, next) => {
+  if (req.user.role !== 'organizer' && req.user.role !== 'admin') {
+    return res.status(403).json({
+      status: 'error',
+      message: 'Organizer access required',
+      code: 'ORGANIZER_ONLY'
+    });
+  }
+  next();
+};
 
-// Get all events
-router.get("/", protect, getEvents);
+// Protected routes - require authentication
+router.use(protect);
 
-// Get an event by id
-router.get("/:id", getEventById);
+// Public event routes
+router.get('/events', getAllEvents);
+router.get('/events/:id', getEventById);
+router.get('/events/:id/attendees', getEventAttendees);
+router.get('/events/:id/recording', getEventRecording);
 
-// Update an event by id
-router.put("/:id", protect, updateEventById);
+// Attendee routes
+router.post('/events/:id/register', registerForEvent);
+router.delete('/events/:id/register', cancelRegistration);
 
-// Delete an event by id
-router.delete("/:id", protect, deleteEventById);
-
-// organizer start event
-router.put("/:id/start", protect, startEvent);
-
-// Get all events by organizer
-router.get("/organizer/:id", getEventsByOrganizer);
-
-// Attend an event
-router.post("/:id/attend", protect, attendEvent);
-
-// Cancel attendance
-router.delete("/:id/attend", protect, cancelAttendance);
-
-// Get attendees
-router.get("/:id/attendees", protect, getAttendees);
-
-// Get event meetings
-router.get("/:id/meetings", protect, getEventMeetings);
-
-// Create a new meeting
-router.post("/:id/meetings", protect, createMeeting);
-
-// Get a meeting by id
-router.get("/meetings/:id", protect, getMeetingById);
-
-// Update a meeting by id
-router.put("/meetings/:id", protect, updateMeetingById);
-
-// Delete a meeting by id
-router.delete("/meetings/:id", protect, deleteMeetingById);
-
-// Get all meetings by host
-router.get("/host/:id/meetings", protect, getMeetingsByHost);
-
-// Get all meetings by participant
-router.get("/participant/:id/meetings", protect, getMeetingsByParticipant);
+// Organizer only routes
+router.post('/events', isOrganizer, createEvent);
+router.put('/events/:id', isOrganizer, updateEvent);
+router.delete('/events/:id', isOrganizer, deleteEvent);
+router.post('/events/:id/start', isOrganizer, startEvent);
+router.post('/events/:id/end', isOrganizer, endEvent);
 
 module.exports = router;

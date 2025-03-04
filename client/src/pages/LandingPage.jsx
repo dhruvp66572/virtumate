@@ -1,252 +1,108 @@
-import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion"; // Instead of @/components/ui/motion
-import { Button } from "../components/ui/button";
-import { Menu, X, Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
-import Login from "./Login";
-import { useNavigate } from "react-router-dom";
+import React from 'react';
+import { Link } from 'react-router-dom';
 
 const LandingPage = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const navigate = useNavigate();
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  const [isModalOpen, setModalOpen] = useState(false);
-
-  const toggleModal = () => {
-    if(!localStorage.getItem('token'))
-      setModalOpen(!isModalOpen);
-    else
-      navigate('/dashboard')
-  };
-
-  const socialLinks = [
-    { icon: <Facebook size={20} />, href: "#" },
-    { icon: <Twitter size={20} />, href: "#" },
-    { icon: <Instagram size={20} />, href: "#" },
-    { icon: <Linkedin size={20} />, href: "#" },
-  ];
-
-  const navLinks = [
-    // { text: 'Home', href: '#' },
-    { text: "Why us?", href: "#about us" },
-    // { text: 'Upcoming Events', href: '#events' },
-    { text: "Speakers", href: "#speakers" },
-    { text: "Content Library", href: "#library" },
-    { text: "Our Sponsors", href: "#sponsors" },
-    {
-      text: "Login",
-      href: "#", // Prevent navigation
-      onClick: toggleModal,
-    },
-  ];
-
-  // const secondaryNavButtons = [
-  //   'Registration', 'Topics', 'Speakers', 'Sponsors'
-  // ];
-
   return (
-    <>
-      <div className="relative min-h-screen overflow-hidden">
-        {/* Navigation */}
-        <nav
-          className={`fixed w-full z-50 transition-all duration-300 ${
-            isScrolled
-              ? "bg-black/80 backdrop-blur-md py-4"
-              : "bg-transparent py-6"
-          }`}
-        >
-          <div className="container mx-auto px-4">
-            <div className="flex items-center justify-between">
-              {/* Social Links */}
-              <div className="hidden md:flex space-x-6">
-                {socialLinks.map((social, index) => (
-                  <motion.a
-                    key={index}
-                    href={social.href}
-                    className="text-white/90 hover:text-white transition-colors"
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    {social.icon}
-                  </motion.a>
-                ))}
-              </div>
-
-              {/* Desktop Navigation */}
-              <div className="hidden md:flex space-x-8 text-white brightness-110 text-xl font-medium">
-                {navLinks.map((link, index) => (
-                  <motion.a
-                    key={index}
-                    href={link.href}
-                    className="text-white/90 hover:text-white transition-colors"
-                    whileHover={{ y: -2 }}
-                    whileTap={{ y: 0 }}
-                  >
-                    {link.onClick ? (
-                      <button
-                        onClick={link.onClick}
-                        className="text-white/90 hover:text-white transition-colors"
-                      >
-                        {link.text}
-                      </button>
-                    ) : (
-                      <a
-                        href={link.href}
-                        className="text-white/90 hover:text-white transition-colors"
-                      >
-                        {link.text}
-                      </a>
-                    )}
-                    {/* {link.text} */}
-                  </motion.a>
-                ))}
-              </div>
-
-              {/* Mobile Menu Button */}
-              <button
-                className="md:hidden text-white p-2"
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              >
-                {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-              </button>
-            </div>
+    <div className="min-h-screen bg-gray-50">
+      {/* Navigation Bar */}
+      <nav className="bg-white shadow-md px-6 py-4">
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          <div className="flex items-center">
+            <h2 className="text-2xl font-bold text-indigo-600">UniEvents</h2>
           </div>
-
-          {/* Mobile Menu */}
-          <motion.div
-            className={`md:hidden ${isMobileMenuOpen ? "block" : "hidden"}`}
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-          >
-            <div className="bg-black/95 backdrop-blur-lg py-4">
-              {navLinks.map((link, index) => (
-                <a
-                  key={index}
-                  href={link.href}
-                  className="block px-6 py-2 text-white/90 hover:text-white hover:bg-white/10"
-                >
-                  {link.text}
-                </a>
-              ))}
-            </div>
-          </motion.div>
-        </nav>
-
-        <Login isOpen={isModalOpen} toggleModal={toggleModal} />
-
-        {/* Hero Section */}
-        <div className="relative h-screen">
-          {/* Background Image with Overlay */}
-          <div className="absolute inset-0">
-            {/* <div className="absolute inset-0 bg-gradient-to-b from-gray-900/80 via-gray-800/70 to-gray-900/90" /> */}
-            <div
-              className="absolute inset-0 "
-              style={{ background: "rgba(128, 128, 128, 0.5)" }}
-            />
-            <img
-              src="/cover.jpg"
-              alt="Singapore Skyline"
-              className="w-full h-full object-cover"
-            />
-          </div>
-
-          {/* Secondary Navigation */}
-          {/* <div className="absolute top-28 right-6 z-10">
-          <div className="flex flex-col md:flex-row gap-2">
-            {secondaryNavButtons.map((text, index) => (
-              <motion.button
-                key={index}
-                className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded text-sm backdrop-blur-sm"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                {text}
-              </motion.button>
-            ))}
-          </div>
-        </div> */}
-
-          {/* Main Content */}
-          <div className="relative h-full flex flex-col items-center justify-center text-white px-4">
-            <motion.div
-              className="text-center space-y-8"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-            >
-              <motion.h1
-                className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-              >
-                {/* THE MARTECH<br />SUMMIT */}
-                VIRTUMATE
-              </motion.h1>
-
-              <motion.p
-                className="text-lg md:text-xl max-w-2xl mx-auto"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.4 }}
-              >
-                "Accelerate Success with Us: Engaging, Seamless & Impactful
-              </motion.p>
-
-              <motion.div
-                className="space-y-4"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.6 }}
-              >
-                <p className="text-base md:text-lg">
-                  Join Virtually | Anywhere in the World | Elevate Your
-                  Experience at #VirtuLink
-                </p>
-                {/* <p>Raffles City Convention Centre</p> */}
-                <p className="text-yellow-300 animate-pulse">
-                  {/* Early Bird Pricing Now Available */}
-                </p>
-              </motion.div>
-
-              <motion.div
-                className="flex flex-col md:flex-row justify-center gap-4 md:gap-6"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.8 }}
-              >
-                <Button
-                  variant="default"
-                  size="lg"
-                  className="bg-white text-gray-900 hover:bg-gray-100 transition-colors"
-                >
-                  Registration
-                </Button>
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="border-white text-white hover:bg-white/10"
-                >
-                  Apply to Speak/Sponsor
-                </Button>
-              </motion.div>
-            </motion.div>
+          <div className="space-x-8">
+            <Link to="/" className="text-gray-600 hover:text-indigo-600 transition-colors">Home</Link>
+            <Link to="/events" className="text-gray-600 hover:text-indigo-600 transition-colors">Events</Link>
+            <Link to="/login" className="text-gray-600 hover:text-indigo-600 transition-colors">Login</Link>
+            <Link to="/register" className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors">Register</Link>
           </div>
         </div>
-        {/* Footer Section */}
-        <footer className="footer bg-gray-800 text-white text-center py-4 text-sm md:text-base lg:text-lg">
-          &copy; 2025 Virtumate | All Rights Reserved
-        </footer>
-      </div>
-    </>
+      </nav>
+
+      {/* Hero Section */}
+      <section className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-20">
+        <div className="max-w-7xl mx-auto px-6 text-center">
+          <h1 className="text-5xl font-bold mb-6">Welcome to University Event Management Platform</h1>
+          <p className="text-xl mb-8">Connect, Participate, and Thrive in Your University Community</p>
+          <div className="space-x-4">
+            <Link to="/register" className="bg-white text-indigo-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">Get Started</Link>
+            <Link to="/events" className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-indigo-600 transition-colors">Explore Events</Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-6">
+          <h2 className="text-3xl font-bold text-center mb-12">Why Choose Our Platform?</h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="bg-gray-50 p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+              <h3 className="text-xl font-semibold mb-4 text-indigo-600">Easy Event Discovery</h3>
+              <p className="text-gray-600">Find and join events that match your interests</p>
+            </div>
+            <div className="bg-gray-50 p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+              <h3 className="text-xl font-semibold mb-4 text-indigo-600">Networking Opportunities</h3>
+              <p className="text-gray-600">Connect with peers and professionals</p>
+            </div>
+            <div className="bg-gray-50 p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+              <h3 className="text-xl font-semibold mb-4 text-indigo-600">Real-time Updates</h3>
+              <p className="text-gray-600">Stay informed about upcoming events</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Upcoming Events Preview */}
+      <section className="py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-6">
+          <h2 className="text-3xl font-bold text-center mb-12">Featured Events</h2>
+          <div className="grid md:grid-cols-2 gap-8">
+            <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+              <h3 className="text-xl font-semibold mb-4 text-indigo-600">Tech Symposium 2024</h3>
+              <p className="text-gray-600 mb-4">Join us for the biggest tech event of the year</p>
+              <Link to="/events" className="text-indigo-600 font-semibold hover:text-indigo-800">Learn More →</Link>
+            </div>
+            <div className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+              <h3 className="text-xl font-semibold mb-4 text-indigo-600">Career Fair</h3>
+              <p className="text-gray-600 mb-4">Meet top employers and explore opportunities</p>
+              <Link to="/events" className="text-indigo-600 font-semibold hover:text-indigo-800">Learn More →</Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Call to Action Section */}
+      <section className="py-20 bg-indigo-600 text-white">
+        <div className="max-w-7xl mx-auto px-6 text-center">
+          <h2 className="text-3xl font-bold mb-4">Ready to Get Started?</h2>
+          <p className="text-xl mb-8">Join our community and never miss an important event again!</p>
+          <Link to="/register" className="bg-white text-indigo-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">Sign Up Now</Link>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-white py-12">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid md:grid-cols-2 gap-8 mb-8">
+            <div>
+              <h3 className="text-xl font-semibold mb-4">About Us</h3>
+              <p className="text-gray-400">Connecting university communities through meaningful events</p>
+            </div>
+            <div>
+              <h3 className="text-xl font-semibold mb-4">Quick Links</h3>
+              <div className="flex flex-col space-y-2">
+                <Link to="/events" className="text-gray-400 hover:text-white transition-colors">Browse Events</Link>
+                <Link to="/register" className="text-gray-400 hover:text-white transition-colors">Create Account</Link>
+                <Link to="/login" className="text-gray-400 hover:text-white transition-colors">Sign In</Link>
+              </div>
+            </div>
+          </div>
+          <div className="border-t border-gray-800 pt-8 text-center">
+            <p className="text-gray-400">&copy; 2024 University Event Management Platform. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
+    </div>
   );
 };
 

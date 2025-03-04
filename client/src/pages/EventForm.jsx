@@ -1,15 +1,15 @@
-import React, { useState, useRef, useEffect } from 'react';
-import '../assets/css/EventForm.css';
+import React, { useState, useRef, useEffect } from "react";
+import "../assets/css/EventForm.css";
 
 const EventForm = ({ onClose }) => {
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    category: '',
-    eventDate: '',
-    duration: '',
+    title: "",
+    description: "",
+    category: "",
+    eventDate: "",
+    duration: "",
     bannerImage: null,
-    outcome: ''
+    outcome: "",
   });
 
   // Add ref for the modal content
@@ -24,25 +24,25 @@ const EventForm = ({ onClose }) => {
 
   // Add event listener on mount and remove on unmount
   useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutside);
-    
+    document.addEventListener("mousedown", handleClickOutside);
+
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [onClose]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleFileChange = (e) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      bannerImage: e.target.files[0]
+      bannerImage: e.target.files[0],
     }));
   };
 
@@ -57,7 +57,7 @@ const EventForm = ({ onClose }) => {
       <div className="modal-content" ref={modalRef}>
         <form onSubmit={handleSubmit} className="event-form">
           <h2 className="form-title">Create New Event</h2>
-          
+
           <div className="form-group">
             <label htmlFor="title">Event Title</label>
             <input
@@ -157,8 +157,18 @@ const EventForm = ({ onClose }) => {
           </div>
 
           <div className="form-actions">
-            <button type="submit"  className="inline-flex items-center px-7 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors" onClick={onClose}>Create Event</button>
-            <button type="button" className="btn btn-secondary" onClick={onClose}>
+            <button
+              type="submit"
+              className="inline-flex items-center px-7 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
+              onClick={onClose}
+            >
+              Create Event
+            </button>
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={onClose}
+            >
               Cancel
             </button>
           </div>

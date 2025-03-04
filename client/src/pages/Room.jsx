@@ -173,7 +173,8 @@ const Room = () => {
     setPeers([]);
     peersRef.current = [];
     setStream(null);
-    navigate("/");
+    alert("Thank you for joining the call!");
+    navigate("/dashboard");    
   };
 
   return (

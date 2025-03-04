@@ -1,59 +1,30 @@
-const {
-    createUser,
-    loginUser,
-    getAllUsers,
-    getUserById,
-    updateUserById,
-    deleteUserById,
-    getprofile,
-    updateprofile,
-} = require("../handlers/User");
+const express = require('express');
+const router = express.Router();
+const { protect } = require('../module/auth');
+const { 
+  createUser,
+  loginUser,
+  logoutUser, 
+  getAllUsers,
+  getUserById,
+  updateUserById,
+  deleteUserById,
+  getprofile,
+  updateprofile
+} = require('../handlers/authhandlers');
 
-const { Router } = require("express");
-const { body } = require("express-validator");
-const { inputErrorHandler } = require("../module/middleware");
-const { protect } = require("../module/auth");
+// Auth routes
+router.post('/register', createUser);
+router.post('/login', loginUser);
+router.post('/logout', logoutUser);
 
-const router = Router();
-
-// Create a new user
-router.post(
-  "/register",
-  [
-    body("email").isEmail().normalizeEmail(),
-    body("password").isLength({ min: 6 }),
-    body("name").isLength({ min: 3 }),
-  ],
-  inputErrorHandler,
-  createUser
-);
-
-// Login
-router.post(
-  "/login",
-  [
-    body("email").isEmail().normalizeEmail(),
-    body("password").isLength({ min: 6 }),
-  ],
-  loginUser
-);
-
-// Get all users
-router.get("/users", getAllUsers);
-
-// Get a user by id
-router.get("/users/:id", getUserById);
-
-// Update a user by id
-router.put("/users/:id", updateUserById);
-
-// Delete a user by id
-router.delete("/users/:id", deleteUserById);
-
-// Get profile
-router.get("/profile", protect, getprofile);
-
-// Update profile
-router.put("/profile", protect, updateprofile);
+// Protected user routes
+router.use(protect);
+router.get('/users', getAllUsers);
+router.get('/users/:id', getUserById);
+router.put('/users/:id', updateUserById);
+router.delete('/users/:id', deleteUserById);
+router.get('/me', getprofile);
+router.put('/me', updateprofile);
 
 module.exports = router;

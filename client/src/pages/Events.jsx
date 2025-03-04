@@ -2,7 +2,12 @@ import { useState, useEffect, useContext } from "react";
 import EventFormModal from "../components/modals/EventFormModal";
 import EventCalendar from "../components/EventCalendar";
 import EventList from "../components/EventList";
-import { createEvent, deleteEventById, getallEvents, updateEventById } from "../handlers/event_handler";
+import {
+  createEvent,
+  deleteEventById,
+  getallEvents,
+  updateEventById,
+} from "../handlers/event_handler";
 import AuthContext from "../context/AuthContext";
 // import ViewEventModal from "../components/modals/ViewEventModal";
 
@@ -91,32 +96,35 @@ const Events = () => {
       status: "upcoming",
       attendees: event.attendees,
     });
-    console.log(data)
+    console.log(data);
     setEvents([...events, newEvent]);
     setIsCreateModalOpen(false);
   };
 
   // Update event
   const handleUpdateEvent = async (updatedEvent) => {
-     const updatednewEvent = {
+    const updatednewEvent = {
       ...updatedEvent,
       id: Math.max(0, ...events.map((e) => e.id)) + 1,
       color: getEventColor(event.type),
     };
 
-    const data = await updateEventById({
-      title: updatednewEvent.title,
-      description: updatednewEvent.description,
-      date: updatednewEvent.date,
-      time: updatednewEvent.time,
-      duration: 2,
-      organizer: user.id,
-      meetingLink: generateMeetingLink(),
-      status: "upcoming",
-      attendees: updatednewEvent.attendees,
-    }, selectedEvent._id);
+    const data = await updateEventById(
+      {
+        title: updatednewEvent.title,
+        description: updatednewEvent.description,
+        date: updatednewEvent.date,
+        time: updatednewEvent.time,
+        duration: 2,
+        organizer: user.id,
+        meetingLink: generateMeetingLink(),
+        status: "upcoming",
+        attendees: updatednewEvent.attendees,
+      },
+      selectedEvent._id
+    );
 
-    console.log(data)
+    console.log(data);
 
     fetchData();
     setIsUpdateModalOpen(false);
@@ -124,9 +132,9 @@ const Events = () => {
 
   // Delete event
   const handleDeleteEvent = async () => {
-    console.log(selectedEvent)
-    const deletedEvenet = await deleteEventById(selectedEvent._id);     
-    console.log(deletedEvenet)
+    console.log(selectedEvent);
+    const deletedEvenet = await deleteEventById(selectedEvent._id);
+    console.log(deletedEvenet);
     fetchData();
     setIsDeleteModalOpen(false);
   };

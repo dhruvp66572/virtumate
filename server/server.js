@@ -1,140 +1,71 @@
-const express = require("express");
-const http = require("http");
-const cors = require("cors");
-const env = require("dotenv");
+const express = require('express');
+const cors = require('cors');
+const mongoose = require('mongoose');
+const dotenv = require('dotenv');
+const authRoutes = require('./routes/authRoutes');
+const eventRoutes = require('./routes/eventRoutes');
+const { Server } = require('socket.io');
+const http = require('http');
 
-// Import routes
+// Load environment variables
+dotenv.config();
 
-const user_api = require("./routes/authRoutes");
-const event_api = require("./routes/eventRoutes");
-const meeting_api = require("./routes/meetingRoutes");
-const { connect } = require("./config/connect");
-
-// Setup socket.io
-
+// Create Express app
 const app = express();
+
+// Create HTTP server
 const server = http.createServer(app);
-const io = require("socket.io")(server, {
+
+// Create Socket.IO instance
+const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:5173"],
-
-    methods: ["GET", "POST"],
-
-    credentials: true,
-  },
+    origin: process.env.CLIENT_URL || "http://localhost:3000",
+    methods: ["GET", "POST"]
+  }
 });
-
-const port = 5000;
 
 // Middleware
-
-app.use(
-  cors({
-    origin: ["http://localhost:5173", "http://localhost:3000"], // Allow frontend
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Allow these HTTP methods
-    allowedHeaders: ["Content-Type", "Authorization"], // Allow these headers
-    credentials: true, // Allow cookies if needed
-  })
-);
-app.options("*", cors()); // Handle preflight requests
-app.use((req, res, next) => {
-  console.log(`Incoming request: ${req.method} ${req.url}`);
-  next();
-});
+app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-env.config();
+
+// Connect to MongoDB
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/eventplatform')
+  .then(() => console.log('Connected to MongoDB'))
+  .catch(err => console.error('MongoDB connection error:', err));
 
 // Routes
+app.use('/api/auth', authRoutes);
+app.use('/api', eventRoutes);
 
-app.get("/", (req, res) => {
-  res.json({ message: "Hello From Server" });
+// Socket.IO connection handling
+io.on('connection', (socket) => {
+  console.log('A user connected');
+
+  socket.on('joinEvent', (eventId) => {
+    socket.join(eventId);
+  });
+
+  socket.on('leaveEvent', (eventId) => {
+    socket.leave(eventId);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('User disconnected');
+  });
 });
-app.use("/api/auth/", user_api);
-app.use("/api/events/", event_api);
-app.use("/api/meetings/", meeting_api);
+
+// Error handling middleware
 app.use((err, req, res, next) => {
-  res.status(500).json({ error: err.message });
-});
-
-connect(process.env.MONGO_CONNECTION)
-  .then(() => {
-    console.log("Connected to MongoDB");
-  })
-
-  .catch((err) => {
-    console.error("Error connecting to MongoDB", err);
-  });
-
-const users = {};
-
-const socketToRoom = {};
-
-io.on("connection", (socket) => {
-  console.log(`User connected: ${socket.id}`);
-
-  socket.on("join-room", (roomId, userId, userName) => {
-    if (!users[roomId]) {
-      users[roomId] = [];
-    }
-
-    users[roomId].push({ id: socket.id, userId, userName });
-
-    socketToRoom[socket.id] = roomId;
-
-    socket.join(roomId);
-
-    const usersInRoom = users[roomId].filter((user) => user.id !== socket.id);
-
-    socket.emit("all-users", usersInRoom);
-
-    socket
-      .to(roomId)
-      .emit("user-connected", { id: socket.id, userId, userName });
-
-    socket.on("sending-signal", ({ userToSignal, signal }) => {
-      io.to(userToSignal).emit("user-joined", { signal, callerID: socket.id });
-    });
-
-    socket.on("returning-signal", ({ signal, callerID }) => {
-      io.to(callerID).emit("receiving-returned-signal", {
-        signal,
-        id: socket.id,
-      });
-    });
-
-    socket.on("message", (message) => {
-      io.to(roomId).emit("createMessage", message);
-    });
-
-    socket.on("mute-unmute", (mute) => {
-      io.to(roomId).emit("mute-unmute", socket.id, mute);
-    });
-
-    socket.on("video-on-off", (video) => {
-      io.to(roomId).emit("video-on-off", socket.id, video);
-    });
-
-    socket.on("screen-share", () => {
-      io.to(roomId).emit("screen-share", socket.id);
-    });
-
-    socket.on("disconnect", () => {
-      console.log(`User disconnected: ${socket.id}`);
-
-      const roomID = socketToRoom[socket.id];
-
-      if (roomID) {
-        users[roomID] = users[roomID].filter((user) => user.id !== socket.id);
-
-        socket.to(roomID).emit("user-disconnected", socket.id);
-      }
-    });
+  console.error(err.stack);
+  res.status(500).json({
+    status: 'error',
+    message: 'Something went wrong!',
+    code: 'INTERNAL_SERVER_ERROR'
   });
 });
 
-server.listen(5000, () => {
-  console.log(`Server running on port ${port}`);
-
-  console.log(`http://localhost:${port}`);
+// Start server
+const PORT = process.env.PORT || 5000;
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });

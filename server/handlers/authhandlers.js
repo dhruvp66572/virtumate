@@ -1,5 +1,5 @@
 const {User} = require('../models/User');
-const {createJWT , hashPassword, comparePassword} = require('../module/auth');
+const {createJWT, hashPassword, comparePassword} = require('../module/auth');
 
 const createUser = async (req, res) => {
     const {name, email, password} = req.body;
@@ -31,6 +31,10 @@ const loginUser = async (req, res) => {
     const token = createJWT(user);
 
     res.json({token});
+}
+
+const logoutUser = async (req, res) => {
+    res.json({message: "Logged out successfully"});
 }
 
 const getAllUsers = async (req, res) => {
@@ -88,4 +92,4 @@ const updateprofile = async (req, res) => {
     res.json(updatedUser);
 }
 
-module.exports = {createUser, loginUser, getAllUsers, getUserById, updateUserById, deleteUserById , getprofile, updateprofile};
+module.exports = {createUser, loginUser, logoutUser, getAllUsers, getUserById, updateUserById, deleteUserById, getprofile, updateprofile};

@@ -2,47 +2,58 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
-const eventSchema = new Schema({
-    title: {        // title of the event
-        type: String,
-        required: true
-    },
-    description: { // description of the event
-        type: String,
-        required: true
-    },
-    date: {         // date of the event
-        type: Date,
-        required: true
-    },
-    time: {         // time of the event
-        type: String,
-        required: true
-    },
-    duration: {     // duration of the event in minutes
-        type: Number,
-        required: true
-    },
-    organizer: {    // user who created the event
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
-    },
-    attendees: [{    // list of users attending the event
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+const eventSchema = new mongoose.Schema({
+    title: { type: String, required: true },
+    description: { type: String, required: true },
+    eventType: { type: String, enum: ['webinar', 'workshop', 'conference', 'other'], required: true },
+    startTime: { type: Date, required: true },
+    endTime: { type: Date, required: true },
+    organizerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    isPublic: { type: Boolean, default: true },
+    allowedAttendees: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    maxAttendees: { type: Number, default: 100 },
+    registrationDeadline: { type: Date },
+    agenda: [{
+      title: String,
+      startTime: Date,
+      endTime: Date,
+      description: String,
+      speakerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
     }],
-    meetingLink: {  // link to the meeting
-        type: String,
-        required: true
+    speakers: [{
+      userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+      bio: String,
+      photo: String,
+      topics: [String]
+    }],
+    exhibitorBooths: [{
+      name: String,
+      description: String,
+      logo: String,
+      representatives: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+      resources: [{ title: String, type: String, url: String }]
+    }],
+    registeredAttendees: [{ 
+      userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+      registrationTime: { type: Date, default: Date.now },
+      attended: { type: Boolean, default: false },
+      attendanceTime: Date,
+      feedbackProvided: { type: Boolean, default: false }
+    }],
+    recordingUrl: String,
+    meetingDetails: {
+      platform: String, // e.g., "Zoom", "Teams", etc.
+      meetingId: String,
+      password: String,
+      hostKey: String,
+      joinUrl: String
     },
-    status: {    // status of the event
-        type: String,
-        enum: ['upcoming', 'ongoing', 'completed'],
-        default: 'upcoming'
-    }
-});
-
+    tags: [String],
+    status: { type: String, enum: ['draft', 'scheduled', 'live', 'completed', 'cancelled', 'upcoming', 'ongoing'], default: 'draft' },
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now }
+  });
+  
 const Event = mongoose.model('Event', eventSchema);
 
 module.exports = Event;
