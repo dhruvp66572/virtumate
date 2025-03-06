@@ -16,35 +16,35 @@ const {
 } = require('../handlers/eventhandler');
 
 // Middleware to check if user is organizer
-const isOrganizer = (req, res, next) => {
-  if (req.user.role !== 'organizer' && req.user.role !== 'admin') {
-    return res.status(403).json({
-      status: 'error',
-      message: 'Organizer access required',
-      code: 'ORGANIZER_ONLY'
-    });
-  }
-  next();
-};
+// const isOrganizer = (req, res, next) => {
+//   if (req.user.role !== 'organizer' && req.user.role !== 'admin') {
+//     return res.status(403).json({
+//       status: 'error',
+//       message: 'Organizer access required',
+//       code: 'ORGANIZER_ONLY'
+//     });
+//   }
+//   next();
+// };
 
 // Protected routes - require authentication
 router.use(protect);
 
 // Public event routes
-router.get('/events', getAllEvents);
-router.get('/events/:id', getEventById);
-router.get('/events/:id/attendees', getEventAttendees);
-router.get('/events/:id/recording', getEventRecording);
+router.get('/', getAllEvents);
+router.get('/:id', getEventById);
+router.get('/:id/attendees', getEventAttendees);
+router.get('/:id/recording', getEventRecording);
 
 // Attendee routes
-router.post('/events/:id/register', registerForEvent);
-router.delete('/events/:id/register', cancelRegistration);
+router.post('/:id/register', registerForEvent);
+router.delete('/:id/register', cancelRegistration);
 
 // Organizer only routes
-router.post('/events', isOrganizer, createEvent);
-router.put('/events/:id', isOrganizer, updateEvent);
-router.delete('/events/:id', isOrganizer, deleteEvent);
-router.post('/events/:id/start', isOrganizer, startEvent);
-router.post('/events/:id/end', isOrganizer, endEvent);
+router.post('/', createEvent);
+router.put('/:id', updateEvent);
+router.delete('/:id', deleteEvent);
+router.post('/:id/start', startEvent);
+router.post('/:id/end', endEvent);
 
 module.exports = router;

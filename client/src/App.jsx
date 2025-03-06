@@ -6,6 +6,11 @@ import Register from "./pages/Register";
 import LandingPage from "./pages/LandingPage";
 import Room from "./pages/Room";
 import Events from "./pages/Events";
+import EventManagement from "./pages/EventManagement";
+import Eventcreate from "./pages/Eventcreate";
+import EventView from "./pages/EventView";
+import EventRegister from "./pages/EventRegister";
+import ProfilePage from "./pages/ProfilePage";
 
 // Function to check if user is authenticated
 const isAuthenticated = () => {
@@ -36,7 +41,12 @@ const App = () => {
         />
 
         <Route path="/events" element={<Events />} />
+        <Route path="/event-management" element={<EventManagement />} />
+        <Route path="/event-create" element={<Eventcreate />} />
+        <Route path="/event-details/:id" element={<EventView />} />
+        <Route path="/event-register" element={<EventRegister />} />
         <Route path="/attendees" element={<h1>Attendees</h1>} />
+        <Route path="/profile" element={<ProfilePage />} />
         <Route path="/messages" element={<h1>Messages</h1>} />
         <Route path="/analytics" element={<h1>Analytics</h1>} />
         <Route path="/settings" element={<h1>Settings</h1>} />

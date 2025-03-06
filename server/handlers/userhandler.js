@@ -43,12 +43,12 @@ const getUserById = async (req, res) => {
 const updateUserById = async (req, res) => {
   try {
     // Prevent updating role through this endpoint
-    delete req.body.role;
+    // delete req.body.role;
     
     const user = await User.findByIdAndUpdate(
       req.params.id,
-      { $set: req.body },
-      { new: true, runValidators: true }
+      req.body,
+      { new: true }
     ).select('-password');
 
     if (!user) {
@@ -60,6 +60,7 @@ const updateUserById = async (req, res) => {
 
     res.json({
       status: 'success',
+      message: 'User updated successfully',    
       data: user
     });
   } catch (error) {
@@ -96,7 +97,7 @@ const deleteUserById = async (req, res) => {
 const changeUserRole = async (req, res) => {
   try {
     const { role } = req.body;
-    if (!['attendee', 'organizer', 'admin'].includes(role)) {
+    if (!['user', 'admin'].includes(role)) {
       return res.status(400).json({
         status: 'error',
         message: 'Invalid role specified'

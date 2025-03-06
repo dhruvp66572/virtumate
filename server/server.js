@@ -3,6 +3,8 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const authRoutes = require('./routes/authRoutes');
+const userRoutes = require('./routes/userRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const { Server } = require('socket.io');
 const http = require('http');
@@ -34,8 +36,10 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/eventplat
   .catch(err => console.error('MongoDB connection error:', err));
 
 // Routes
+app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
-app.use('/api', eventRoutes);
+app.use('/api/admin/',adminRoutes);
+app.use('/api/events/', eventRoutes);
 
 // Socket.IO connection handling
 io.on('connection', (socket) => {

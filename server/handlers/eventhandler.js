@@ -22,7 +22,7 @@ const createEvent = async (req, res) => {
   try {
     const event = new Event({
       ...req.body,
-      organizer: req.user._id
+      organizer: req.user.id
     });
     await event.save();
     res.status(201).json({

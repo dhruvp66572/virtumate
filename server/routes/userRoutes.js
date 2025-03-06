@@ -23,18 +23,22 @@ const isAdmin = (req, res, next) => {
   next();
 };
 
+
 // Protected routes - require authentication
 router.use(protect);
+router.get('/demo', (res) => {
+res.send('Hello World');
+});
 
 // Admin only routes
-router.get('/users', isAdmin, getAllUsers);
-router.delete('/users/:id', isAdmin, deleteUserById);
-router.post('/users/:id/role', isAdmin, changeUserRole);
+router.get('/', isAdmin, getAllUsers);
+router.delete('/:id', isAdmin, deleteUserById);
+router.post('/:id/role', isAdmin, changeUserRole);
 
 // User routes
-router.get('/users/:id', getUserById);
-router.put('/users/:id', updateUserById);
-router.get('/users/:id/events', getUserEvents);
-router.post('/users/:id/interests', updateUserInterests);
+router.get('/:id', getUserById);
+router.put('/:id', updateUserById);
+router.get('/:id/events', getUserEvents);
+router.post('/:id/interests', updateUserInterests);
 
 module.exports = router;
