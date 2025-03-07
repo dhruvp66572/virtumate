@@ -39,7 +39,7 @@ const Login = () => {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Navigation Bar */}
-      <nav className="bg-white shadow-md px-6 py-4">
+      {/* <nav className="bg-white shadow-md px-6 py-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center">
             <Link to="/">
@@ -53,7 +53,7 @@ const Login = () => {
             <Link to="/register" className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors">Register</Link>
           </div>
         </div>
-      </nav>
+      </nav> */}
 
       {/* Main Content */}
       <div className="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
@@ -183,7 +183,7 @@ const Login = () => {
       </div>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
+      {/* <footer className="bg-gray-900 text-white py-12">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid md:grid-cols-2 gap-8 mb-8">
             <div>
@@ -203,7 +203,7 @@ const Login = () => {
             <p className="text-gray-400">&copy; 2024 University Event Management Platform. All rights reserved.</p>
           </div>
         </div>
-      </footer>
+      </footer> */}
     </div>
   );
 };

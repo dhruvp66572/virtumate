@@ -59,7 +59,7 @@ const ProfilePage = () => {
             </div>
           </div>
         </div>
-      </nav>
+      </nav> 
 
       {/* Main Content */}
       <div className="flex-grow py-10">

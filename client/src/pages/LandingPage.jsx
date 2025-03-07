@@ -5,7 +5,7 @@ const LandingPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Navigation Bar */}
-      <nav className="bg-white shadow-md px-6 py-4">
+      {/* <nav className="bg-white shadow-md px-6 py-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center">
             <h2 className="text-2xl font-bold text-indigo-600">UniEvents</h2>
@@ -17,7 +17,7 @@ const LandingPage = () => {
             <Link to="/register" className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors">Register</Link>
           </div>
         </div>
-      </nav>
+      </nav> */}
 
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-20">
