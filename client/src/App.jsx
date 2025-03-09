@@ -13,26 +13,25 @@ import EventView from "./pages/EventView";
 import EventRegister from "./pages/EventRegister";
 import ProfilePage from "./pages/ProfilePage";
 import { useAuth } from "./context/AuthContext";
+import Footer from "./components/Footer";
 
 const App = () => {
   const { isAuthenticated } = useAuth(); // Get auth state
 
   return (
     <>
-      {/* Navbar should always be displayed */}
-      <Navbar />
-
+     
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/events" element={<Events />} />
 
         {/* Protected Routes */}
         {isAuthenticated ? (
           <Route path="/" element={<Layout />}>
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/events" element={<Events />} />
             <Route path="/room/:roomId" element={<Room />} />
             <Route path="/event-management" element={<EventManagement />} />
             <Route path="/event-create" element={<Eventcreate />} />

@@ -83,7 +83,7 @@ const getAllEvents = async (req, res) => {
       ];
     }
 
-    const events = await Event.find(query).populate('organizer', 'name email');
+    const events = await Event.find(query).populate('organizerId', 'name email');
     res.json({
       status: 'success',
       data: events

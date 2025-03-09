@@ -1,105 +1,47 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import axiosInstance from "../utils/axiosIntance";
 
 const EventsPage = () => {
   // State for search and filters
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [dateFilter, setDateFilter] = useState("all");
+  const [events, setEvents] = useState([]);
 
+  useEffect(() => {
+    document.title = "UniEvents | Events";
+
+    // Fetch events from API
+    const fetchEvents = async () => {
+      try {
+        const response = await axiosInstance.get("/events");
+        setEvents(response.data.data);
+      } catch (error) {
+        console.error("Error fetching events:", error);
+      }
+    };
+
+    fetchEvents();
+  }, []);
+  console.log(events);
   // Mock data for events
-  const events = [
-    {
-      id: 1,
-      title: "AI Research Symposium",
-      description:
-        "Join leading researchers in artificial intelligence for a day of presentations and discussions on the latest advancements in the field.",
-      date: "March 15, 2024",
-      time: "10:00 AM - 4:00 PM",
-      location: "Virtual",
-      category: "academic",
-      organizer: "Computer Science Department",
-      image:
-        "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-      attendees: 78,
-      tags: ["technology", "research", "ai"],
-    },
-    {
-      id: 2,
-      title: "Career Development Workshop",
-      description:
-        "Prepare for your future career with this interactive workshop featuring resume building, interview tips, and networking strategies.",
-      date: "March 22, 2024",
-      time: "1:00 PM - 3:00 PM",
-      location: "Main Campus, Room 302",
-      category: "workshop",
-      organizer: "Career Services",
-      image:
-        "https://images.unsplash.com/photo-1515169067868-5387ec356754?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-      attendees: 45,
-      tags: ["career", "professional", "development"],
-    },
-    {
-      id: 3,
-      title: "Student Leadership Conference",
-      description:
-        "Develop your leadership skills at this annual conference featuring keynote speakers, breakout sessions, and networking opportunities.",
-      date: "April 5, 2024",
-      time: "9:00 AM - 5:00 PM",
-      location: "Student Union Building",
-      category: "conference",
-      organizer: "Student Affairs",
-      image:
-        "https://images.unsplash.com/photo-1475721027785-f74ec9c409d7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-      attendees: 120,
-      tags: ["leadership", "student", "development"],
-    },
-    {
-      id: 4,
-      title: "Spring Music Festival",
-      description:
-        "Enjoy performances from student musicians and local bands at our annual spring music festival on the campus lawn.",
-      date: "April 18, 2024",
-      time: "5:00 PM - 10:00 PM",
-      location: "Campus Lawn",
-      category: "social",
-      organizer: "Music Department",
-      image:
-        "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-      attendees: 250,
-      tags: ["music", "entertainment", "social"],
-    },
-    {
-      id: 5,
-      title: "Data Science Hackathon",
-      description:
-        "Put your data analysis skills to the test in this 24-hour hackathon with prizes for the most innovative solutions.",
-      date: "March 28, 2024",
-      time: "12:00 PM - 12:00 PM (next day)",
-      location: "Innovation Hub",
-      category: "academic",
-      organizer: "Data Science Club",
-      image:
-        "https://images.unsplash.com/photo-1504639725590-34d0984388bd?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-      attendees: 64,
-      tags: ["data science", "competition", "technology"],
-    },
-    {
-      id: 6,
-      title: "International Food Festival",
-      description:
-        "Experience cuisines from around the world prepared by international student associations and local restaurants.",
-      date: "April 12, 2024",
-      time: "11:00 AM - 3:00 PM",
-      location: "University Plaza",
-      category: "social",
-      organizer: "International Student Association",
-      image:
-        "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-      attendees: 320,
-      tags: ["food", "culture", "international"],
-    },
-  ];
+  // const events = [
+  //   {
+  //     id: 1,
+  //     title: "AI Research Symposium",
+  //     description:
+  //       "Join leading researchers in artificial intelligence for a day of presentations and discussions on the latest advancements in the field.",
+  //     date: "March 15, 2024",
+  //     time: "10:00 AM - 4:00 PM",
+  //     location: "Virtual",
+  //     category: "academic",
+  //     organizer: "Computer Science Department",
+  //     image:
+  //       "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+  //     attendees: 78,
+  //     tags: ["technology", "research", "ai"],
+  //   },
 
   // Filter events based on search and category
   const filteredEvents = events.filter((event) => {
@@ -110,28 +52,57 @@ const EventsPage = () => {
         tag.toLowerCase().includes(searchTerm.toLowerCase())
       );
 
+      let eventdate = new Date(event.startTime).toDateString().split(" ").slice(1).join(" ");
+      console.log(eventdate);
+      let diff = new Date(event.startTime) - new Date();
+      let days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      console.log(days);
+      if (days < 0) {
+        event.status = "completed";
+      } else {
+        event.status = "live";
+      }      
+      console.log(event.status);
+
     const matchesCategory =
-      categoryFilter === "all" || event.category === categoryFilter;
+      categoryFilter === "all" || event.eventType === categoryFilter;
 
     let matchesDate = true;
     if (dateFilter === "thisWeek") {
-      // In a real app, you would implement actual date logic here
+      let today = new Date();
+      let nextWeek = new Date(today);
+      nextWeek.setDate(today.getDate() + 7);
       matchesDate =
-        event.date.includes("March 15") || event.date.includes("March 22");
+        new Date(event.startTime) >= today && new Date(event.startTime) < nextWeek;        
     } else if (dateFilter === "nextWeek") {
-      matchesDate = event.date.includes("March 28");
+      let today = new Date();
+      let nextWeek = new Date(today);
+      nextWeek.setDate(today.getDate() + 7);
+      let nextNextWeek = new Date(nextWeek);
+      nextNextWeek.setDate(nextWeek.getDate() + 7);
+      matchesDate =
+        new Date(event.startTime) >= nextWeek && new Date(event.startTime) < nextNextWeek;        
     } else if (dateFilter === "thisMonth") {
-      matchesDate = event.date.includes("March");
+      let today = new Date();
+      let nextMonth = new Date(today);
+      nextMonth.setMonth(today.getMonth() + 1);
+      matchesDate =
+        new Date(event.startTime) >= today && new Date(event.startTime) < nextMonth;
     } else if (dateFilter === "nextMonth") {
-      matchesDate = event.date.includes("April");
+      let today = new Date();
+      let nextMonth = new Date(today);
+      nextMonth.setMonth(today.getMonth() + 1);
+      let nextNextMonth = new Date(nextMonth);
+      nextNextMonth.setMonth(nextMonth.getMonth() + 1);
+      matchesDate =
+        new Date(event.startTime) >= nextMonth && new Date(event.startTime) < nextNextMonth;
     }
 
     return matchesSearch && matchesCategory && matchesDate;
   });
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">     
-
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Main Content */}
       <div className="flex-grow py-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -205,10 +176,10 @@ const EventsPage = () => {
                   onChange={(e) => setCategoryFilter(e.target.value)}
                 >
                   <option value="all">All Categories</option>
-                  <option value="academic">Academic</option>
-                  <option value="workshop">Workshops</option>
-                  <option value="conference">Conferences</option>
-                  <option value="social">Social</option>
+                  <option value="webinar">webinar</option>
+                  <option value="workshop">workshop</option>
+                  <option value="conference">conference</option>
+                  <option value="other">other</option>
                 </select>
               </div>
               <div>
@@ -265,7 +236,9 @@ const EventsPage = () => {
               >
                 <div className="h-48 overflow-hidden">
                   <img
-                    src={event.image}
+                    src={
+                      "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                    }
                     alt={event.title}
                     className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500"
                   />
@@ -273,11 +246,11 @@ const EventsPage = () => {
                 <div className="p-6">
                   <div className="flex items-center space-x-2 mb-2">
                     <span className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-700">
-                      {event.category.charAt(0).toUpperCase() +
-                        event.category.slice(1)}
+                      {event.eventType.charAt(0).toUpperCase() +
+                        event.eventType.slice(1)}
                     </span>
                     <span className="text-gray-500 text-sm">
-                      {event.attendees} attending
+                      {event.attendees} attendees
                     </span>
                   </div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">
@@ -300,7 +273,11 @@ const EventsPage = () => {
                         d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
                       />
                     </svg>
-                    {event.date}
+                    {new Date(event.startTime).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    })}
                   </div>
                   <div className="flex items-center text-gray-600 text-sm mb-4">
                     <svg
@@ -313,20 +290,26 @@ const EventsPage = () => {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth="2"
-                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                        d="M12 8v4l3 3m6 0a9 9 0 11-18 0 9 9 0 0118 0z"
                       />
                     </svg>
-                    {event.location}
+                    {
+                      // In a real app, you would format the time using a library like date-fns or moment.js
+                      new Date(event.startTime).toLocaleTimeString("en-US", {
+                        hour: "numeric",
+                        minute: "numeric",
+                      })
+                    }{" "} - {" "}
+                    {
+                      new Date(event.endTime).toLocaleTimeString("en-US", {
+                        hour: "numeric",
+                        minute: "numeric",
+                      })
+                    }
                   </div>
                   <div className="mt-4 flex justify-between items-center">
                     <Link
-                      to={`/event-details/1`}
+                      to={`/event-details/${event._id}`}
                       className="text-indigo-600 font-medium hover:text-indigo-800 transition-colors"
                     >
                       View Details
@@ -372,15 +355,17 @@ const EventsPage = () => {
                   />
                 </svg>
               </button>
-              <button className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-indigo-50 text-sm font-medium text-indigo-600 hover:bg-indigo-100">
-                1
-              </button>
-              <button className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
-                2
-              </button>
-              <button className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
-                3
-              </button>
+              {
+                // Array of page numbers
+                [1, 2, 3, 4, 5].map((pageNumber) => (
+                  <button
+                    key={pageNumber}
+                    className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
+                  >
+                    {pageNumber}
+                  </button>
+                ))
+              }
               <button className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
                 <span className="sr-only">Next</span>
                 <svg
@@ -400,49 +385,6 @@ const EventsPage = () => {
           </div>
         </div>
       </div>
-
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12 mt-auto">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid md:grid-cols-2 gap-8 mb-8">
-            <div>
-              <h3 className="text-xl font-semibold mb-4">About Us</h3>
-              <p className="text-gray-400">
-                Connecting university communities through meaningful events
-              </p>
-            </div>
-            <div>
-              <h3 className="text-xl font-semibold mb-4">Quick Links</h3>
-              <div className="flex flex-col space-y-2">
-                <Link
-                  to="/events"
-                  className="text-gray-400 hover:text-white transition-colors"
-                >
-                  Browse Events
-                </Link>
-                <Link
-                  to="/help"
-                  className="text-gray-400 hover:text-white transition-colors"
-                >
-                  Help Center
-                </Link>
-                <Link
-                  to="/contact"
-                  className="text-gray-400 hover:text-white transition-colors"
-                >
-                  Contact Us
-                </Link>
-              </div>
-            </div>
-          </div>
-          <div className="border-t border-gray-800 pt-8 text-center">
-            <p className="text-gray-400">
-              &copy; 2024 University Event Management Platform. All rights
-              reserved.
-            </p>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 };

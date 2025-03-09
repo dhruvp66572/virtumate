@@ -1,9 +1,19 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import Footer from '../components/Footer';
+import Navbar from '../components/Navbar';
+import { useAuth } from '../context/AuthContext';
 
 const LandingPage = () => {
+  const {user} = useAuth();
+  let isAuthenticated = false;
+  if(user){
+    isAuthenticated = true;
+  }
   return (
+    <>
     <div className="min-h-screen bg-gray-50">
+      <Navbar />
       {/* Navigation Bar */}
       {/* <nav className="bg-white shadow-md px-6 py-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
@@ -25,7 +35,15 @@ const LandingPage = () => {
           <h1 className="text-5xl font-bold mb-6">Welcome to University Event Management Platform</h1>
           <p className="text-xl mb-8">Connect, Participate, and Thrive in Your University Community</p>
           <div className="space-x-4">
-            <Link to="/register" className="bg-white text-indigo-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">Get Started</Link>
+          {
+            isAuthenticated ? (
+              <Link to="/dashboard" className="bg-white text-indigo-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">Dashboard</Link>
+            ) : (
+              <Link to="/login" className="bg-white text-indigo-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                Get Started
+              </Link>
+            )
+          }
             <Link to="/events" className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-indigo-600 transition-colors">Explore Events</Link>
           </div>
         </div>
@@ -81,28 +99,9 @@ const LandingPage = () => {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid md:grid-cols-2 gap-8 mb-8">
-            <div>
-              <h3 className="text-xl font-semibold mb-4">About Us</h3>
-              <p className="text-gray-400">Connecting university communities through meaningful events</p>
-            </div>
-            <div>
-              <h3 className="text-xl font-semibold mb-4">Quick Links</h3>
-              <div className="flex flex-col space-y-2">
-                <Link to="/events" className="text-gray-400 hover:text-white transition-colors">Browse Events</Link>
-                <Link to="/register" className="text-gray-400 hover:text-white transition-colors">Create Account</Link>
-                <Link to="/login" className="text-gray-400 hover:text-white transition-colors">Sign In</Link>
-              </div>
-            </div>
-          </div>
-          <div className="border-t border-gray-800 pt-8 text-center">
-            <p className="text-gray-400">&copy; 2024 University Event Management Platform. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
+        <Footer />
     </div>
+    </>    
   );
 };
 

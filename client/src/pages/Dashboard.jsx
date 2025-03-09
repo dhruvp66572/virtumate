@@ -1,79 +1,103 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import axiosInstance from '../utils/axiosIntance';
 
 const Dashboard = () => {
+  const {user} = useAuth(); // Get user details from Auth Context
+  const upcomingEvents = [];
+  const createdEvents = [];
+  const liveEvents = [];
+
+  useEffect(() => {
+    const getAllEvents = async () => {
+      try {
+        console.log(user.id)
+        const response = await axiosInstance.get(`/users/${user?.id}`);
+        console.log(response.data.data);
+        return response.data;        
+      } catch (error) {
+        console.error('Error fetching events:', error);
+        throw error;
+      }
+    };
+
+    // Fetch all events
+    getAllEvents();
+  }, [user?.id]);
+
   // Mock data for upcoming events
-  const upcomingEvents = [
-    {
-      id: 1, 
-      title: 'AI Research Symposium',
-      date: 'March 15, 2024',
-      time: '10:00 AM - 4:00 PM',
-      location: 'Virtual',
-      status: 'Registered'
-    },
-    {
-      id: 2, 
-      title: 'Career Development Workshop',
-      date: 'March 22, 2024',
-      time: '1:00 PM - 3:00 PM',
-      location: 'Main Campus, Room 302',
-      status: 'Registered'
-    },
-    {
-      id: 3, 
-      title: 'Student Leadership Conference',
-      date: 'April 5, 2024',
-      time: '9:00 AM - 5:00 PM',
-      location: 'Student Union Building',
-      status: 'Pending Approval'
-    }
-  ];
+  // const upcomingEvents = [
+  //   {
+  //     id: 1, 
+  //     title: 'AI Research Symposium',
+  //     date: 'March 15, 2024',
+  //     time: '10:00 AM - 4:00 PM',
+  //     location: 'Virtual',
+  //     status: 'Registered'
+  //   },
+  //   {
+  //     id: 2, 
+  //     title: 'Career Development Workshop',
+  //     date: 'March 22, 2024',
+  //     time: '1:00 PM - 3:00 PM',
+  //     location: 'Main Campus, Room 302',
+  //     status: 'Registered'
+  //   },
+  //   {
+  //     id: 3, 
+  //     title: 'Student Leadership Conference',
+  //     date: 'April 5, 2024',
+  //     time: '9:00 AM - 5:00 PM',
+  //     location: 'Student Union Building',
+  //     status: 'Pending Approval'
+  //   }
+  // ];
 
-  // Mock data for events created by user
-  const createdEvents = [
-    {
-      id: 101, 
-      title: 'Web Development Study Group',
-      date: 'March 18, 2024',
-      time: '6:00 PM - 8:00 PM',
-      location: 'Library, Meeting Room 4',
-      attendees: 12,
-      status: 'Active'
-    },
-    {
-      id: 102, 
-      title: 'Chess Club Tournament',
-      date: 'April 10, 2024',
-      time: '2:00 PM - 6:00 PM',
-      location: 'Recreation Center',
-      attendees: 8,
-      status: 'Active'
-    }
-  ];
+  // // Mock data for events created by user
+  // const createdEvents = [
+  //   {
+  //     id: 101, 
+  //     title: 'Web Development Study Group',
+  //     date: 'March 18, 2024',
+  //     time: '6:00 PM - 8:00 PM',
+  //     location: 'Library, Meeting Room 4',
+  //     attendees: 12,
+  //     status: 'Active'
+  //   },
+  //   {
+  //     id: 102, 
+  //     title: 'Chess Club Tournament',
+  //     date: 'April 10, 2024',
+  //     time: '2:00 PM - 6:00 PM',
+  //     location: 'Recreation Center',
+  //     attendees: 8,
+  //     status: 'Active'
+  //   }
+  // ];
 
-  // Mock data for live events
-  const liveEvents = [
-    {
-      id: 201,
-      title: 'Live Coding Workshop',
-      date: 'March 10, 2024',
-      time: '2:00 PM - 4:00 PM',
-      location: 'Virtual',
-      link: 'https://liveevent.com/coding-workshop'
-    },
-    {
-      id: 202,
-      title: 'Live Music Concert',
-      date: 'March 12, 2024',
-      time: '6:00 PM - 8:00 PM',
-      location: 'Virtual',
-      link: 'https://liveevent.com/music-concert'
-    }
-  ];
+  // // Mock data for live events
+  // const liveEvents = [
+  //   {
+  //     id: 201,
+  //     title: 'Live Coding Workshop',
+  //     date: 'March 10, 2024',
+  //     time: '2:00 PM - 4:00 PM',
+  //     location: 'Virtual',
+  //     link: 'https://liveevent.com/coding-workshop'
+  //   },
+  //   {
+  //     id: 202,
+  //     title: 'Live Music Concert',
+  //     date: 'March 12, 2024',
+  //     time: '6:00 PM - 8:00 PM',
+  //     location: 'Virtual',
+  //     link: 'https://liveevent.com/music-concert'
+  //   }
+  // ];
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gray-50 flex flex-col">      
      {/* Main Content */}
       <div className="flex-grow py-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -81,7 +105,7 @@ const Dashboard = () => {
           <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl shadow-lg p-6 mb-8 text-white">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-2xl font-bold">Welcome back, Sarah!</h1>
+                <h1 className="text-2xl font-bold">Welcome back, {user?.name || "User"}</h1>
                 <p className="mt-1">You have 3 upcoming events this month</p>
               </div>
               <div>
@@ -262,29 +286,6 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
-
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12 mt-auto">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid md:grid-cols-2 gap-8 mb-8">
-            <div>
-              <h3 className="text-xl font-semibold mb-4">About Us</h3>
-              <p className="text-gray-400">Connecting university communities through meaningful events</p>
-            </div>
-            <div>
-              <h3 className="text-xl font-semibold mb-4">Quick Links</h3>
-              <div className="flex flex-col space-y-2">
-                <Link to="/events" className="text-gray-400 hover:text-white transition-colors">Browse Events</Link>
-                <Link to="/help" className="text-gray-400 hover:text-white transition-colors">Help Center</Link>
-                <Link to="/contact" className="text-gray-400 hover:text-white transition-colors">Contact Us</Link>
-              </div>
-            </div>
-          </div>
-          <div className="border-t border-gray-800 pt-8 text-center">
-            <p className="text-gray-400">&copy; 2024 University Event Management Platform. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 };

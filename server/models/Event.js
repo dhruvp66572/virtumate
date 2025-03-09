@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const Schema = mongoose.Schema;
+
 
 const eventSchema = new mongoose.Schema({
     title: { type: String, required: true },
@@ -18,13 +18,14 @@ const eventSchema = new mongoose.Schema({
       startTime: Date,
       endTime: Date,
       description: String,
-      speakerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+      speaker : String,   
+
     }],
     speakers: [{
-      userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+      name: String,    
       bio: String,
       photo: String,
-      topics: [String]
+      topics: [String]      
     }],
     exhibitorBooths: [{
       name: String,

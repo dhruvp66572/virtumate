@@ -1,81 +1,70 @@
-import axios from "axios";
+// src/api/eventService.js
 
-const getallEvents = async () => {
-  const response = await axios.get(
-    "http://localhost:5000/api/events/",
-    {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    }
-  );
+import axiosInstance from "../utils/axiosIntance";
 
-  return response;
+// Fetch all events
+const getAllEvents = async () => {
+  try {
+    const response = await axiosInstance.get('/events');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching events:', error);
+    throw error;
+  }
 };
 
+// Fetch a specific event by ID
 const getEventById = async (id) => {
-  const response = await axios.get(`http://localhost:5000/api/events/${id}`, {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-    },
-  });
-
-  console.log(response);
+  try {
+    const response = await axiosInstance.get(`/events/${id}`);
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching event with ID ${id}:`, error);
+    throw error;
+  }
 };
 
+// Create a new event
 const createEvent = async (formData) => {
-  const response = await axios.post(
-    "http://localhost:5000/api/events/",
-    formData,
-    {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    }
-  );
-
-  console.log(response);
-  return response;
+  try {
+    const response = await axiosInstance.post('/events', formData);
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error creating event:', error);
+    throw error;
+  }
 };
 
+// Update an event by ID
 const updateEventById = async (formData, id) => {
-  console.log(id);
-
-  const response = await axios.put(
-    `http://localhost:5000/api/events/${id}`,
-    formData,
-    {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    }
-  );
-
-  console.log(response);
-  return response;
+  try {
+    console.log(`Updating event with ID ${id}`);
+    const response = await axiosInstance.put(`/events/${id}`, formData);
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.error(`Error updating event with ID ${id}:`, error);
+    throw error;
+  }
 };
 
+// Delete an event by ID
 const deleteEventById = async (id) => {
-  console.log(id);
-  const response = await axios.delete(
-    `http://localhost:5000/api/events/${id}`,
-    {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    }
-  );
-
-  console.log(response);
-  return response;
+  try {
+    console.log(`Deleting event with ID ${id}`);
+    const response = await axiosInstance.delete(`/events/${id}`);
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.error(`Error deleting event with ID ${id}:`, error);
+    throw error;
+  }
 };
 
 export {
-  getallEvents,
+  getAllEvents,
   getEventById,
   createEvent,
   updateEventById,
