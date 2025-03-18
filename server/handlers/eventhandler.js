@@ -1,5 +1,5 @@
 const Event = require("../models/Event");
-const User = require("../models/User");
+const {User} = require("../models/User");
 
 // Get all events
 const getAllEvents = async (req, res) => {
@@ -25,6 +25,11 @@ const createEvent = async (req, res) => {
       organizerId: req.user.id
     });
     await event.save();
+
+    const user = await User.findById(req.user.id);
+    user.eventsOrganized.push(event._id);
+    await user.save();
+
     res.status(201).json({
       status: 'success',
       data: event
@@ -40,7 +45,7 @@ const createEvent = async (req, res) => {
 // Get event by ID
 const getEventById = async (req, res) => {
   try {
-    const event = await Event.findById(req.params.id);
+    const event = await Event.findById(req.params.id).populate('organizerId', '-password').populate('registeredAttendees', '-password');
     if (!event) {
       return res.status(404).json({
         status: 'error',
@@ -95,6 +100,11 @@ const deleteEvent = async (req, res) => {
         message: 'Event not found'
       });
     }
+
+    const user = await User.findById(req.user.id);
+    user.eventsOrganized = user.eventsOrganized.filter(id => id.toString() !== req.params.id);
+    await user.save();
+
     res.json({
       status: 'success',
       message: 'Event deleted successfully'

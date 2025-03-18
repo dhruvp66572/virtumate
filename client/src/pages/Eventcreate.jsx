@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axiosInstance from "../utils/axiosIntance";
 import { useAuth } from "../context/AuthContext";
@@ -109,8 +109,11 @@ const Eventcreate = () => {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Here you would send `formData` to your backend
-    console.log("Form data submitted:", formData);
+
+    // console.log(currentStep);
+
+    // // Here you would send `formData` to your backend
+    // console.log("Form data submitted:", formData);
 
     if (formData.agenda.length < 0) {
       alert("Please add at least one agenda item.");
@@ -125,7 +128,11 @@ const Eventcreate = () => {
       }); // Replace '1234' with actual organizer ID
       console.log(response.data);
 
-      navigate("/events");
+      // Redirect to event page
+      if (response.status === 201) {
+        navigate(`/events/${response.data.data._id}`);
+      }
+
     } catch (error) {
       console.error("Error creating event:", error);
       alert("An error occurred. Please try again.");
@@ -142,14 +149,18 @@ const Eventcreate = () => {
       case 2:
         return formData.startTime && formData.endTime; // Require start and end time
       case 3:
-        return true; // All fields in step 3 are optional
+        return true; // No validation needed for step 3
       default:
         return true;
     }
   };
 
-  // Go to next step if validation passes
-  const goToNextStep = () => {
+  // // Go to next step if validation passes
+
+  const goToNextStep = (e) => {
+    // Add this line to prevent form submission when clicking "Next"
+    e.preventDefault();
+    
     if (validateStep(currentStep)) {
       setCurrentStep(currentStep + 1);
       window.scrollTo(0, 0);
@@ -157,13 +168,15 @@ const Eventcreate = () => {
       alert("Please fill in all required fields.");
     }
   };
-
+  
   // Go to previous step
-  const goToPreviousStep = () => {
+  const goToPreviousStep = (e) => {
+    // Also add this to the previous step function
+    e.preventDefault();
+    
     setCurrentStep(currentStep - 1);
     window.scrollTo(0, 0);
   };
-
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <div className="flex-grow py-10">

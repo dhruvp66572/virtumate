@@ -14,6 +14,8 @@ import EventRegister from "./pages/EventRegister";
 import ProfilePage from "./pages/ProfilePage";
 import { useAuth } from "./context/AuthContext";
 import Footer from "./components/Footer";
+import MyEvenets from "./pages/MyEvenets";
+import Settings from "./pages/Settings";
 
 const App = () => {
   const { isAuthenticated } = useAuth(); // Get auth state
@@ -32,15 +34,16 @@ const App = () => {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/events" element={<Events />} />
             <Route path="/room/:roomId" element={<Room />} />
-            <Route path="/event-management" element={<EventManagement />} />
             <Route path="/event-create" element={<Eventcreate />} />
+            <Route path="/myevents" element={<MyEvenets />} />
+            <Route path="/myevents/:id" element={<EventManagement />} />
             <Route path="/event-details/:id" element={<EventView />} />
             <Route path="/events/:id/register" element={<EventRegister />} />
             <Route path="/attendees" element={<h1>Attendees</h1>} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/messages" element={<h1>Messages</h1>} />
             <Route path="/analytics" element={<h1>Analytics</h1>} />
-            <Route path="/settings" element={<h1>Settings</h1>} />
+            <Route path="/settings" element={<Settings />} />
             <Route path="/help" element={<h1>Help</h1>} />
 
             {/* Redirect unknown routes to dashboard */}

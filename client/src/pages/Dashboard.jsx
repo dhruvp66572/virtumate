@@ -198,7 +198,7 @@ const Dashboard = () => {
                   ))}
                 </div>
                 <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 rounded-b-xl">
-                  <Link to="/events/create" className="text-indigo-600 font-medium hover:text-indigo-800 transition-colors flex items-center justify-center">
+                  <Link to="/event-create" className="text-indigo-600 font-medium hover:text-indigo-800 transition-colors flex items-center justify-center">
                     Create New Event
                     <svg className="w-5 h-5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path>
