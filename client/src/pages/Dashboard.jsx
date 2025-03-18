@@ -1,30 +1,12 @@
-import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import axiosInstance from '../utils/axiosIntance';
 
 const Dashboard = () => {
   const {user} = useAuth(); // Get user details from Auth Context
   const upcomingEvents = [];
   const createdEvents = [];
   const liveEvents = [];
-
-  useEffect(() => {
-    const getAllEvents = async () => {
-      try {
-        console.log(user.id)
-        const response = await axiosInstance.get(`/users/${user?.id}`);
-        console.log(response.data.data);
-        return response.data;        
-      } catch (error) {
-        console.error('Error fetching events:', error);
-        throw error;
-      }
-    };
-
-    // Fetch all events
-    getAllEvents();
-  }, [user?.id]);
+  console.log(user?.name)
 
   // Mock data for upcoming events
   // const upcomingEvents = [

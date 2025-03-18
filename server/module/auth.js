@@ -24,7 +24,9 @@ const createJWT = (user) => {
   const token = jwt.sign(
     {
       id: user._id,
-      email: user.email,            
+      email: user.email, 
+      name: user.name,
+      role: user.role           
     },
     process.env.JWT_SECRET,
     { 

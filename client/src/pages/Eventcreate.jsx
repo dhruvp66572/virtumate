@@ -1,33 +1,40 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import axiosInstance from '../utils/axiosIntance';
-import { useAuth } from '../context/AuthContext';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import axiosInstance from "../utils/axiosIntance";
+import { useAuth } from "../context/AuthContext";
 
 const Eventcreate = () => {
   const navigate = useNavigate();
   const { user } = useAuth(); // Assuming you have a user context
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    eventType: 'webinar', // Changed from category to eventType
-    startTime: '',
-    endTime: '',
-    organizerId: '', // Assuming you'll set this based on user context
+    title: "",
+    description: "",
+    eventType: "webinar", // Changed from category to eventType
+    startTime: "",
+    endTime: "",
+    organizerId: "", // Assuming you'll set this based on user context
     isPublic: true,
     maxAttendees: 100, // Default value
-    registrationDeadline: '',
+    registrationDeadline: "",
     agenda: [
-      { id: 1, title: '', startTime: '', endTime: '', description: '', speaker: '' }
+      {
+        id: 1,
+        title: "",
+        startTime: "",
+        endTime: "",
+        description: "",
+        speaker: "",
+      },
     ],
     tags: [],
-    tagInput: '',
+    tagInput: "",
   });
 
   // Handle form input changes
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    if (type === 'checkbox') {
+    if (type === "checkbox") {
       setFormData({ ...formData, [name]: checked });
     } else {
       setFormData({ ...formData, [name]: value });
@@ -45,7 +52,7 @@ const Eventcreate = () => {
       setFormData({
         ...formData,
         tags: [...formData.tags, formData.tagInput],
-        tagInput: ''
+        tagInput: "",
       });
     }
   };
@@ -54,22 +61,30 @@ const Eventcreate = () => {
   const removeTag = (tag) => {
     setFormData({
       ...formData,
-      tags: formData.tags.filter(t => t !== tag)
+      tags: formData.tags.filter((t) => t !== tag),
     });
   };
 
   // Add new agenda item
   const addAgendaItem = () => {
-    const newId = formData.agenda.length > 0 
-      ? Math.max(...formData.agenda.map(item => item.id)) + 1 
-      : 1;
+    const newId =
+      formData.agenda.length > 0
+        ? Math.max(...formData.agenda.map((item) => item.id)) + 1
+        : 1;
 
     setFormData({
       ...formData,
       agenda: [
         ...formData.agenda,
-        { id: newId, title: '', startTime: '', endTime: '', description: '', speaker: '' }
-      ]
+        {
+          id: newId,
+          title: "",
+          startTime: "",
+          endTime: "",
+          description: "",
+          speaker: "",
+        },
+      ],
     });
   };
 
@@ -77,9 +92,9 @@ const Eventcreate = () => {
   const updateAgendaItem = (id, field, value) => {
     setFormData({
       ...formData,
-      agenda: formData.agenda.map(item => 
+      agenda: formData.agenda.map((item) =>
         item.id === id ? { ...item, [field]: value } : item
-      )
+      ),
     });
   };
 
@@ -87,7 +102,7 @@ const Eventcreate = () => {
   const removeAgendaItem = (id) => {
     setFormData({
       ...formData,
-      agenda: formData.agenda.filter(item => item.id !== id)
+      agenda: formData.agenda.filter((item) => item.id !== id),
     });
   };
 
@@ -95,31 +110,33 @@ const Eventcreate = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     // Here you would send `formData` to your backend
-    console.log('Form data submitted:', formData);   
-    
-    if(formData.agenda.length < 0) {  
-      alert('Please add at least one agenda item.');
-      return
+    console.log("Form data submitted:", formData);
+
+    if (formData.agenda.length < 0) {
+      alert("Please add at least one agenda item.");
+      return;
     }
 
     // Assuming you have an API endpoint to create events
-    try{
-      const response = await axiosInstance.post('/events', {...formData , organizerId: user.id}); // Replace '1234' with actual organizer ID
-      console.log(response.data);      
-      
-      navigate('/events');
-    }
-    catch (error) {
-      console.error('Error creating event:', error);
-      alert('An error occurred. Please try again.');
+    try {
+      const response = await axiosInstance.post("/events", {
+        ...formData,
+        organizerId: user.id,
+      }); // Replace '1234' with actual organizer ID
+      console.log(response.data);
+
+      navigate("/events");
+    } catch (error) {
+      console.error("Error creating event:", error);
+      alert("An error occurred. Please try again.");
       return;
     }
-    alert('Event created successfully!');
+    alert("Event created successfully!");
   };
 
   // Form validation for each step
   const validateStep = (step) => {
-    switch(step) {
+    switch (step) {
       case 1:
         return formData.title && formData.description && formData.eventType;
       case 2:
@@ -137,7 +154,7 @@ const Eventcreate = () => {
       setCurrentStep(currentStep + 1);
       window.scrollTo(0, 0);
     } else {
-      alert('Please fill in all required fields.');
+      alert("Please fill in all required fields.");
     }
   };
 
@@ -148,26 +165,65 @@ const Eventcreate = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">     
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       <div className="flex-grow py-10">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Breadcrumb */}
           <nav className="mb-6 text-sm" aria-label="Breadcrumb">
             <ol className="flex items-center space-x-2">
               <li>
-                <Link to="/dashboard" className="text-gray-500 hover:text-indigo-600">Dashboard</Link>
+                <Link
+                  to="/dashboard"
+                  className="text-gray-500 hover:text-indigo-600"
+                >
+                  Dashboard
+                </Link>
               </li>
               <li className="flex items-center">
-                <Link to="/events" className="ml-2 text-gray-500 hover:text-indigo-600">Events</Link>
+                <svg
+                  className="h-5 w-5 text-gray-400"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                <Link
+                  to="/events"
+                  className="ml-2 text-gray-500 hover:text-indigo-600"
+                >
+                  Events
+                </Link>
               </li>
               <li className="flex items-center">
-                <span className="ml-2 text-indigo-600 font-medium">Create Event</span>
+                <svg
+                  className="h-5 w-5 text-gray-400"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                <span className="ml-2 text-indigo-600 font-medium">
+                  Create Event
+                </span>
               </li>
             </ol>
           </nav>
 
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">Create New Event</h1>
-            <p className="mt-2 text-gray-600">Fill in the details below to create your event</p>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Create New Event
+            </h1>
+            <p className="mt-2 text-gray-600">
+              Fill in the details below to create your event
+            </p>
           </div>
 
           <div className="mb-8">
@@ -175,19 +231,49 @@ const Eventcreate = () => {
             <div className="mb-8">
               <div className="flex items-center justify-between">
                 <div className="flex-1">
-                  <div className={`h-2 ${currentStep >= 1 ? 'bg-indigo-600' : 'bg-gray-200'} rounded-l-full`}></div>
+                  <div
+                    className={`h-2 ${
+                      currentStep >= 1 ? "bg-indigo-600" : "bg-gray-200"
+                    } rounded-l-full`}
+                  ></div>
                 </div>
                 <div className="flex-1">
-                  <div className={`h-2 ${currentStep >= 2 ? 'bg-indigo-600' : 'bg-gray-200'}`}></div>
+                  <div
+                    className={`h-2 ${
+                      currentStep >= 2 ? "bg-indigo-600" : "bg-gray-200"
+                    }`}
+                  ></div>
                 </div>
                 <div className="flex-1">
-                  <div className={`h-2 ${currentStep >= 3 ? 'bg-indigo-600' : 'bg-gray-200'} rounded-r-full`}></div>
+                  <div
+                    className={`h-2 ${
+                      currentStep >= 3 ? "bg-indigo-600" : "bg-gray-200"
+                    } rounded-r-full`}
+                  ></div>
                 </div>
               </div>
               <div className="flex justify-between mt-2 text-sm font-medium">
-                <div className={currentStep === 1 ? 'text-indigo-600' : 'text-gray-500'}>Basic Info</div>
-                <div className={currentStep === 2 ? 'text-indigo-600' : 'text-gray-500'}>Date </div>
-                <div className={currentStep === 3 ? 'text-indigo-600' : 'text-gray-500'}>Details & Publish</div>
+                <div
+                  className={
+                    currentStep === 1 ? "text-indigo-600" : "text-gray-500"
+                  }
+                >
+                  Basic Info
+                </div>
+                <div
+                  className={
+                    currentStep === 2 ? "text-indigo-600" : "text-gray-500"
+                  }
+                >
+                  Date{" "}
+                </div>
+                <div
+                  className={
+                    currentStep === 3 ? "text-indigo-600" : "text-gray-500"
+                  }
+                >
+                  Details & Publish
+                </div>
               </div>
             </div>
 
@@ -197,11 +283,16 @@ const Eventcreate = () => {
                 {/* Step 1: Basic Information */}
                 {currentStep === 1 && (
                   <div>
-                    <h2 className="text-xl font-semibold text-gray-900 mb-6">Basic Information</h2>
-                    
+                    <h2 className="text-xl font-semibold text-gray-900 mb-6">
+                      Basic Information
+                    </h2>
+
                     {/* Event Title */}
                     <div className="mb-6">
-                      <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+                      <label
+                        htmlFor="title"
+                        className="block text-sm font-medium text-gray-700 mb-1"
+                      >
                         Event Title <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -215,10 +306,13 @@ const Eventcreate = () => {
                         required
                       />
                     </div>
-                    
+
                     {/* Event Description */}
                     <div className="mb-6">
-                      <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+                      <label
+                        htmlFor="description"
+                        className="block text-sm font-medium text-gray-700 mb-1"
+                      >
                         Description <span className="text-red-500">*</span>
                       </label>
                       <textarea
@@ -231,12 +325,17 @@ const Eventcreate = () => {
                         placeholder="Provide details about your event"
                         required
                       ></textarea>
-                      <p className="mt-1 text-sm text-gray-500">Clearly describe what participants can expect.</p>
+                      <p className="mt-1 text-sm text-gray-500">
+                        Clearly describe what participants can expect.
+                      </p>
                     </div>
-                    
+
                     {/* Event Type */}
                     <div className="mb-6">
-                      <label htmlFor="eventType" className="block text-sm font-medium text-gray-700 mb-1">
+                      <label
+                        htmlFor="eventType"
+                        className="block text-sm font-medium text-gray-700 mb-1"
+                      >
                         Event Type <span className="text-red-500">*</span>
                       </label>
                       <select
@@ -253,10 +352,13 @@ const Eventcreate = () => {
                         <option value="other">Other</option>
                       </select>
                     </div>
-                    
+
                     {/* Tags */}
                     <div className="mb-6">
-                      <label htmlFor="tags" className="block text-sm font-medium text-gray-700 mb-1">
+                      <label
+                        htmlFor="tags"
+                        className="block text-sm font-medium text-gray-700 mb-1"
+                      >
                         Tags
                       </label>
                       <div className="flex items-center">
@@ -280,8 +382,8 @@ const Eventcreate = () => {
                       {formData.tags.length > 0 && (
                         <div className="mt-3 flex flex-wrap gap-2">
                           {formData.tags.map((tag, index) => (
-                            <span 
-                              key={index} 
+                            <span
+                              key={index}
                               className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-700`}
                             >
                               {tag}
@@ -290,8 +392,16 @@ const Eventcreate = () => {
                                 onClick={() => removeTag(tag)}
                                 className="ml-1.5 inline-flex items-center justify-center h-4 w-4 rounded-full bg-white bg-opacity-25"
                               >
-                                <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
-                                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                                <svg
+                                  className="h-3 w-3"
+                                  fill="currentColor"
+                                  viewBox="0 0 20 20"
+                                >
+                                  <path
+                                    fillRule="evenodd"
+                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                    clipRule="evenodd"
+                                  />
                                 </svg>
                               </button>
                             </span>
@@ -308,10 +418,13 @@ const Eventcreate = () => {
                     <h2 className="text-xl font-semibold text-gray-900 mb-6">
                       Date
                     </h2>
-                    
+
                     {/* Event Start Time */}
                     <div className="mb-6">
-                      <label htmlFor="startTime" className="block text-sm font-medium text-gray-700 mb-1">
+                      <label
+                        htmlFor="startTime"
+                        className="block text-sm font-medium text-gray-700 mb-1"
+                      >
                         Start Time <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -324,10 +437,13 @@ const Eventcreate = () => {
                         required
                       />
                     </div>
-                    
+
                     {/* Event End Time */}
                     <div className="mb-6">
-                      <label htmlFor="endTime" className="block text-sm font-medium text-gray-700 mb-1">
+                      <label
+                        htmlFor="endTime"
+                        className="block text-sm font-medium text-gray-700 mb-1"
+                      >
                         End Time <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -340,10 +456,13 @@ const Eventcreate = () => {
                         required
                       />
                     </div>
-                    
+
                     {/* Registration Deadline */}
                     <div className="mb-6">
-                      <label htmlFor="registrationDeadline" className="block text-sm font-medium text-gray-700 mb-1">
+                      <label
+                        htmlFor="registrationDeadline"
+                        className="block text-sm font-medium text-gray-700 mb-1"
+                      >
                         Registration Deadline
                       </label>
                       <input
@@ -354,12 +473,18 @@ const Eventcreate = () => {
                         onChange={handleChange}
                         className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                       />
-                      <p className="mt-1 text-sm text-gray-500">Leave blank to allow registration until the event starts.</p>
+                      <p className="mt-1 text-sm text-gray-500">
+                        Leave blank to allow registration until the event
+                        starts.
+                      </p>
                     </div>
-                    
+
                     {/* Max Attendees */}
                     <div className="mb-6">
-                      <label htmlFor="maxAttendees" className="block text-sm font-medium text-gray-700 mb-1">
+                      <label
+                        htmlFor="maxAttendees"
+                        className="block text-sm font-medium text-gray-700 mb-1"
+                      >
                         Maximum Attendees
                       </label>
                       <input
@@ -371,7 +496,9 @@ const Eventcreate = () => {
                         onChange={handleChange}
                         className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                       />
-                      <p className="mt-1 text-sm text-gray-500">Enter the maximum number of attendees allowed.</p>
+                      <p className="mt-1 text-sm text-gray-500">
+                        Enter the maximum number of attendees allowed.
+                      </p>
                     </div>
                   </div>
                 )}
@@ -379,8 +506,10 @@ const Eventcreate = () => {
                 {/* Step 3: Details & Publish */}
                 {currentStep === 3 && (
                   <div>
-                    <h2 className="text-xl font-semibold text-gray-900 mb-6">Additional Details & Publish</h2>
-                    
+                    <h2 className="text-xl font-semibold text-gray-900 mb-6">
+                      Additional Details & Publish
+                    </h2>
+
                     {/* Event Visibility */}
                     <div className="mb-6">
                       <div className="flex items-center">
@@ -392,19 +521,26 @@ const Eventcreate = () => {
                           onChange={handleChange}
                           className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
                         />
-                        <label htmlFor="isPublic" className="ml-2 block text-sm text-gray-700">
-                          This event is public and can be discovered by all users
+                        <label
+                          htmlFor="isPublic"
+                          className="ml-2 block text-sm text-gray-700"
+                        >
+                          This event is public and can be discovered by all
+                          users
                         </label>
                       </div>
                       <p className="mt-1 text-sm text-gray-500 ml-6">
-                        If unchecked, only people with the direct link can see this event.
+                        If unchecked, only people with the direct link can see
+                        this event.
                       </p>
                     </div>
 
                     {/* Agenda Items */}
                     <div className="mb-6">
                       <div className="flex justify-between items-center mb-3">
-                        <label className="block text-sm font-medium text-gray-700">Event Agenda/Schedule</label>
+                        <label className="block text-sm font-medium text-gray-700">
+                          Event Agenda/Schedule
+                        </label>
                         <button
                           type="button"
                           onClick={addAgendaItem}
@@ -413,52 +549,100 @@ const Eventcreate = () => {
                           Add Item
                         </button>
                       </div>
-                      
+
                       <div className="space-y-4">
                         {formData.agenda.map((item) => (
-                          <div key={item.id} className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                          <div
+                            key={item.id}
+                            className="bg-gray-50 p-4 rounded-lg border border-gray-200"
+                          >
                             <div className="flex justify-between items-start mb-3">
-                              <h4 className="text-sm font-medium text-gray-700">Agenda Item #{item.id}</h4>
+                              <h4 className="text-sm font-medium text-gray-700">
+                                Agenda Item #{item.id}
+                              </h4>
                               <button
                                 type="button"
                                 onClick={() => removeAgendaItem(item.id)}
                                 className="text-gray-400 hover:text-gray-600"
                               >
-                                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                <svg
+                                  className="h-4 w-4"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M6 18L18 6M6 6l12 12"
+                                  />
                                 </svg>
                               </button>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
                               <div>
-                                <label htmlFor={`title-${item.id}`} className="block text-xs font-medium text-gray-700 mb-1">Title</label>
+                                <label
+                                  htmlFor={`title-${item.id}`}
+                                  className="block text-xs font-medium text-gray-700 mb-1"
+                                >
+                                  Title
+                                </label>
                                 <input
                                   type="text"
                                   id={`title-${item.id}`}
                                   value={item.title}
-                                  onChange={(e) => updateAgendaItem(item.id, 'title', e.target.value)}
+                                  onChange={(e) =>
+                                    updateAgendaItem(
+                                      item.id,
+                                      "title",
+                                      e.target.value
+                                    )
+                                  }
                                   className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm"
                                   placeholder="e.g., Opening Keynote"
                                 />
                               </div>
                               <div>
-                                <label htmlFor={`speaker-${item.id}`} className="block text-xs font-medium text-gray-700 mb-1">Speaker Name</label>
+                                <label
+                                  htmlFor={`speaker-${item.id}`}
+                                  className="block text-xs font-medium text-gray-700 mb-1"
+                                >
+                                  Speaker Name
+                                </label>
                                 <input
                                   type="text"
                                   id={`speaker-${item.id}`}
                                   value={item.speaker}
-                                  onChange={(e) => updateAgendaItem(item.id, 'speaker', e.target.value)}
+                                  onChange={(e) =>
+                                    updateAgendaItem(
+                                      item.id,
+                                      "speaker",
+                                      e.target.value
+                                    )
+                                  }
                                   className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm"
                                   placeholder="Speaker Name"
                                 />
                               </div>
                             </div>
                             <div>
-                              <label htmlFor={`description-${item.id}`} className="block text-xs font-medium text-gray-700 mb-1">Description</label>
+                              <label
+                                htmlFor={`description-${item.id}`}
+                                className="block text-xs font-medium text-gray-700 mb-1"
+                              >
+                                Description
+                              </label>
                               <textarea
                                 id={`description-${item.id}`}
                                 value={item.description}
-                                onChange={(e) => updateAgendaItem(item.id, 'description', e.target.value)}
+                                onChange={(e) =>
+                                  updateAgendaItem(
+                                    item.id,
+                                    "description",
+                                    e.target.value
+                                  )
+                                }
                                 className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm"
                                 rows={2}
                                 placeholder="Brief description of this session"
@@ -484,7 +668,7 @@ const Eventcreate = () => {
                   ) : (
                     <div></div>
                   )}
-                  
+
                   {currentStep < 3 ? (
                     <button
                       type="button"

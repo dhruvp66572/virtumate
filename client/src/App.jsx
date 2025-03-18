@@ -19,8 +19,7 @@ const App = () => {
   const { isAuthenticated } = useAuth(); // Get auth state
 
   return (
-    <>
-     
+    <>     
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<LandingPage />} />
@@ -36,7 +35,7 @@ const App = () => {
             <Route path="/event-management" element={<EventManagement />} />
             <Route path="/event-create" element={<Eventcreate />} />
             <Route path="/event-details/:id" element={<EventView />} />
-            <Route path="/event-register" element={<EventRegister />} />
+            <Route path="/events/:id/register" element={<EventRegister />} />
             <Route path="/attendees" element={<h1>Attendees</h1>} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/messages" element={<h1>Messages</h1>} />

@@ -37,7 +37,7 @@ router.get('/:id/attendees', getEventAttendees);
 router.get('/:id/recording', getEventRecording);
 
 // Attendee routes
-router.post('/:id/register', registerForEvent);
+router.put('/:id/register', registerForEvent);
 router.delete('/:id/register', cancelRegistration);
 
 // Organizer only routes

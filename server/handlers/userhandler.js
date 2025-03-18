@@ -1,5 +1,6 @@
 const { User } = require("../models/User");
 const Event = require("../models/Event");
+const { createJWT } = require("../module/auth");
 
 // Get all users (admin only)
 const getAllUsers = async (req, res) => {
@@ -58,10 +59,13 @@ const updateUserById = async (req, res) => {
       });
     }
 
+    const token = createJWT(user);
+
     res.json({
       status: 'success',
       message: 'User updated successfully',    
-      data: user
+      token,
+      data: user,
     });
   } catch (error) {
     res.status(500).json({

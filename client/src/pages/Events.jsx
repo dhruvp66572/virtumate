@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axiosInstance from "../utils/axiosIntance";
 
@@ -52,7 +52,7 @@ const EventsPage = () => {
         tag.toLowerCase().includes(searchTerm.toLowerCase())
       );
 
-      let eventdate = new Date(event.startTime).toDateString().split(" ").slice(1).join(" ");
+      let eventdate = new Date(event.startTime)
       console.log(eventdate);
       let diff = new Date(event.startTime) - new Date();
       let days = Math.floor(diff / (1000 * 60 * 60 * 24));
@@ -70,10 +70,12 @@ const EventsPage = () => {
     let matchesDate = true;
     if (dateFilter === "thisWeek") {
       let today = new Date();
-      let nextWeek = new Date(today);
-      nextWeek.setDate(today.getDate() + 7);
+      let thisWeek = new Date(today);
+      thisWeek.setDate(today.getDate() + (7 - today.getDay()));
+      let nextWeek = new Date(thisWeek);
+      nextWeek.setDate(thisWeek.getDate() + 7);
       matchesDate =
-        new Date(event.startTime) >= today && new Date(event.startTime) < nextWeek;        
+        new Date(event.startTime) >= thisWeek && new Date(event.startTime) < nextWeek;
     } else if (dateFilter === "nextWeek") {
       let today = new Date();
       let nextWeek = new Date(today);
@@ -207,24 +209,18 @@ const EventsPage = () => {
 
           {/* Event Tags */}
           <div className="mb-8 flex flex-wrap gap-2">
-            <button className="bg-indigo-100 text-indigo-700 px-4 py-2 rounded-full text-sm font-medium hover:bg-indigo-200 transition-colors">
-              #technology
-            </button>
-            <button className="bg-purple-100 text-purple-700 px-4 py-2 rounded-full text-sm font-medium hover:bg-purple-200 transition-colors">
-              #research
-            </button>
-            <button className="bg-pink-100 text-pink-700 px-4 py-2 rounded-full text-sm font-medium hover:bg-pink-200 transition-colors">
-              #career
-            </button>
-            <button className="bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-medium hover:bg-blue-200 transition-colors">
-              #leadership
-            </button>
-            <button className="bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-medium hover:bg-green-200 transition-colors">
-              #social
-            </button>
-            <button className="bg-yellow-100 text-yellow-700 px-4 py-2 rounded-full text-sm font-medium hover:bg-yellow-200 transition-colors">
-              #arts
-            </button>
+            {events
+              .reduce((tags, event) => tags.concat(event.tags), [])
+              .filter((tag, index, tags) => tags.indexOf(tag) === index)
+              .map((tag) => (
+                <button
+                  key={tag}
+                  className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-700 hover:bg-indigo-200 transition-colors cursor-pointer "
+                  onClick={() => setSearchTerm(tag)}
+                >
+                  #{tag}
+                </button>
+              ))}
           </div>
 
           {/* Events Grid */}
@@ -314,18 +310,18 @@ const EventsPage = () => {
                     >
                       View Details
                     </Link>
-                    {event.isLive ? (
+                    {event.status == "live" ? (
                       <a
                         href={event.virtualLink}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
+                        className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors cursor-pointer"
                       >
                         Join Now
                       </a>
                     ) : (
                       <Link
-                        to={"/event-register"}
+                        to={`/events/${event._id}/register`}
                         className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
                       >
                         Register

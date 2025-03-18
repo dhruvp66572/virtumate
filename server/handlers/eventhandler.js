@@ -140,14 +140,14 @@ const registerForEvent = async (req, res) => {
       });
     }
 
-    if (event.attendees.includes(req.user._id)) {
+    if (event.registeredAttendees.includes(req.user._id)) {
       return res.status(400).json({
         status: 'error',
         message: 'Already registered for this event'
       });
     }
 
-    event.attendees.push(req.user._id);
+    event.registeredAttendees.push(req.user._id);
     await event.save();
 
     res.json({
