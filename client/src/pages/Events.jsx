@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axiosInstance from "../utils/axiosIntance";
 
 const EventsPage = () => {
@@ -8,6 +8,7 @@ const EventsPage = () => {
   const [eventtypeFilter, seteventtypeFilter] = useState("all");
   const [dateFilter, setDateFilter] = useState("all");
   const [events, setEvents] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     document.title = "UniEvents | Events";
@@ -98,6 +99,19 @@ const EventsPage = () => {
 
     return matchesSearch && matcheseventtype && matchesDate;
   });
+
+
+  const handleJoin = async (id) => {
+      try {
+        const response = await axiosInstance.post(`/events/${id}/meeting/join`);
+        console.log(response.data);
+        const token = response.data.token;
+        localStorage.setItem("roomToken", token);
+        navigate(`/video-call/${id}`);
+      } catch (error) {
+        console.error("Error joining meeting", error);
+      }
+    };
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -363,10 +377,8 @@ const EventsPage = () => {
                           </svg>
                         </Link>
                         {["live", "ongoing"].includes(event.status) ? (
-                          <a
-                            href={event.virtualLink}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                          <button
+                            onClick={() => handleJoin(event._id)}
                             className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors cursor-pointer flex items-center"
                           >
                             <svg
@@ -383,7 +395,7 @@ const EventsPage = () => {
                               />
                             </svg>
                             Join Now
-                          </a>
+                          </button>
                         ) : ["draft"].includes(event.status) ? (
                           <span className="text-gray-500 px-4 py-2 rounded-lg bg-gray-200">
                             Draft

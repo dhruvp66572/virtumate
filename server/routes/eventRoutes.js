@@ -13,7 +13,9 @@ const {
   getEventRecording,
   startEvent,
   endEvent,
-  sendEventEmail
+  sendEventEmail,
+  createeventmeeting,
+  joinEventMeeting,
 } = require('../handlers/eventhandler');
 
 // Middleware to check if user is organizer
@@ -48,5 +50,10 @@ router.put('/:id', updateEvent);
 router.delete('/:id', deleteEvent);
 router.post('/:id/start', startEvent);
 router.post('/:id/end', endEvent);
+
+// Event meeting routes
+router.post('/:id/meeting', createeventmeeting); // Assuming this is a public route
+router.post('/:id/meeting/join', joinEventMeeting); // Assuming this is a public route
+
 
 module.exports = router;

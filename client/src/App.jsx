@@ -16,6 +16,7 @@ import { useAuth } from "./context/AuthContext";
 import Footer from "./components/Footer";
 import MyEvenets from "./pages/MyEvenets";
 import Settings from "./pages/Settings";
+import VideoCall from "./components/VideoCall";
 
 const App = () => {
   const { isAuthenticated } = useAuth(); // Get auth state
@@ -39,6 +40,7 @@ const App = () => {
             <Route path="/myevents/:id" element={<EventManagement />} />
             <Route path="/event-details/:id" element={<EventView />} />
             <Route path="/events/:id/register" element={<EventRegister />} />
+            <Route path="/video-call/:roomName" element={<VideoCall />} />
             <Route path="/attendees" element={<h1>Attendees</h1>} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/messages" element={<h1>Messages</h1>} />

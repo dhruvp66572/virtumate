@@ -1,4 +1,5 @@
 const Event = require("../models/Event");
+const {generateToken} = require("../utils/livekitUtils")
 const { User } = require("../models/User");
 const sendMail = require("../utils/sendMail");
 
@@ -123,33 +124,35 @@ const deleteEvent = async (req, res) => {
   }
 };
 
-  // Get event attendees
-  const getEventAttendees = async (req, res) => {
-    try {
-      const event = await Event.findById(req.params.id)
-        .populate("registeredAttendees.userId", "-password name email")
-        .lean();
-  
-      if (!event) {
-        return res.status(404).json({ status: "error", message: "Event not found" });
-      }
-  
-      console.log(event.registeredAttendees); // Debugging: Check if userId is populated
-  
-      res.json({ status: "success", data: event.registeredAttendees });
-    } catch (error) {
-      console.error("Error fetching event attendees:", error);
-      res.status(500).json({ status: "error", message: error.message });
+// Get event attendees
+const getEventAttendees = async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.id)
+      .populate("registeredAttendees.userId", "-password name email")
+      .lean();
+
+    if (!event) {
+      return res
+        .status(404)
+        .json({ status: "error", message: "Event not found" });
     }
-  };
-  
+
+    console.log(event.registeredAttendees); // Debugging: Check if userId is populated
+
+    res.json({ status: "success", data: event.registeredAttendees });
+  } catch (error) {
+    console.error("Error fetching event attendees:", error);
+    res.status(500).json({ status: "error", message: error.message });
+  }
+};
+
 // Send event email
 const sendEventEmail = async (req, res) => {
   try {
     const { subject, body, attendees } = req.body;
 
     // Logic to send email to all registered attendees
-    await sendMail("dhruvprajapati66572@gmail.com",subject, body);
+    await sendMail("dhruvprajapati66572@gmail.com", subject, body);
 
     res.json({
       status: "success",
@@ -162,8 +165,6 @@ const sendEventEmail = async (req, res) => {
     });
   }
 };
-
-
 
 // Register for event
 const registerForEvent = async (req, res) => {
@@ -204,6 +205,13 @@ const registerForEvent = async (req, res) => {
     user.eventsAttended.push(event._id);
     await user.save();
 
+    // Send email to the user
+    await sendMail(
+      user.email,
+      "Event Registration Confirmation",
+      `You have successfully registered for the event: ${event.title}`
+    );
+
     res.json({
       status: "success",
       message: "Successfully registered for event",
@@ -234,8 +242,8 @@ const cancelRegistration = async (req, res) => {
       });
     }
 
-    event.attendees = event.attendees.filter(
-      (id) => id.toString() !== req.user.id.toString()
+    event.registeredAttendees = event.registeredAttendees.filter(
+      (attendee) => attendee._id != req.user.id
     );
     await event.save();
 
@@ -335,6 +343,89 @@ const endEvent = async (req, res) => {
   }
 };
 
+// 📌 Create & Schedule a Meeting 
+const createeventmeeting = async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.id);
+    if (!event) {
+      return res.status(404).json({
+        status: "error",
+        message: "Event not found",
+      });
+    }
+
+    // Logic to create and schedule a meeting
+   
+    const meeting = {
+      title: event.title,
+      organizerId: req.user.id,
+      roomName: event._id,
+      dateTime: event.startTime,
+      attendees: event.registeredAttendees.map((attendee) => attendee._id),
+    };
+
+    // Save meeting details to the event
+    event.meetingDetails = meeting;
+    await event.save();  
+
+    res.json({
+      status: "success",
+      message: "Meeting created successfully",
+      data: meeting,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: error.message,
+    });
+  }
+};
+
+// 📌 Join a Meeting (Attendee)
+const joinEventMeeting = async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.id);
+    if (!event) {
+      return res.status(404).json({
+        status: "error",
+        message: "Event not found",
+      });
+    }
+
+    // Logic to join the meeting
+    const meetingDetails = event.meetingDetails;
+    if (!meetingDetails) {
+      return res.status(404).json({
+        status: "error",
+        message: "Meeting details not found",
+      });
+    }
+
+    if (!meetingDetails.attendees.includes(req.user.id)) {
+      return res.status(403).json({
+        status: "error",
+        message: "You are not allowed to join this meeting",
+      });
+    }
+
+    // Logic to join the meeting (e.g., using a video conferencing API)
+    const token = await generateToken(event._id, req.user.id, false);
+
+    res.json({
+      status: "success",
+      message: "Joined the meeting successfully",
+      data: meetingDetails,
+      token: token,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: error.message,
+    });
+  }
+};
+
+// Export all handlers
 module.exports = {
   getAllEvents,
   createEvent,
@@ -347,5 +438,7 @@ module.exports = {
   getEventRecording,
   startEvent,
   endEvent,
-  sendEventEmail
+  sendEventEmail,
+  createeventmeeting,
+  joinEventMeeting
 };
