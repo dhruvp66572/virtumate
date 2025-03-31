@@ -1,4 +1,4 @@
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import axiosInstance from "../utils/axiosIntance";
 
@@ -49,105 +49,105 @@ const EventView = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">      
-     { /* Hero Section */}
-        <div
-          className="w-full bg-cover bg-center h-72 md:h-96 relative"
-          style={{
-            backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url(${
-          event.imageUrl ||
-          "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80"
-            })`,
-            backgroundPosition: "center",
-          }}
-        > 
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      {/* Hero Section */}
+      <div
+        className="w-full bg-cover bg-center h-72 md:h-96 relative"
+        style={{
+          backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url(${
+            event.imageUrl ||
+            "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80"
+          })`,
+          backgroundPosition: "center",
+        }}
+      >
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60 z-0 ">
-        <div className="absolute top-4 left-4">
-          <Link 
-            to="/events" 
-            className="flex items-center px-3 py-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-lg text-white font-medium transition-colors"
-          >
-            <svg 
-          className="w-5 h-5 mr-2" 
-          fill="none" 
-          stroke="currentColor" 
-          viewBox="0 0 24 24" 
-          xmlns="http://www.w3.org/2000/svg"
+          <div className="absolute top-4 left-4">
+            <Link
+              to="/events"
+              className="flex items-center px-3 py-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-lg text-white font-medium transition-colors"
             >
-          <path 
-            strokeLinecap="round" 
-            strokeLinejoin="round" 
-            strokeWidth={2} 
-            d="M10 19l-7-7m0 0l7-7m-7 7h18"
-          />
-            </svg>
-            Back to Events
-          </Link>
-        </div>
-        </div>
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col justify-end pb-10 relative z-10">
-            <div className="mb-4 flex flex-wrap gap-2">
-          <span className="text-sm font-semibold px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full inline-flex items-center">
-            <svg
-              className="w-4 h-4 mr-1"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path
-            fillRule="evenodd"
-            d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z"
-            clipRule="evenodd"
-              />
-            </svg>
-            {event.eventType || "Event"}
-          </span>
-          {(event.registeredAttendees?.length || 0) >= event.maxAttendees ? (
-            <span className="text-sm font-semibold px-3 py-1 bg-red-100 text-red-800 rounded-full">
-              Fully Booked
-            </span>
-          ) : (
-            <span className="text-sm font-semibold px-3 py-1 bg-green-100 text-green-800 rounded-full">
-              {event.maxAttendees - (event.registeredAttendees?.length || 0)}{" "}
-              Spots Left
-            </span>
-          )}
-          {event.status && (
-            <span
-              className={`text-sm font-semibold px-3 py-1 rounded-full ${
-            event.status === "draft"
-              ? "bg-yellow-100 text-yellow-800"
-              : event.status === "scheduled"
-              ? "bg-blue-100 text-blue-800"
-              : event.status === "live"
-              ? "bg-green-100 text-green-800"
-              : event.status === "completed"
-              ? "bg-gray-100 text-gray-800"
-              : event.status === "cancelled"
-              ? "bg-red-100 text-red-800"
-              : event.status === "upcoming"
-              ? "bg-purple-100 text-purple-800"
-              : event.status === "ongoing"
-              ? "bg-teal-100 text-teal-800"
-              : "bg-gray-100 text-gray-800"
-              }`}
-            >
-              {event.status.charAt(0).toUpperCase() + event.status.slice(1)}
-            </span>
-          )}
-            </div>
-            <h1 className="text-3xl md:text-5xl font-bold text-white mb-2 drop-shadow-lg">
-          {event.title}
-            </h1>
-            <p className="text-gray-200 text-lg md:text-xl mb-4 max-w-2xl">
-          {event.shortDescription ||
-            event.description?.substring(0, 120) ||
-            "No description available"}
-          ...
-            </p>
+              <svg
+                className="w-5 h-5 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                />
+              </svg>
+              Back to Events
+            </Link>
           </div>
         </div>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col justify-end pb-10 relative z-10">
+          <div className="mb-4 flex flex-wrap gap-2">
+            <span className="text-sm font-semibold px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full inline-flex items-center">
+              <svg
+                className="w-4 h-4 mr-1"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              {event.eventType || "Event"}
+            </span>
+            {(event.registeredAttendees?.length || 0) >= event.maxAttendees ? (
+              <span className="text-sm font-semibold px-3 py-1 bg-red-100 text-red-800 rounded-full">
+                Fully Booked
+              </span>
+            ) : (
+              <span className="text-sm font-semibold px-3 py-1 bg-green-100 text-green-800 rounded-full">
+                {event.maxAttendees - (event.registeredAttendees?.length || 0)}{" "}
+                Spots Left
+              </span>
+            )}
+            {event.status && (
+              <span
+                className={`text-sm font-semibold px-3 py-1 rounded-full ${
+                  event.status === "draft"
+                    ? "bg-yellow-100 text-yellow-800"
+                    : event.status === "scheduled"
+                    ? "bg-blue-100 text-blue-800"
+                    : event.status === "live"
+                    ? "bg-green-100 text-green-800"
+                    : event.status === "completed"
+                    ? "bg-gray-100 text-gray-800"
+                    : event.status === "cancelled"
+                    ? "bg-red-100 text-red-800"
+                    : event.status === "upcoming"
+                    ? "bg-purple-100 text-purple-800"
+                    : event.status === "ongoing"
+                    ? "bg-teal-100 text-teal-800"
+                    : "bg-gray-100 text-gray-800"
+                }`}
+              >
+                {event.status.charAt(0).toUpperCase() + event.status.slice(1)}
+              </span>
+            )}
+          </div>
+          <h1 className="text-3xl md:text-5xl font-bold text-white mb-2 drop-shadow-lg">
+            {event.title}
+          </h1>
+          <p className="text-gray-200 text-lg md:text-xl mb-4 max-w-2xl">
+            {event.shortDescription ||
+              event.description?.substring(0, 120) ||
+              "No description available"}
+            ...
+          </p>
+        </div>
+      </div>
 
-        {/* Main Content */}
+      {/* Main Content */}
       <div className="flex-grow py-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-white rounded-xl shadow-md overflow-hidden">
@@ -403,21 +403,64 @@ const EventView = () => {
                       </span>
                     </div>
                   </div>
-                  <Link
-                    to={`/events/${event._id}/register`}
-                    className={`w-full sm:w-auto px-6 py-3 rounded-lg transition-colors flex items-center justify-center font-medium ${
-                      event.status === "draft"
-                        ? "bg-gray-400 text-white cursor-not-allowed"
-                        : "bg-indigo-600 text-white hover:bg-indigo-700"
-                    }`}
-                    onClick={(e) =>
-                      event.status === "draft" && e.preventDefault()
-                    }
-                  >
-                    {event.status === "draft"
-                      ? "Registration Not Yet Open"
-                      : "Register for Event"}
-                  </Link>
+                  {["live", "ongoing"].includes(event.status) ? (
+                    <a
+                      href={event.virtualLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors cursor-pointer flex items-center"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-4 w-4 mr-1"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                        <path
+                          fillRule="evenodd"
+                          d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      Join Now
+                    </a>
+                  ) : ["draft"].includes(event.status) ? (
+                    <span className="text-gray-500 px-4 py-2 rounded-lg bg-gray-200">
+                      Draft
+                    </span>
+                  ) : ["ongoing"].includes(event.status) ? (
+                    <span className="text-green-500 px-4 py-2 rounded-lg bg-green-100">
+                      Ongoing
+                    </span>  
+                  ) : ["completed", "cancelled"].includes(event.status) ? (
+                    <span
+                      className={`text-white px-4 py-2 rounded-lg ${
+                        event.status === "completed"
+                          ? "bg-gray-500"
+                          : "bg-red-500"
+                      }`}
+                    >
+                      {event.status === "completed" ? "Completed" : "Cancelled"}
+                    </span>
+                  ) : (
+                    <Link
+                      to={`/events/${event._id}/register`}
+                      className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors flex items-center"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-4 w-4 mr-1"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6z" />
+                        <path d="M16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z" />
+                      </svg>
+                      Register
+                    </Link>
+                  )}
+                 
                 </div>
               </div>
             </div>

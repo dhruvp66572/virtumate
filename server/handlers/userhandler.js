@@ -21,7 +21,7 @@ const getAllUsers = async (req, res) => {
 // Get user by ID
 const getUserById = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id).select('-password');
+    const user = await User.findById(req.params.id).select('-password').populate('eventsOrganized').populate('eventsAttended');
     if (!user) {
       return res.status(404).json({
         status: 'error',

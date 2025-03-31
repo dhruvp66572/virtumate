@@ -36,7 +36,7 @@ const eventSchema = new mongoose.Schema({
       registrationTime: { type: Date, default: Date.now },
       attended: { type: Boolean, default: false },
       attendanceTime: Date,
-      feedbackProvided: { type: Boolean, default: false }
+      feedbackProvided: { type: Boolean, default: false}
     }],
     recordingUrl: String,
     meetingDetails: {
@@ -46,6 +46,11 @@ const eventSchema = new mongoose.Schema({
       hostKey: String,
       joinUrl: String
     },
+    resources: [{
+      title: String,
+      type: String, // e.g., "PDF", "Video", etc.
+      url: String
+    }],
     tags: [String],
     status: { type: String, enum: ['draft', 'scheduled', 'live', 'completed', 'cancelled', 'upcoming', 'ongoing'], default: 'draft' },
     createdAt: { type: Date, default: Date.now },

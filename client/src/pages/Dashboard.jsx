@@ -6,7 +6,6 @@ const Dashboard = () => {
   const upcomingEvents = [];
   const createdEvents = [];
   const liveEvents = [];
-  console.log(user?.name)
 
   // Mock data for upcoming events
   // const upcomingEvents = [

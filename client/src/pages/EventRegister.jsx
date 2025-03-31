@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import axiosInstance from '../utils/axiosIntance';
 
@@ -7,6 +7,8 @@ const EventRegister = () => {
   const { id } = useParams();
   const { user } = useAuth();
   const [isConfirming, setIsConfirming] = useState(false);
+  const navigate = useNavigate();
+
   
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,20 +19,24 @@ const EventRegister = () => {
     try {
       const response = await axiosInstance.put(`/events/${id}/register`);
 
-      if (response.status === 200) {
-        console.log(response.data);
-        alert('You have successfully registered for the event!');
-        window.location.href = `/events/`;
-      }      
+      if (response.data.status === 'success') {
+        alert('Registration successful!');
+        // Optionally redirect to event details page or show success message
+        // navigate(`/events/${id}`);
+        return;
+      }
+
+      if (response.data.status === 'error') {
+        alert(response.data.message);
+        return;
+      }
 
     } catch (error) {
-      console.log(error)
+      console.error('Error registering for event:', error);
+      alert('An error occurred. Please try again later.');
     }
-    // Logic to handle registration (e.g., API call)
-    console.log('Registration data submitted:');
-    alert('You have successfully registered for the event!');
-  };
-
+  }
+  
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">    
 

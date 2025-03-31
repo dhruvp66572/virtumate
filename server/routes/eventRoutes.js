@@ -12,7 +12,8 @@ const {
   cancelRegistration,
   getEventRecording,
   startEvent,
-  endEvent
+  endEvent,
+  sendEventEmail
 } = require('../handlers/eventhandler');
 
 // Middleware to check if user is organizer
@@ -41,6 +42,7 @@ router.put('/:id/register', registerForEvent);
 router.delete('/:id/register', cancelRegistration);
 
 // Organizer only routes
+router.post('/:id/send-email', sendEventEmail); // Assuming this is a public route
 router.post('/', createEvent);
 router.put('/:id', updateEvent);
 router.delete('/:id', deleteEvent);

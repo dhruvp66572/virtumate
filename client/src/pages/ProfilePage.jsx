@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "../utils/axiosIntance";
 import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const ProfilePage = () => {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [formData, setFormData] = useState({
     name: "",
@@ -21,7 +23,7 @@ const ProfilePage = () => {
     const fetchdata = async () => {
       try {
         const response = await axiosInstance.get(`/users/${user.id}`);
-        console.log('token', response); // Update the token in local storage
+        console.log('token', response.data); // Update the token in local storage
         setFormData(response.data.data);
       
       } catch (error) {
@@ -294,20 +296,41 @@ const ProfilePage = () => {
           {/* Past Events Tab */}
           {activeTab === "pastEvents" && (
             <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                Past Events
-              </h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">Past Events</h2>
               {formData.eventsAttended.length > 0 ? (
                 <ul className="space-y-4">
                   {formData.eventsAttended.map((event) => (
                     <li
-                      key={event.id}
-                      className="border-b border-gray-200 pb-2"
+                      key={event._id}
+                      className="border-b border-gray-200 pb-4 flex flex-col sm:flex-row sm:justify-between"
                     >
-                      <h3 className="text-lg font-semibold">{event.title}</h3>
-                      <p className="text-gray-600">
-                        Date: {new Date(event.date).toLocaleDateString()}
-                      </p>
+                      <div>
+                        <h3 className="text-lg font-semibold text-indigo-600 cursor-pointer" onClick={()=>{
+                          
+                          navigate(`/event-details/${event._id}`) // Assuming you have a route for event details
+                        }} >
+                          {event.title}
+                        </h3>
+                        <p className="text-gray-600">{event.description}</p>
+                        <p className="text-sm text-gray-500">
+                          Tags: {event.tags.join(", ")}
+                        </p>
+                      </div>
+                      <div className="text-sm text-gray-500 sm:text-right mt-2 sm:mt-0">
+                        <p>
+                          Start:{" "}
+                          <span className="font-medium">
+                            {new Date(event.startTime).toLocaleDateString()}
+                          </span>
+                        </p>
+                        <p>
+                          End:{" "}
+                          <span className="font-medium">
+                            {new Date(event.endTime).toLocaleDateString()}
+                          </span>
+                        </p>
+                        <p>Status: {event.status}</p>
+                      </div>
                     </li>
                   ))}
                 </ul>
@@ -316,8 +339,6 @@ const ProfilePage = () => {
               )}
             </div>
           )}
-
-          {/* Other Past Data Tab */}
           {activeTab === "Logs" && (
             <div className="bg-white rounded-lg shadow-md p-6">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">

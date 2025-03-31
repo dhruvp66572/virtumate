@@ -8,6 +8,7 @@ const adminRoutes = require('./routes/adminRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const { Server } = require('socket.io');
 const http = require('http');
+const bodyParser = require('body-parser');
 
 // Load environment variables
 dotenv.config();
@@ -29,6 +30,8 @@ const io = new Server(server, {
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/eventplatform')
@@ -57,6 +60,7 @@ io.on('connection', (socket) => {
     console.log('User disconnected');
   });
 });
+
 
 // Error handling middleware
 app.use((err, req, res, next) => {

@@ -6,17 +6,23 @@ import { updateEventById } from "../handlers/event_handler";
 const EventManagement = () => {
   // Get the event ID from URL parameters
   const { id } = useParams();
-  console.log(id);
 
+  const [subTab, setSubTab] = useState("view");
+  const [attendeedata, setAttendeeData] = useState([]);
   useEffect(() => {
     document.title = "UniEvents | Manage Event";
-
     // Fetch event details from API
     const fetchEvent = async () => {
       try {
         const response = await axiosInstance.get(`/events/${id}`);
-        console.log(response.data.data);
+        // console.log(response.data.data);
         setEvent(response.data.data);
+
+        const attendeeResponse = await axiosInstance.get(
+          `/events/${id}/attendees`
+        );
+        console.log(attendeeResponse.data.data[0].attended);
+        setAttendeeData(attendeeResponse.data.data);
       } catch (error) {
         console.error("Error fetching event:", error);
       }
@@ -33,7 +39,6 @@ const EventManagement = () => {
   // State for editing form
   const [isEditing, setIsEditing] = useState(false);
   const [editedEvent, setEditedEvent] = useState({ ...event });
-  console.log(editedEvent);
 
   const handleEditChange = (e) => {
     const { name, value } = e.target;
@@ -56,34 +61,34 @@ const EventManagement = () => {
     setIsEditing(false);
   };
 
-  // Function to get attendee stats
-  //   const getAttendeeStats = () => {
-  //     const confirmedAttendees = event.registeredAttendees.filter(
-  //       (attendee) => attendee.status === "confirmed"
-  //     );
-  //     const waitlistedAttendees = event.registeredAttendees.filter(
-  //       (attendee) => attendee.status === "waitlisted"
-  //     );
-  //     const pendingAttendees = event.registeredAttendees.filter(
-  //       (attendee) => attendee.status === "pending"
-  //     );
-  //     const cancelledAttendees = event.registeredAttendees.filter(
-  //       (attendee) => attendee.status === "cancelled"
-  //     );
+  const handleAttendanceChange = (attendeeId, attended) => {
+    console.log(attendeeId, attended);
 
-  //     return {
-  //       total: event.registeredAttendees.length,
-  //       confirmed: confirmedAttendees.length,
-  //       waitlisted: waitlistedAttendees.length,
-  //       pending: pendingAttendees.length,
-  //       cancelled: cancelledAttendees.length,
-  //   };
-  // }
+    // Update the attendance status of the attendee
+    const updatedAttendees = attendeedata.map((attendee) => {
+      if (attendee._id === attendeeId) {
+        return { ...attendee, attended: attended }; // Use the passed 'attended' value directly
+      }
+      return attendee;
+    });
+    setAttendeeData(updatedAttendees);
+  };
 
-  //   const stats = getAttendeeStats();
+  const saveAttendance = async () => {
+    try {
+      const response = await axiosInstance.put(
+        `/events/${event._id}`,
+        { registeredAttendees: attendeedata } // Send the updated attendees data
+      );
+      console.log(response.data.data);
+      // Handle success response if needed
+      alert("Attendance updated successfully!");
+    } catch (error) {
+      console.error("Error saving attendance:", error);
+    }
+  };
 
-  // Add this to the state declarations after the existing state variables
-  // Define status options for the event
+  // State for status options
   const [statusOptions] = useState([
     { value: "draft", label: "Draft", color: "yellow" },
     { value: "scheduled", label: "Scheduled", color: "blue" },
@@ -91,8 +96,56 @@ const EventManagement = () => {
     { value: "completed", label: "Completed", color: "gray" },
     { value: "cancelled", label: "Cancelled", color: "red" },
     { value: "upcoming", label: "Upcoming", color: "purple" },
-    { value: "ongoing", label: "Ongoing", color: "teal" }
+    { value: "ongoing", label: "Ongoing", color: "teal" },
   ]);
+
+  // Function to handlesend email
+  const handleSendEmail = async (subject, body,Recipients) => {
+    try {
+
+      // if (!subject || !body ) {
+      //   alert("Please fill in all fields.");
+      //   return;
+      // }
+
+      // if (subject.length > 100) {
+      //   alert("Subject should not exceed 100 characters.");
+      //   return;
+      // }
+
+      // if (body.length > 500) {
+      //   alert("Body should not exceed 500 characters.");
+      //   return;
+      // }
+
+      // if (Recipients === "All Attendees") {
+      //   alert("All Attendees selected.");
+      //   Recipients = event.registeredAttendees.map((attendee) => attendee.userId);
+      // // } else if (Recipients === "speakers") {
+      // //   Recipients = event.speakers.map((speaker) => speaker._id);
+      // // } else if (Recipients === "exhibitors") {
+      // //   Recipients = event.exhibitorBooths.map((booth) => booth._id);
+      // // } else if (Recipients === "attendees") {
+      // //   Recipients = event.registeredAttendees.map((attendee) => attendee.userId);
+      // } else {
+      //   alert("Invalid recipient type selected.");
+      //   return;
+      // }
+
+      const response = await axiosInstance.post(
+        `/events/${event._id}/send-email`
+      ,     {
+        subject: "Event Reminder",
+        body: `Dear Attendee, \n\nThis is a reminder for the upcoming event: ${event.title}.\n\nThank you!`,
+        attendees: event.registeredAttendees.map((attendee) => attendee.userId),          
+      });
+      console.log(response.data);
+      alert("Email sent successfully!");
+    } catch (error) {
+      console.error("Error sending email:", error);
+      alert("Failed to send email. Please try again later.");
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -371,15 +424,26 @@ const EventManagement = () => {
               <div>
                 {isEditing ? (
                   <div className="space-y-8 max-w-4xl mx-auto">
-                      <div className="bg-indigo-50 p-4 rounded-lg border border-indigo-100 mb-6">
+                    <div className="bg-indigo-50 p-4 rounded-lg border border-indigo-100 mb-6">
                       <h3 className="text-lg font-semibold text-indigo-700 mb-2 flex items-center">
-                        <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        <svg
+                          className="h-5 w-5 mr-2"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
                         </svg>
                         Edit Event Details
                       </h3>
                       <p className="text-sm text-indigo-600">
-                        Make changes to your event and click "Save Changes" when you're done.
+                        Make changes to your event and click "Save Changes" when
+                        you're done.
                       </p>
                     </div>
 
@@ -388,7 +452,10 @@ const EventManagement = () => {
                         Basic Information
                       </h4>
                       <div className="mb-6">
-                        <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+                        <label
+                          htmlFor="title"
+                          className="block text-sm font-medium text-gray-700 mb-1"
+                        >
                           Event Title <span className="text-red-500">*</span>
                         </label>
                         <input
@@ -402,7 +469,10 @@ const EventManagement = () => {
                         />
                       </div>
                       <div className="mb-6">
-                        <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+                        <label
+                          htmlFor="description"
+                          className="block text-sm font-medium text-gray-700 mb-1"
+                        >
                           Description <span className="text-red-500">*</span>
                         </label>
                         <textarea
@@ -415,7 +485,8 @@ const EventManagement = () => {
                           placeholder="Describe your event in detail to attract attendees"
                         />
                         <p className="mt-1 text-xs text-gray-500">
-                          Provide clear details about what attendees can expect from this event
+                          Provide clear details about what attendees can expect
+                          from this event
                         </p>
                       </div>
                     </div>
@@ -426,8 +497,12 @@ const EventManagement = () => {
                       </h4>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="mb-4">
-                          <label htmlFor="startTime" className="block text-sm font-medium text-gray-700 mb-1">
-                            Start Date & Time <span className="text-red-500">*</span>
+                          <label
+                            htmlFor="startTime"
+                            className="block text-sm font-medium text-gray-700 mb-1"
+                          >
+                            Start Date & Time{" "}
+                            <span className="text-red-500">*</span>
                           </label>
                           <input
                             type="datetime-local"
@@ -440,8 +515,12 @@ const EventManagement = () => {
                         </div>
 
                         <div className="mb-4">
-                          <label htmlFor="endTime" className="block text-sm font-medium text-gray-700 mb-1">
-                            End Date & Time <span className="text-red-500">*</span>
+                          <label
+                            htmlFor="endTime"
+                            className="block text-sm font-medium text-gray-700 mb-1"
+                          >
+                            End Date & Time{" "}
+                            <span className="text-red-500">*</span>
                           </label>
                           <input
                             type="datetime-local"
@@ -461,7 +540,10 @@ const EventManagement = () => {
                       </h4>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="mb-4">
-                          <label htmlFor="eventType" className="block text-sm font-medium text-gray-700 mb-1">
+                          <label
+                            htmlFor="eventType"
+                            className="block text-sm font-medium text-gray-700 mb-1"
+                          >
                             Event Type <span className="text-red-500">*</span>
                           </label>
                           <select
@@ -483,8 +565,12 @@ const EventManagement = () => {
                         </div>
 
                         <div className="mb-4">
-                          <label htmlFor="maxAttendees" className="block text-sm font-medium text-gray-700 mb-1">
-                            Maximum Attendees <span className="text-red-500">*</span>
+                          <label
+                            htmlFor="maxAttendees"
+                            className="block text-sm font-medium text-gray-700 mb-1"
+                          >
+                            Maximum Attendees{" "}
+                            <span className="text-red-500">*</span>
                           </label>
                           <div className="relative rounded-md shadow-sm">
                             <input
@@ -499,7 +585,9 @@ const EventManagement = () => {
                               placeholder="100"
                             />
                             <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                              <span className="text-gray-500 sm:text-sm">people</span>
+                              <span className="text-gray-500 sm:text-sm">
+                                people
+                              </span>
                             </div>
                           </div>
                           <p className="mt-1 text-xs text-gray-500">
@@ -509,18 +597,26 @@ const EventManagement = () => {
                       </div>
 
                       <div className="mb-6">
-                        <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
+                        <label
+                          htmlFor="status"
+                          className="block text-sm font-medium text-gray-700 mb-1"
+                        >
                           Event Status
                         </label>
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-7 gap-2">
                           {statusOptions.map((option) => (
-                            <div 
+                            <div
                               key={option.value}
-                              onClick={() => setEditedEvent({...editedEvent, status: option.value})}
+                              onClick={() =>
+                                setEditedEvent({
+                                  ...editedEvent,
+                                  status: option.value,
+                                })
+                              }
                               className={`cursor-pointer rounded-md border px-3 py-2 text-sm flex items-center justify-center ${
-                                editedEvent.status === option.value 
-                                  ? `bg-${option.color}-50 border-${option.color}-200 text-${option.color}-700` 
-                                  : 'border-gray-200 hover:bg-gray-50'
+                                editedEvent.status === option.value
+                                  ? `bg-${option.color}-50 border-${option.color}-200 text-${option.color}-700`
+                                  : "border-gray-200 hover:bg-gray-50"
                               }`}
                             >
                               {option.label}
@@ -536,19 +632,25 @@ const EventManagement = () => {
                             name="isPublic"
                             type="checkbox"
                             checked={editedEvent.isPublic}
-                            onChange={(e) => setEditedEvent({
-                              ...editedEvent,
-                              isPublic: e.target.checked,
-                            })}
+                            onChange={(e) =>
+                              setEditedEvent({
+                                ...editedEvent,
+                                isPublic: e.target.checked,
+                              })
+                            }
                             className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
                           />
                         </div>
                         <div>
-                          <label htmlFor="isPublic" className="font-medium text-sm text-gray-700">
+                          <label
+                            htmlFor="isPublic"
+                            className="font-medium text-sm text-gray-700"
+                          >
                             Make this event public
                           </label>
                           <p className="text-xs text-gray-500">
-                            Public events will be listed in the event directory and can be discovered by all users
+                            Public events will be listed in the event directory
+                            and can be discovered by all users
                           </p>
                         </div>
                       </div>
@@ -557,7 +659,9 @@ const EventManagement = () => {
                 ) : (
                   <div className="max-w-4xl mx-auto">
                     <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-8">
-                      <h3 className="text-xl font-semibold mb-4 text-gray-800 pb-2 border-b border-gray-100">Event Description</h3>
+                      <h3 className="text-xl font-semibold mb-4 text-gray-800 pb-2 border-b border-gray-100">
+                        Event Description
+                      </h3>
                       <div className="prose max-w-none mb-4 text-gray-700">
                         <p>{event.description}</p>
                       </div>
@@ -586,22 +690,35 @@ const EventManagement = () => {
                               </svg>
                             </div>
                             <div>
-                              <span className="block text-sm font-medium text-gray-900">Date & Time</span>
+                              <span className="block text-sm font-medium text-gray-900">
+                                Date & Time
+                              </span>
                               <span className="block text-sm text-gray-600">
-                                {new Date(event.startTime).toLocaleDateString("en-US", {
-                                  weekday: 'long',
-                                  month: 'long',
-                                  day: 'numeric',
-                                  year: 'numeric',
-                                })}
+                                {new Date(event.startTime).toLocaleDateString(
+                                  "en-US",
+                                  {
+                                    weekday: "long",
+                                    month: "long",
+                                    day: "numeric",
+                                    year: "numeric",
+                                  }
+                                )}
                                 <br />
-                                {new Date(event.startTime).toLocaleTimeString([], {
-                                  hour: '2-digit',
-                                  minute: '2-digit',
-                                })} - {new Date(event.endTime).toLocaleTimeString([], {
-                                  hour: '2-digit',
-                                  minute: '2-digit',
-                                })}
+                                {new Date(event.startTime).toLocaleTimeString(
+                                  [],
+                                  {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  }
+                                )}{" "}
+                                -{" "}
+                                {new Date(event.endTime).toLocaleTimeString(
+                                  [],
+                                  {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  }
+                                )}
                               </span>
                             </div>
                           </li>
@@ -731,7 +848,6 @@ const EventManagement = () => {
                                   />
                                 </svg>
                               )}
-
                             </div>
                             <div className="ml-3">
                               <h3 className="text-sm font-medium text-gray-900">
@@ -871,240 +987,161 @@ const EventManagement = () => {
             {/* Attendees Tab */}
             {activeTab === "attendees" && (
               <div>
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl font-bold text-gray-900">
-                    Attendees Management
-                  </h2>
-                  <div className="flex space-x-3">
-                    <button className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none">
-                      <svg
-                        className="h-5 w-5 mr-2"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M12 4v16m8-8H4"
-                        />
-                      </svg>
-                      Add Attendees
-                    </button>
-                    <button className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
-                      <svg
-                        className="h-5 w-5 mr-2 text-gray-500"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M17 16v2a2 2 0 01-2 2H5a2 2 0 01-2-2v-7a2 2 0 012-2h2m3-4H9a2 2 0 00-2 2v7a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-1m-1 4l-3 3m0 0l-3-3m3 3V3"
-                        />
-                      </svg>
-                      Export List
-                    </button>
-                  </div>
+                {/* Sub-tabs */}
+                <div className="flex space-x-4 mb-6">
+                  <button
+                    onClick={() => setSubTab("view")}
+                    className={`py-2 px-4 rounded-md font-medium ${
+                      subTab === "view"
+                        ? "bg-indigo-600 text-white"
+                        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                    }`}
+                  >
+                    View Attendees
+                  </button>
+                  <button
+                    onClick={() => setSubTab("takeAttendance")}
+                    className={`py-2 px-4 rounded-md font-medium ${
+                      subTab === "takeAttendance"
+                        ? "bg-indigo-600 text-white"
+                        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                    }`}
+                  >
+                    Take Attendance
+                  </button>
                 </div>
 
-                {/* Attendee Stats */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                  <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-                    <h3 className="text-sm font-medium text-gray-500">
-                      Total Attendees
-                    </h3>
-                    <p className="text-3xl font-bold text-gray-800 mt-2">
-                      {/* {stats.total} */}
-                      100
-                    </p>
-                  </div>
-                  <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-                    <h3 className="text-sm font-medium text-gray-500">
-                      Confirmed
-                    </h3>
-                    <p className="text-3xl font-bold text-green-600 mt-2">
-                      {/* {stats.confirmed} */}
-                      10
-                    </p>
-                  </div>
-                  <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-                    <h3 className="text-sm font-medium text-gray-500">
-                      Pending
-                    </h3>
-                    <p className="text-3xl font-bold text-yellow-600 mt-2">
-                      {/* {stats.pending} */}
-                      20
-                    </p>
-                  </div>
-                  <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-                    <h3 className="text-sm font-medium text-gray-500">
-                      Waitlisted
-                    </h3>
-                    <p className="text-3xl font-bold text-indigo-600 mt-2">
-                      {/* {stats.waitlisted} */}
-                      20
-                    </p>
-                  </div>
-                </div>
-
-                {/* Search and Filter */}
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-                  <div className="relative flex-1">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <svg
-                        className="h-5 w-5 text-gray-400"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                        />
-                      </svg>
-                    </div>
-                    <input
-                      type="text"
-                      className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                      placeholder="Search attendees..."
-                    />
-                  </div>
-                  <div className="flex space-x-3">
-                    <select className="block rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                      <option value="">All Statuses</option>
-                      <option value="confirmed">Confirmed</option>
-                      <option value="pending">Pending</option>
-                      <option value="waitlisted">Waitlisted</option>
-                      <option value="cancelled">Cancelled</option>
-                    </select>
-                  </div>
-                </div>
-
-                {/* Attendees Table */}
-                <div className="overflow-hidden shadow-sm border border-gray-200 rounded-lg mb-8">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th
-                          scope="col"
-                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                        >
-                          Name
-                        </th>
-                        <th
-                          scope="col"
-                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                        >
-                          Email
-                        </th>
-                        <th
-                          scope="col"
-                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                        >
-                          Status
-                        </th>
-                        <th
-                          scope="col"
-                          className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
-                        >
-                          Actions
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {/* {event.registeredAttendees.map((attendee) => (
-                        <tr key={attendee.id}>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="flex items-center">
-                              <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600">
-                                {attendee.name.charAt(0)}
-                              </div>
-                              <div className="ml-4">
-                                <div className="text-sm font-medium text-gray-900">
-                                  {attendee.name}
-                                </div>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-500">
-                              {attendee.email}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
+                {/* View Attendees */}
+                {subTab === "view" && (
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                      Registered Attendees
+                    </h2>
+                    <div className="overflow-hidden shadow-sm border border-gray-200 rounded-lg mb-8">
+                      <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gray-50">
+                          <tr>
+                            <th
+                              scope="col"
+                              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            >
+                              Name
+                            </th>
+                            <th
+                              scope="col"
+                              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            >
+                              Email
+                            </th>
+                            {/* <th
+                              scope="col"
+                              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            >
+                              Status
+                            </th> */}
+                          </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                          {attendeedata.map((attendee) => (
+                            <tr key={attendee.id}>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                {/* {attendee.name} */}
+                                {attendee._id}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                {attendee._id}
+                              </td>
+                              {/*                             <td className="px-6 py-4 whitespace-nowrap">
                             <span
                               className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                attendee.status === "confirmed"
-                                  ? "bg-green-100 text-green-800"
-                                  : attendee.status === "pending"
-                                  ? "bg-yellow-100 text-yellow-800"
-                                  : attendee.status === "waitlisted"
-                                  ? "bg-blue-100 text-blue-800"
-                                  : "bg-red-100 text-red-800"
+                              attendee.attended == true
+                                ? "bg-green-100 text-green-800"
+                                : attendee.attended == false
+                                ? "bg-yellow-100 text-yellow-800"
+                                : "bg-gray-100 text-gray-800"
                               }`}
-                            >
-                              {attendee.status.charAt(0).toUpperCase() +
-                                attendee.status.slice(1)}
+                            >d
+                              {attendee.attended == true
+                                ? "Attended" }
                             </span>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <button className="text-indigo-600 hover:text-indigo-900 mr-3">
-                              Message
-                            </button>
-                            <button className="text-gray-600 hover:text-gray-900">
-                              <svg
-                                className="h-5 w-5"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                  d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
-                                />
-                              </svg>
-                            </button>
-                          </td>
-                        </tr>
-                      ))} */}
-                    </tbody>
-                  </table>
-                </div>
+                            </td> */}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
 
-                {/* Pagination */}
-                <div className="flex items-center justify-between">
-                  <div className="text-sm text-gray-700">
-                    Showing <span className="font-medium">1</span> to{" "}
-                    <span className="font-medium">
-                      {event.registeredAttendees.length}
-                    </span>{" "}
-                    of{" "}
-                    <span className="font-medium">
-                      {event.registeredAttendees.length}
-                    </span>{" "}
-                    attendees
+                {/* Take Attendance */}
+                {subTab === "takeAttendance" && (
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                      Take Attendance
+                    </h2>
+                    <div className="overflow-hidden shadow-sm border border-gray-200 rounded-lg mb-8">
+                      <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gray-50">
+                          <tr>
+                            <th
+                              scope="col"
+                              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            >
+                              Name
+                            </th>
+                            <th
+                              scope="col"
+                              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            >
+                              Email
+                            </th>
+                            <th
+                              scope="col"
+                              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            >
+                              Attendance
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                          {attendeedata.map((attendee) => (
+                            <tr key={attendee.id}>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                {attendee._id}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                {attendee._id}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <input
+                                  type="checkbox"
+                                  checked={attendee.attended}
+                                  onChange={(e) =>
+                                    handleAttendanceChange(
+                                      attendee._id,
+                                      e.target.checked
+                                    )
+                                  }
+                                  className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                                />
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    <div className="flex justify-end">
+                      <button
+                        onClick={saveAttendance}
+                        className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none"
+                      >
+                        Save Attendance
+                      </button>
+                    </div>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <button className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                      Previous
-                    </button>
-                    <button className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                      Next
-                    </button>
-                  </div>
-                </div>
+                )}
               </div>
             )}
-
-            {/* Agenda Tab */}
             {activeTab === "agenda" && (
               <div>
                 <div className="flex justify-between items-center mb-6">
@@ -1278,7 +1315,7 @@ const EventManagement = () => {
               <div>
                 <div className="flex justify-between items-center mb-6">
                   <h2 className="text-2xl font-bold text-gray-900">
-                    Event Resources
+                    Event Resources -- Pending
                   </h2>
                   <button className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none">
                     <svg
@@ -1440,7 +1477,9 @@ const EventManagement = () => {
                     Attendee Messaging
                   </h2>
                   <div className="flex space-x-3">
-                    <button className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none">
+                    <button className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none"
+                      onClick={() => handleSendEmail()}
+                    >
                       <svg
                         className="h-5 w-5 mr-2"
                         fill="none"
@@ -1456,7 +1495,7 @@ const EventManagement = () => {
                       </svg>
                       Send Email
                     </button>
-                    <button className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none">
+                    {/* <button className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none">
                       <svg
                         className="h-5 w-5 mr-2"
                         fill="none"
@@ -1471,7 +1510,7 @@ const EventManagement = () => {
                         />
                       </svg>
                       Send Notification
-                    </button>
+                    </button> */}
                   </div>
                 </div>
 
@@ -1495,10 +1534,6 @@ const EventManagement = () => {
                         className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                       >
                         <option>All Attendees</option>
-                        <option>Confirmed Attendees</option>
-                        <option>Pending Attendees</option>
-                        <option>Waitlisted Attendees</option>
-                        <option>Select Individual Attendees</option>
                       </select>
                     </div>
                     <div className="mb-4">
@@ -1530,11 +1565,14 @@ const EventManagement = () => {
                       ></textarea>
                     </div>
                     <div className="flex justify-end space-x-3">
-                      <button className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
+                      {/* <button className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
                         Save Draft
-                      </button>
-                      <button className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none">
-                        Send Message
+                      </button> */}
+                      <button
+                        className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none"
+                        onClick={() => handleSendEmail()}
+                      >
+                        Send Email
                       </button>
                     </div>
                   </div>
