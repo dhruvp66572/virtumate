@@ -43,7 +43,7 @@ const Login = () => {
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center">
             <Link to="/">
-              <h2 className="text-2xl font-bold text-indigo-600">UniEvents</h2>
+              <h2 className="text-2xl font-bold text-indigo-600">Virtumate</h2>
             </Link>
           </div>
           <div className="space-x-8">

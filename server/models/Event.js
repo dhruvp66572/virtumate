@@ -56,10 +56,10 @@ const eventSchema = new mongoose.Schema({
   ],
   recordingUrl: String,
   meetingDetails: {
-    title: { type: String, required: true },
-    organizerId: { type: String, required: true }, // Organizer's ID
-    roomName: { type: String, required: true },
-    dateTime: { type: Date, required: true }, // Scheduled date & time
+    title: { type: String },
+    organizerId: { type: String}, // Organizer's ID
+    roomName: { type: String},
+    dateTime: { type: Date}, // Scheduled date & time
     attendees: [{ type: String }], // List of registered attendees (user IDs)
   },
   resources: [

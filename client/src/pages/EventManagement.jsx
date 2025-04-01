@@ -10,7 +10,7 @@ const EventManagement = () => {
   const [subTab, setSubTab] = useState("view");
   const [attendeedata, setAttendeeData] = useState([]);
   useEffect(() => {
-    document.title = "UniEvents | Manage Event";
+    document.title = "Virtumate | Manage Event";
     // Fetch event details from API
     const fetchEvent = async () => {
       try {

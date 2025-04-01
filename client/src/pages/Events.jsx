@@ -11,7 +11,7 @@ const EventsPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    document.title = "UniEvents | Events";
+    document.title = "Virtumate | Events";
 
     // Fetch events from API
     const fetchEvents = async () => {

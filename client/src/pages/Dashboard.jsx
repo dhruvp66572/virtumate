@@ -1,16 +1,75 @@
-import { Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import axiosInstance from "../utils/axiosIntance";
 
 const Dashboard = () => {
-  const {user} = useAuth(); // Get user details from Auth Context
-  const upcomingEvents = [];
-  const createdEvents = [];
-  const liveEvents = [];
+  // const upcomingEvents = [];
+  // const createdEvents = [];
+   const navigate = useNavigate();
+
+  const [events, setEvents] = useState([]);
+  const { user, token } = useAuth(); // Get user details from Auth Context
+
+  useEffect(() => {
+    const formatEvents = (events, type) => {
+      return events.map((event) => ({
+        ...event,
+        date: new Date(event.startTime).toISOString().split("T")[0], // YYYY-MM-DD
+        time: new Date(event.startTime).toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true,
+        }),
+        type, // Add status label (Organized or Registered)
+      }));
+    };
+
+    const fetchEvents = async () => {
+      if (!user) return;
+
+      try {
+        const response = await axiosInstance.get(`/users/${user.id}/events`, {
+          headers: {
+            Authorization: `Bearer ${token}`, // Include auth token
+          },
+        });
+
+        console.log("Raw Response:", response.data.data);
+
+        const organizedEvents = response.data.data.organized || [];
+        const registeredEvents = response.data.data.attended || [];
+        
+
+        console.log("Organized Events:", organizedEvents);
+        console.log("Registered Events:", registeredEvents);
+
+        // ✅ Use the formatEvents function with parameters
+        const formattedOrganized = formatEvents(organizedEvents, "Organized");
+        const formattedRegistered = formatEvents(
+          registeredEvents,
+          "Registered"
+        );
+
+        // ✅ Merge both types into a single array
+        const formattedEvents = [...formattedOrganized, ...formattedRegistered];
+
+        console.log("Formatted Events:", formattedEvents);
+
+        // ✅ Store in state
+        setEvents(formattedEvents);
+      } catch (error) {
+        console.error("Error fetching events:", error);
+      }
+    };
+
+    fetchEvents();
+  }, [user?.id, token]);
 
   // Mock data for upcoming events
   // const upcomingEvents = [
   //   {
-  //     id: 1, 
+  //     id: 1,
   //     title: 'AI Research Symposium',
   //     date: 'March 15, 2024',
   //     time: '10:00 AM - 4:00 PM',
@@ -18,7 +77,7 @@ const Dashboard = () => {
   //     status: 'Registered'
   //   },
   //   {
-  //     id: 2, 
+  //     id: 2,
   //     title: 'Career Development Workshop',
   //     date: 'March 22, 2024',
   //     time: '1:00 PM - 3:00 PM',
@@ -26,7 +85,7 @@ const Dashboard = () => {
   //     status: 'Registered'
   //   },
   //   {
-  //     id: 3, 
+  //     id: 3,
   //     title: 'Student Leadership Conference',
   //     date: 'April 5, 2024',
   //     time: '9:00 AM - 5:00 PM',
@@ -38,7 +97,7 @@ const Dashboard = () => {
   // // Mock data for events created by user
   // const createdEvents = [
   //   {
-  //     id: 101, 
+  //     id: 101,
   //     title: 'Web Development Study Group',
   //     date: 'March 18, 2024',
   //     time: '6:00 PM - 8:00 PM',
@@ -47,7 +106,7 @@ const Dashboard = () => {
   //     status: 'Active'
   //   },
   //   {
-  //     id: 102, 
+  //     id: 102,
   //     title: 'Chess Club Tournament',
   //     date: 'April 10, 2024',
   //     time: '2:00 PM - 6:00 PM',
@@ -77,22 +136,52 @@ const Dashboard = () => {
   //   }
   // ];
 
+  const handleJoin = async (id) => {
+      try {
+        const response = await axiosInstance.post(`/events/${id}/meeting/join`);
+        console.log(response.data);
+        const token = response.data.token;
+        localStorage.setItem("roomToken", token);     
+        navigate(`/video-call/${id}`);
+      } catch (error) {
+        console.error("Error joining meeting", error);
+      }
+    };
+  
+
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">      
-     {/* Main Content */}
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      {/* Main Content */}
       <div className="flex-grow py-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Welcome Banner */}
           <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl shadow-lg p-6 mb-8 text-white">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-2xl font-bold">Welcome back, {user?.name || "User"}</h1>
+                <h1 className="text-2xl font-bold">
+                  Welcome back, {user?.name || "User"}
+                </h1>
                 <p className="mt-1">You have 3 upcoming events this month</p>
               </div>
-              <div>
-                <Link to="/event-create" className="bg-white text-indigo-600 px-4 py-2 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
-                  Create Event
-                </Link>
+              <div className="flex items-center gap-4">
+                <div>
+                  <Link
+                    to="/event-create"
+                    className="bg-white text-indigo-600 px-4 py-2 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+                  >
+                    Create Event
+                  </Link>
+                </div>
+                {/* <div>
+                  <button
+                    onClick={() =>
+                      (window.location.href = "http://localhost:9000")
+                    }
+                    className="bg-white text-indigo-600 px-4 py-2 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+                  >
+                    Start Event
+                  </button>
+                </div> */}
               </div>
             </div>
           </div>
@@ -100,20 +189,34 @@ const Dashboard = () => {
           {/* Stats Overview */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <div className="bg-white rounded-xl shadow p-6 border-t-4 border-indigo-500">
-              <h3 className="text-gray-500 text-sm font-medium">Upcoming Events</h3>
-              <p className="text-3xl font-bold text-gray-800 mt-2">3</p>
+              <h3 className="text-gray-500 text-sm font-medium">
+                Registered Events
+              </h3>
+              <p className="text-3xl font-bold text-gray-800 mt-2">
+                {events.filter(event => event.type === "Registered").length}
+              </p>
             </div>
             <div className="bg-white rounded-xl shadow p-6 border-t-4 border-purple-500">
-              <h3 className="text-gray-500 text-sm font-medium">Events Created</h3>
-              <p className="text-3xl font-bold text-gray-800 mt-2">2</p>
+              <h3 className="text-gray-500 text-sm font-medium">
+                Events Created
+              </h3>
+              <p className="text-3xl font-bold text-gray-800 mt-2">
+                {events.filter(event => event.type === "Organized").length}
+              </p>
             </div>
             <div className="bg-white rounded-xl shadow p-6 border-t-4 border-pink-500">
               <h3 className="text-gray-500 text-sm font-medium">Connections</h3>
-              <p className="text-3xl font-bold text-gray-800 mt-2">24</p>
+              <p className="text-3xl font-bold text-gray-800 mt-2">
+                {user?.connections?.length || 0}
+              </p>
             </div>
             <div className="bg-white rounded-xl shadow p-6 border-t-4 border-blue-500">
-              <h3 className="text-gray-500 text-sm font-medium">Notifications</h3>
-              <p className="text-3xl font-bold text-gray-800 mt-2">5</p>
+              <h3 className="text-gray-500 text-sm font-medium">
+                Notifications
+              </h3>
+              <p className="text-3xl font-bold text-gray-800 mt-2">
+                {user?.notifications?.length || 0}
+              </p>
             </div>
           </div>
 
@@ -123,10 +226,12 @@ const Dashboard = () => {
             <div className="lg:col-span-2">
               <div className="bg-white rounded-xl shadow-md">
                 <div className="px-6 py-4 border-b border-gray-200">
-                  <h2 className="text-xl font-semibold text-gray-800">Your Upcoming Events</h2>
+                  <h2 className="text-xl font-semibold text-gray-800">
+                    Your Upcoming Events
+                  </h2>
                 </div>
                 <div className="p-4">
-                  {upcomingEvents.map(event => (
+                  {/* {upcomingEvents.map(event => (
                     <div key={event.id} className="mb-4 border-b border-gray-100 pb-4 last:border-0 last:pb-0">
                       <div className="flex justify-between items-start">
                         <div>
@@ -145,7 +250,7 @@ const Dashboard = () => {
                         </div>
                       </div>
                       <div className="mt-3 flex space-x-3">
-                        <Link to={`/events/${event.id}`} className="text-indigo-600 text-sm font-medium hover:text-indigo-800 transition-colors">
+                        <Link to={/events/${event.id}} className="text-indigo-600 text-sm font-medium hover:text-indigo-800 transition-colors">
                           View Details
                         </Link>
                         <button className="text-indigo-600 text-sm font-medium hover:text-indigo-800 transition-colors">
@@ -153,13 +258,55 @@ const Dashboard = () => {
                         </button>
                       </div>
                     </div>
-                  ))}
+                  ))} */}
+                  {events.filter((event) => event.type === "Registered")
+                    .length > 0 ? (
+                    events
+                      .filter((event) => event.type === "Registered")
+                      .map((event) => (
+                        <div
+                          key={event._id}
+                          className="mb-4 border-b border-gray-100 pb-4 last:border-0 last:pb-0"
+                        >
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <h3 className="font-medium text-lg text-indigo-600">
+                                {event.title}
+                              </h3>
+                              <p className="text-gray-600 text-sm mt-1">
+                                {event.date} • {event.time}
+                              </p>
+                            </div>
+                            <div>
+                              <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-medium">
+                                {event.status}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                  ) : (
+                    <p className="text-gray-500">No organized events found.</p>
+                  )}
                 </div>
                 <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 rounded-b-xl">
-                  <Link to="/events" className="text-indigo-600 font-medium hover:text-indigo-800 transition-colors flex items-center justify-center">
+                  <Link
+                    to="/events"
+                    className="text-indigo-600 font-medium hover:text-indigo-800 transition-colors flex items-center justify-center"
+                  >
                     View All Events
-                    <svg className="w-5 h-5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
+                    <svg
+                      className="w-5 h-5 ml-1"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M9 5l7 7-7 7"
+                      ></path>
                     </svg>
                   </Link>
                 </div>
@@ -171,36 +318,81 @@ const Dashboard = () => {
               {/* Events Created */}
               <div className="bg-white rounded-xl shadow-md">
                 <div className="px-6 py-4 border-b border-gray-200">
-                  <h2 className="text-xl font-semibold text-gray-800">Events You're Organizing</h2>
+                  <h2 className="text-xl font-semibold text-gray-800">
+                    Events You are Organizing
+                  </h2>
                 </div>
                 <div className="p-4">
-                  {createdEvents.map(event => (
-                    <div key={event.id} className="mb-4 border-b border-gray-100 pb-4 last:border-0 last:pb-0">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <h3 className="font-medium text-lg text-indigo-600">{event.title}</h3>
-                          <p className="text-gray-600 text-sm mt-1">{event.date} • {event.time}</p>
-                          <p className="text-gray-600 text-sm">Attendees: {event.attendees}</p>
+                  {events.filter((event) => event.type === "schedule").length > 0 ? (
+                     events
+                     .filter((event) => event.type === "Organized").map((event) => (
+                      <div
+                        key={event._id}
+                        className="border-b border-gray-200 pb-6 mb-6 last:border-b-0 last:pb-0"
+                      >
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <h2 className="text-xl font-semibold text-indigo-600">
+                              {event.title}
+                            </h2>
+                            <p className="text-gray-600 mt-1">
+                              📅 {event.date} • 🕒 {event.time}
+                            </p>
+                            <p className="text-gray-600 mt-1">
+                              👥 Attendees: {event.attendees || 0}
+                            </p>
+                          </div>
+                          <div>
+                            <span
+                              className={`inline-block px-4 py-1 rounded-full text-sm font-medium ${
+                                event.status === "active"
+                                  ? "bg-green-100 text-green-700"
+                                  : "bg-red-100 text-red-700"
+                              }`}
+                            >
+                              {event.status}
+                            </span>
+                          </div>
                         </div>
-                        <div>
-                          <span className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-700">
-                            {event.status}
-                          </span>
+
+                        <div className="mt-4 flex justify-between items-center">
+                          <Link
+                            to={`/myevents/${event._id}`}
+                            className="text-indigo-600 font-medium hover:text-indigo-800 transition"
+                          >
+                            Manage Event →
+                          </Link>
+                          <p className="text-sm text-gray-500">
+                            Created on:{" "}
+                            {new Date(event.createdAt).toLocaleDateString()}
+                          </p>
                         </div>
                       </div>
-                      <div className="mt-3">
-                        <Link to={`/events/${event.id}/manage`} className="text-indigo-600 text-sm font-medium hover:text-indigo-800 transition-colors">
-                          Manage Event
-                        </Link>
-                      </div>
-                    </div>
-                  ))}
+                    ))
+                  ) : (
+                    <p className="text-gray-500">
+                      You have not organized any events yet.
+                    </p>
+                  )}
                 </div>
                 <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 rounded-b-xl">
-                  <Link to="/event-create" className="text-indigo-600 font-medium hover:text-indigo-800 transition-colors flex items-center justify-center">
+                  <Link
+                    to="/event-create"
+                    className="text-indigo-600 font-medium hover:text-indigo-800 transition-colors flex items-center justify-center"
+                  >
                     Create New Event
-                    <svg className="w-5 h-5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path>
+                    <svg
+                      className="w-5 h-5 ml-1"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M12 4v16m8-8H4"
+                      ></path>
                     </svg>
                   </Link>
                 </div>
@@ -209,21 +401,36 @@ const Dashboard = () => {
               {/* Live Events */}
               <div className="bg-white rounded-xl shadow-md">
                 <div className="px-6 py-4 border-b border-gray-200">
-                  <h2 className="text-xl font-semibold text-gray-800">Live Events</h2>
+                  <h2 className="text-xl font-semibold text-gray-800">
+                    Live Events
+                  </h2>
                 </div>
                 <div className="p-4">
-                  {liveEvents.map(event => (
-                    <div key={event.id} className="mb-4 border-b border-gray-100 pb-4 last:border-0 last:pb-0">
+                  {events.filter(event => event.status === "live").map((event) => (
+                    <div
+                      key={event.id}
+                      className="mb-4 border-b border-gray-100 pb-4 last:border-0 last:pb-0"
+                    >
                       <div className="flex justify-between items-start">
                         <div>
-                          <h3 className="font-medium text-lg text-indigo-600">{event.title}</h3>
-                          <p className="text-gray-600 text-sm mt-1">{event.date} • {event.time}</p>
-                          <p className="text-gray-600 text-sm">{event.location}</p>
+                          <h3 className="font-medium text-lg text-indigo-600">
+                            {event.title}
+                          </h3>
+                          <p className="text-gray-600 text-sm mt-1">
+                            {event.date} • {event.time}
+                          </p>
+                          <p className="text-gray-600 text-sm">
+                            {event.eventType}
+                          </p>
                         </div>
                         <div>
-                          <a href={event.link} target="_blank" rel="noopener noreferrer" className="text-indigo-600 text-sm font-medium hover:text-indigo-800 transition-colors">
+                          <button
+                          onClick={() => handleJoin(event._id)}
+                         rel="noopener noreferrer"
+                            className="text-indigo-600 text-sm font-medium hover:text-indigo-800 transition-colors"
+                          >
                             Join Now
-                          </a>
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -234,31 +441,66 @@ const Dashboard = () => {
               {/* Recommended Connections */}
               <div className="bg-white rounded-xl shadow-md">
                 <div className="px-6 py-4 border-b border-gray-200">
-                  <h2 className="text-xl font-semibold text-gray-800">Recommended Connections</h2>
+                  <h2 className="text-xl font-semibold text-gray-800">
+                    Recommended Connections
+                  </h2>
                 </div>
                 <div className="p-4 space-y-4">
                   <div className="flex items-center">
-                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Profile" className="h-10 w-10 rounded-full" />
+                    <img
+                      src="https://randomuser.me/api/portraits/men/32.jpg"
+                      alt="Profile"
+                      className="h-10 w-10 rounded-full"
+                    />
                     <div className="ml-3">
-                      <p className="text-sm font-medium text-gray-900">Michael Chen</p>
-                      <p className="text-xs text-gray-500">Computer Science, Junior</p>
+                      <p className="text-sm font-medium text-gray-900">
+                        Michael Chen
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        Computer Science, Junior
+                      </p>
                     </div>
-                    <button className="ml-auto text-indigo-600 hover:text-indigo-800 text-sm font-medium">Connect</button>
+                    <button className="ml-auto text-indigo-600 hover:text-indigo-800 text-sm font-medium">
+                      Connect
+                    </button>
                   </div>
                   <div className="flex items-center">
-                    <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Profile" className="h-10 w-10 rounded-full" />
+                    <img
+                      src="https://randomuser.me/api/portraits/women/44.jpg"
+                      alt="Profile"
+                      className="h-10 w-10 rounded-full"
+                    />
                     <div className="ml-3">
-                      <p className="text-sm font-medium text-gray-900">Priya Sharma</p>
-                      <p className="text-xs text-gray-500">Business Administration, Senior</p>
+                      <p className="text-sm font-medium text-gray-900">
+                        Priya Sharma
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        Business Administration, Senior
+                      </p>
                     </div>
-                    <button className="ml-auto text-indigo-600 hover:text-indigo-800 text-sm font-medium">Connect</button>
+                    <button className="ml-auto text-indigo-600 hover:text-indigo-800 text-sm font-medium">
+                      Connect
+                    </button>
                   </div>
                 </div>
                 <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 rounded-b-xl">
-                  <Link to="/networks" className="text-indigo-600 font-medium hover:text-indigo-800 transition-colors flex items-center justify-center">
+                  <Link
+                    to="/networks"
+                    className="text-indigo-600 font-medium hover:text-indigo-800 transition-colors flex items-center justify-center"
+                  >
                     View All Recommendations
-                    <svg className="w-5 h-5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
+                    <svg
+                      className="w-5 h-5 ml-1"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M9 5l7 7-7 7"
+                      ></path>
                     </svg>
                   </Link>
                 </div>

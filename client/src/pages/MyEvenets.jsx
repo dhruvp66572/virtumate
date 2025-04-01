@@ -9,7 +9,7 @@ const MyEvents = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    document.title = "UniEvents | Events";
+    document.title = "Virtumate | Events";
 
     // Fetch events from API
     const fetchEvents = async () => {
@@ -54,7 +54,6 @@ const MyEvents = () => {
       console.log(response.data.data);
 
       alert("Meeting scheduled successfully");
-
     } catch (error) {
       console.error("Error scheduling meeting", error);
     }
@@ -65,12 +64,14 @@ const MyEvents = () => {
       const response = await axiosInstance.post(`/events/${id}/meeting/join`);
       console.log(response.data);
       const token = response.data.token;
-      localStorage.setItem("roomToken", token);
+      localStorage.setItem("roomToken", token);     
       navigate(`/video-call/${id}`);
     } catch (error) {
       console.error("Error joining meeting", error);
     }
   };
+
+  
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col">
       {/* Main Content */}

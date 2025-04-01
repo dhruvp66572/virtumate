@@ -18,7 +18,7 @@ const LandingPage = () => {
       {/* <nav className="bg-white shadow-md px-6 py-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center">
-            <h2 className="text-2xl font-bold text-indigo-600">UniEvents</h2>
+            <h2 className="text-2xl font-bold text-indigo-600">Virtumate</h2>
           </div>
           <div className="space-x-8">
             <Link to="/" className="text-gray-600 hover:text-indigo-600 transition-colors">Home</Link>
