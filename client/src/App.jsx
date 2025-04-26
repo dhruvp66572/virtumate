@@ -17,6 +17,7 @@ import Footer from "./components/Footer";
 import MyEvenets from "./pages/MyEvenets";
 import Settings from "./pages/Settings";
 import VideoCall from "./components/VideoCall";
+import { Toaster } from "react-hot-toast";
 
 const App = () => {
   const { isAuthenticated } = useAuth(); // Get auth state
@@ -56,6 +57,10 @@ const App = () => {
           <Route path="*" element={<Navigate to="/" />} />
         )}
       </Routes>
+      <Toaster
+        position="top-right"
+        reverseOrder={false}
+      />
     </>
   );
 };

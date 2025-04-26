@@ -442,8 +442,8 @@ const EventManagement = () => {
                         Edit Event Details
                       </h3>
                       <p className="text-sm text-indigo-600">
-                        Make changes to your event and click "Save Changes" when
-                        you're done.
+                        Make changes to your event and click &quot;Save Changes&quot; when
+                        you&apos;re done.
                       </p>
                     </div>
 

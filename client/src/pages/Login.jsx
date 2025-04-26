@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
+import toast from 'react-hot-toast';
 
 const Login = () => {
   const {login } = useContext(AuthContext);
@@ -9,6 +10,8 @@ const Login = () => {
     password: '',
   });
   
+  const navigate = useNavigate();
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -19,15 +22,27 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    // Validate form data (basic validation)
+    if (!formData.email || !formData.password) {
+      toast.error('Please fill in all fields.');
+      return;
+    }
+
+
     try {
+      toast.loading('Logging in...');
       const response = await login(formData.email, formData.password);
       console.log('Login attempt:', response);
       if (response) {
         console.log('Login successful:', response);
-
-        setTimeout(() => {
-          window.location.href = '/dashboard';
-        }, 2000);
+        toast.dismiss(); // dismiss loading
+        toast.success('Logged in successfully!', {
+          duration: 2000});
+        navigate('/dashboard');
+      }
+      else {
+        toast.dismiss(); // dismiss loading
+        toast.error('Invalid credentials. Please try again.');
       }
     } catch (error) {
       console.error('Login failed:', error);
@@ -79,7 +94,6 @@ const Login = () => {
                     name="email"
                     type="email"
                     autoComplete="email"
-                    required
                     value={formData.email}
                     onChange={handleChange}
                     className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
@@ -98,11 +112,11 @@ const Login = () => {
                     name="password"
                     type="password"
                     autoComplete="current-password"
-                    required
                     value={formData.password}
                     onChange={handleChange}
                     className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                     placeholder="Enter your password"
+
                   />
                 </div>
               </div>

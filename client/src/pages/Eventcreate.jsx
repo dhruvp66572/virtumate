@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axiosInstance from "../utils/axiosIntance";
 import { useAuth } from "../context/AuthContext";
+import toast from "react-hot-toast";
 
 const Eventcreate = () => {
   const navigate = useNavigate();
@@ -110,11 +111,6 @@ const Eventcreate = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // console.log(currentStep);
-
-    // // Here you would send `formData` to your backend
-    // console.log("Form data submitted:", formData);
-
     if (formData.agenda.length < 0) {
       alert("Please add at least one agenda item.");
       return;
@@ -122,6 +118,15 @@ const Eventcreate = () => {
 
     // Assuming you have an API endpoint to create events
     try {
+      // Prepare form data for submission
+      toast.loading("Creating event...", {
+        duration: 5000,
+        position: "top-right",
+        style: {
+          background: "#333",
+          color: "#fff",
+        },
+      });
       const response = await axiosInstance.post("/events", {
         ...formData,
         organizerId: user.id,
@@ -130,12 +135,33 @@ const Eventcreate = () => {
 
       // Redirect to event page
       if (response.status === 201) {
+
+        toast.dismiss();
+        toast.success("Event created successfully!", {
+          duration: 3000,
+          position: "top-right",
+          style: {
+            background: "#333",
+            color: "#fff",
+          },
+        });
+
+        // Redirect to the event details pag
         navigate(`/events/${response.data.data._id}`);
       }
 
     } catch (error) {
       console.error("Error creating event:", error);
-      alert("An error occurred. Please try again.");
+      toast.dismiss();
+      toast.error("Failed to create event. Please try again.", {
+        duration: 3000,
+        position: "top-right",
+        style: {
+          background: "#333",
+          color: "#fff",
+        },
+      });
+      // Handle error (e.g., show a message to the user)
       return;
     }
     alert("Event created successfully!");
