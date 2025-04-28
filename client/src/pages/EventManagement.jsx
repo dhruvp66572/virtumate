@@ -1,11 +1,17 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import axiosInstance from "../utils/axiosIntance";
-import { updateEventById } from "../handlers/event_handler";
+import {
+  changeEventStatusById,
+  updateEventById,
+} from "../handlers/event_handler";
+import toast from "react-hot-toast";
+import { useAuth } from "../context/AuthContext";
 
 const EventManagement = () => {
   // Get the event ID from URL parameters
   const { id } = useParams();
+  const { user } = useAuth();
 
   const [subTab, setSubTab] = useState("view");
   const [attendeedata, setAttendeeData] = useState([]);
@@ -82,7 +88,7 @@ const EventManagement = () => {
       );
       console.log(response.data.data);
       // Handle success response if needed
-      alert("Attendance updated successfully!");
+      toast.success("Attendance saved successfully!");
     } catch (error) {
       console.error("Error saving attendance:", error);
     }
@@ -99,53 +105,113 @@ const EventManagement = () => {
     { value: "ongoing", label: "Ongoing", color: "teal" },
   ]);
 
+  const [Recipientstype, setRecipientstype] = useState("All Attendees");
+  const [subject, setSubject] = useState("");
+  const [body, setBody] = useState("");
+
   // Function to handlesend email
-  const handleSendEmail = async (subject, body,Recipients) => {
+  const handleSendEmail = async () => {
     try {
+      if (!subject) {
+        toast.error("Subject is required.");
+        return;
+      }
+      if (!body) {
+        toast.error("Body is required.");
+        return;
+      }
 
-      // if (!subject || !body ) {
-      //   alert("Please fill in all fields.");
-      //   return;
-      // }
+      if (subject.length > 100) {
+        toast.error("Subject should not exceed 100 characters.");
+        return;
+      }
 
-      // if (subject.length > 100) {
-      //   alert("Subject should not exceed 100 characters.");
-      //   return;
-      // }
+      if (Recipientstype === "All Attendees") {
+        toast.success("Sending email to all attendees...");
+        // console.log(event.registeredAttendees);
 
-      // if (body.length > 500) {
-      //   alert("Body should not exceed 500 characters.");
-      //   return;
-      // }
+        // } else if (Recipients === "speakers") {
+        //   Recipients = event.speakers.map((speaker) => speaker._id);
+        // } else if (Recipients === "exhibitors") {
+        //   Recipients = event.exhibitorBooths.map((booth) => booth._id);
+        // } else if (Recipients === "attendees") {
+        //   Recipients = event.registeredAttendees.map((attendee) => attendee.userId);
+      } else {
+        toast.error("Please select a recipient type.");
+        return;
+      }
 
-      // if (Recipients === "All Attendees") {
-      //   alert("All Attendees selected.");
-      //   Recipients = event.registeredAttendees.map((attendee) => attendee.userId);
-      // // } else if (Recipients === "speakers") {
-      // //   Recipients = event.speakers.map((speaker) => speaker._id);
-      // // } else if (Recipients === "exhibitors") {
-      // //   Recipients = event.exhibitorBooths.map((booth) => booth._id);
-      // // } else if (Recipients === "attendees") {
-      // //   Recipients = event.registeredAttendees.map((attendee) => attendee.userId);
-      // } else {
-      //   alert("Invalid recipient type selected.");
-      //   return;
-      // }
-
+      // Send email using the API
+      const toastId = toast.loading("Sending email...");
       const response = await axiosInstance.post(
-        `/events/${event._id}/send-email`
-      ,     {
-        subject: "Event Reminder",
-        body: `Dear Attendee, \n\nThis is a reminder for the upcoming event: ${event.title}.\n\nThank you!`,
-        attendees: event.registeredAttendees.map((attendee) => attendee.userId),          
-      });
+        `/events/${event._id}/getallregisteredemail`,
+        {
+          subject: subject,
+          body: body,
+        }
+      );
+      if (response.status === 200) {
+        toast.dismiss(toastId);
+        toast.success("Email sent successfully!");
+      }
       console.log(response.data);
-      alert("Email sent successfully!");
     } catch (error) {
       console.error("Error sending email:", error);
-      alert("Failed to send email. Please try again later.");
+
+      toast.dismiss();
+      toast.error(error.response.data.message);
     }
-  }
+  };
+  // Function to handlesend email
+  const handleSendEmailmsg = async (subject, body) => {
+    try {
+      if (!subject) {
+        toast.error("Subject is required.");
+        return;
+      }
+      if (!body) {
+        toast.error("Body is required.");
+        return;
+      }
+
+      if (subject.length > 100) {
+        toast.error("Subject should not exceed 100 characters.");
+        return;
+      }
+
+      // Send email using the API
+      const toastId = toast.loading("Sending email...");
+      const response = await axiosInstance.post(
+        `/events/${event._id}/getallregisteredemail`,
+        {
+          subject: subject,
+          body: body,
+        }
+      );
+      if (response.status === 200) {
+        toast.dismiss(toastId);
+        toast.success("Email sent successfully!");
+      }
+      console.log(response.data);
+    } catch (error) {
+      console.error("Error sending email:", error);
+
+      toast.dismiss();
+      toast.error(error.response.data.message);
+    }
+  };
+
+  const handleSchedule = async (id) => {
+    try {
+      const response = await axiosInstance.post(`/events/${id}/meeting`);
+      console.log(response.data.data);
+      toast.success("Meeting Scheduled!", {
+        duration: 3000, // 3 seconds
+      });
+    } catch (error) {
+      console.error("Error scheduling meeting", error);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -317,6 +383,48 @@ const EventManagement = () => {
                         >
                           Edit Event
                         </button>
+
+                        <select
+                          value={event.status}
+                          onChange={async (e) => {
+                            let status = e.target.value;
+                            setEvent({ ...event, status: e.target.value });
+                            const toastId = toast.loading(
+                              "Changing event Status..."
+                            );
+                            try {
+                              const response = await axiosInstance.put(
+                                `/events/${event._id}/changestatus`,
+                                { status }
+                              );
+                              console.log(response.data);
+
+                              if (response.status === 200) {
+                                toast.dismiss(toastId);
+                                toast.success("Now Event is " + status + "!");
+
+                                if (status === "live") {
+                                  handleSchedule(event._id); // Call the handleSchedule function after changing status
+                                }
+                              }
+                            } catch (error) {
+                              console.error(
+                                "Error Changing event status:",
+                                error
+                              );
+                              toast.dismiss(toastId);
+                              toast.error("Failed to Change event Status ❌");
+                            }
+                          }}
+                          className="bg-white text-indigo-600 px-4 py-2 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+                        >
+                          {statusOptions.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
+
                         <Link
                           to={`/event-details/${event._id}`}
                           className="border-2 border-white text-white px-4 py-2 rounded-lg font-semibold hover:bg-white hover:text-indigo-600 transition-colors"
@@ -442,8 +550,8 @@ const EventManagement = () => {
                         Edit Event Details
                       </h3>
                       <p className="text-sm text-indigo-600">
-                        Make changes to your event and click &quot;Save Changes&quot; when
-                        you&apos;re done.
+                        Make changes to your event and click &quot;Save
+                        Changes&quot; when you&apos;re done.
                       </p>
                     </div>
 
@@ -868,7 +976,9 @@ const EventManagement = () => {
                           Share Event
                         </h3>
                         <div className="flex space-x-3 mb-4">
-                          <button className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
+                          {/* <button className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none" 
+                            
+                          >
                             <svg
                               className="h-5 w-5 mr-2 text-gray-500"
                               fill="currentColor"
@@ -887,8 +997,16 @@ const EventManagement = () => {
                               <path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z" />
                             </svg>
                             Twitter
-                          </button>
-                          <button className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
+                          </button> */}
+                          <button
+                            onClick={() => {
+                              navigator.clipboard.writeText(
+                                `${window.location.origin}/event/${event._id}`
+                              );
+                              toast.success("Link copied to clipboard!");
+                            }}
+                            className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none"
+                          >
                             <svg
                               className="h-5 w-5 mr-2 text-gray-500"
                               fill="none"
@@ -913,7 +1031,36 @@ const EventManagement = () => {
                         Quick Actions
                       </h3>
                       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                        <button className="inline-flex items-center justify-center px-4 py-3 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none">
+                        <button
+                          onClick={() => {
+                            const subject = `🌟 You're Invited: Join Us for ${event.title}! 🌟`;
+                            const body = `
+                              🎉 We are thrilled to invite you to our upcoming event: "${
+                                event.title
+                              }"! 🎉
+                              
+                              📅 Date: ${new Date(
+                                event.startTime
+                              ).toLocaleDateString()}
+                              🕒 Time: ${new Date(
+                                event.startTime
+                              ).toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                              
+                              🌟 This is a fantastic opportunity to connect, learn, and engage with like-minded individuals. Don't miss out on this exciting event!
+                              
+                              We look forward to seeing you there! 😊
+                              
+                              Best regards,
+                              The Virtumate Team
+                            `;
+
+                            handleSendEmailmsg(subject, body);
+                          }}
+                          className="inline-flex items-center justify-center px-4 py-3 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none"
+                        >
                           <svg
                             className="h-5 w-5 mr-2"
                             fill="none"
@@ -929,7 +1076,29 @@ const EventManagement = () => {
                           </svg>
                           Send Invitations
                         </button>
-                        <button className="inline-flex items-center justify-center px-4 py-3 border border-transparent shadow-sm text-sm font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none">
+                        <button
+                          onClick={() => {
+                            const addToGoogleCalendar = () => {
+                              const startDate = new Date(event.startTime)
+                                .toISOString()
+                                .replace(/-|:|\.\d+/g, "");
+                              const endDate = new Date(event.endTime)
+                                .toISOString()
+                                .replace(/-|:|\.\d+/g, "");
+                              const details = encodeURIComponent(
+                                event.description || "No details provided"
+                              );
+                              const title = encodeURIComponent(
+                                event.title || "Event"
+                              );
+                              const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startDate}/${endDate}&details=${details}`;
+                              window.open(url, "_blank");
+                            };
+
+                            addToGoogleCalendar();
+                          }}
+                          className="inline-flex items-center justify-center px-4 py-3 border border-transparent shadow-sm text-sm font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none"
+                        >
                           <svg
                             className="h-5 w-5 mr-2"
                             fill="none"
@@ -945,7 +1114,85 @@ const EventManagement = () => {
                           </svg>
                           Add to Calendar
                         </button>
-                        <button className="inline-flex items-center justify-center px-4 py-3 border border-transparent shadow-sm text-sm font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none">
+                        <button
+                          onClick={() => {
+                            const generatePDF = async () => {
+                              const { jsPDF } = await import("jspdf");
+                              const autoTable = (
+                                await import("jspdf-autotable")
+                              ).default;
+
+                              const doc = new jsPDF();
+
+                              // Add Event Header
+                              doc.setFontSize(18);
+                              doc.text(event.title || "Event Details", 14, 20);
+                              doc.setFontSize(12);
+                              doc.text(
+                                `Date: ${new Date(
+                                  event.startTime
+                                ).toLocaleDateString()}`,
+                                14,
+                                30
+                              );
+                              doc.text(
+                                `Time: ${new Date(
+                                  event.startTime
+                                ).toLocaleTimeString()} - ${new Date(
+                                  event.endTime
+                                ).toLocaleTimeString()}`,
+                                14,
+                                36
+                              );
+                              doc.text(
+                                `Status: ${event.status || "N/A"}`,
+                                14,
+                                48
+                              );
+
+                              // Add a line separator
+                              doc.line(14, 52, 200, 52);
+
+                              // Add Table Header
+                              doc.setFontSize(14);
+                              doc.text("Registered Attendees", 14, 60);
+
+                              // Prepare Table Data
+                              const tableData = attendeedata.map((attendee) => [
+                                attendee._id || "N/A",
+                                attendee.email || "N/A",
+                                attendee.attended ? "Present" : "Absent",
+                              ]);
+
+                              // Add Table
+                              autoTable(doc, {
+                                head: [["Name", "Email", "Attendance"]],
+                                body: tableData,
+                                startY: 70,
+                              });
+
+                              // Add Footer
+                              const pageCount = doc.internal.getNumberOfPages();
+                              for (let i = 1; i <= pageCount; i++) {
+                                doc.setPage(i);
+                                doc.setFontSize(10);
+                                doc.text(
+                                  `Page ${i} of ${pageCount}`,
+                                  doc.internal.pageSize.width - 20,
+                                  doc.internal.pageSize.height - 10
+                                );
+                              }
+
+                              // Save PDF
+                              doc.save(
+                                `${event.title || "event"}_attendees.pdf`
+                              );
+                            };
+
+                            generatePDF();
+                          }}
+                          className="inline-flex items-center justify-center px-4 py-3 border border-transparent shadow-sm text-sm font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none"
+                        >
                           <svg
                             className="h-5 w-5 mr-2"
                             fill="none"
@@ -961,7 +1208,9 @@ const EventManagement = () => {
                           </svg>
                           Export Attendee List
                         </button>
-                        <button className="inline-flex items-center justify-center px-4 py-3 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
+                        {/* <button 
+                          
+                        className="inline-flex items-center justify-center px-4 py-3 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
                           <svg
                             className="h-5 w-5 mr-2 text-gray-500"
                             fill="none"
@@ -976,7 +1225,7 @@ const EventManagement = () => {
                             />
                           </svg>
                           Archive Event
-                        </button>
+                        </button> */}
                       </div>
                     </div>
                   </div>
@@ -1008,6 +1257,36 @@ const EventManagement = () => {
                     }`}
                   >
                     Take Attendance
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      const csvContent = [
+                        ["Name", "Email", "Attendance"],
+                        ...attendeedata.map((attendee) => [
+                          attendee.name || "N/A",
+                          attendee.email || "N/A",
+                          attendee.attended ? "Present" : "Absent",
+                        ]),
+                      ]
+                        .map((row) => row.join(","))
+                        .join("\n");
+
+                      const blob = new Blob([csvContent], {
+                        type: "text/csv;charset=utf-8;",
+                      });
+                      const url = URL.createObjectURL(blob);
+                      const link = document.createElement("a");
+                      link.setAttribute("href", url);
+                      link.setAttribute("download", "attendance.csv");
+                      link.style.visibility = "hidden";
+                      document.body.appendChild(link);
+                      link.click();
+                      document.body.removeChild(link);
+                    }}
+                    className={`py-2 px-4 rounded-md font-medium bg-indigo-600 text-white hover:bg-indigo-700`}
+                  >
+                    Export Attendance
                   </button>
                 </div>
 
@@ -1477,24 +1756,6 @@ const EventManagement = () => {
                     Attendee Messaging
                   </h2>
                   <div className="flex space-x-3">
-                    <button className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none"
-                      onClick={() => handleSendEmail()}
-                    >
-                      <svg
-                        className="h-5 w-5 mr-2"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                        />
-                      </svg>
-                      Send Email
-                    </button>
                     {/* <button className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none">
                       <svg
                         className="h-5 w-5 mr-2"
@@ -1532,6 +1793,7 @@ const EventManagement = () => {
                       <select
                         id="recipients"
                         className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                        onChange={(e) => setRecipientstype(e.target.value)}
                       >
                         <option>All Attendees</option>
                       </select>
@@ -1548,6 +1810,7 @@ const EventManagement = () => {
                         id="subject"
                         className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                         placeholder="Message subject"
+                        onChange={(e) => setSubject(e.target.value)}
                       />
                     </div>
                     <div className="mb-4">
@@ -1562,6 +1825,7 @@ const EventManagement = () => {
                         rows={6}
                         className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                         placeholder="Type your message here..."
+                        onChange={(e) => setBody(e.target.value)}
                       ></textarea>
                     </div>
                     <div className="flex justify-end space-x-3">
@@ -1584,7 +1848,39 @@ const EventManagement = () => {
                     Message Templates
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="border border-gray-200 rounded-lg p-4 hover:border-indigo-300 hover:bg-indigo-50 cursor-pointer transition-colors">
+                    <div
+                      className="border border-gray-200 rounded-lg p-4 hover:border-indigo-300 hover:bg-indigo-50 cursor-pointer transition-colors"
+                      onClick={() => {
+                        let subject =
+                          "📅 Reminder: Upcoming Event - Don't Miss Out!";
+                        let body = `
+                        Dear Attendee,
+
+                        This is a friendly reminder that our event, "${
+                          event.title
+                        }", is just around the corner! We are excited to have you join us.
+
+                        📍 Event Details:
+                        - Date: ${new Date(
+                          event.startTime
+                        ).toLocaleDateString()}
+                        - Time: ${new Date(event.startTime).toLocaleTimeString(
+                          [],
+                          { hour: "2-digit", minute: "2-digit" }
+                        )}
+
+
+                        Please mark your calendar and prepare for an engaging and insightful experience. If you have any questions, feel free to reach out to us.
+
+                        We look forward to seeing you there!
+
+                        Best regards,  
+                        The Virtumate Team
+                        `;
+
+                        handleSendEmailmsg(subject, body);
+                      }}
+                    >
                       <h4 className="font-medium text-gray-900">
                         Event Reminder
                       </h4>
@@ -1593,7 +1889,34 @@ const EventManagement = () => {
                         We&apos;re looking forward to seeing you!
                       </p>
                     </div>
-                    <div className="border border-gray-200 rounded-lg p-4 hover:border-indigo-300 hover:bg-indigo-50 cursor-pointer transition-colors">
+                    <div
+                      className="border border-gray-200 rounded-lg p-4 hover:border-indigo-300 hover:bg-indigo-50 cursor-pointer transition-colors"
+                      onClick={() => {
+                        let subject = "🙏 Thank You for Attending Our Event!";
+                        let body = `
+                        Dear Attendee,
+
+                        We sincerely thank you for joining us at "${
+                          event.title
+                        }". Your presence made the event truly special, and we hope you found it valuable and engaging.
+
+                        🌟 Event Highlights:
+                        - Date: ${new Date(
+                          event.startTime
+                        ).toLocaleDateString()}
+                        - Key Takeaways: [Add key takeaways or highlights here]
+
+                        We would love to hear your feedback to help us improve future events. Please feel free to share your thoughts or suggestions.
+
+                        Once again, thank you for being a part of our event. We look forward to welcoming you to our future events!
+
+                        Warm regards,  
+                        The Virtumate Team
+                        `;
+
+                        handleSendEmailmsg(subject, body);
+                      }}
+                    >
                       <h4 className="font-medium text-gray-900">
                         Thank You Message
                       </h4>
@@ -1602,22 +1925,63 @@ const EventManagement = () => {
                         valuable and look forward to seeing you again.
                       </p>
                     </div>
-                    <div className="border border-gray-200 rounded-lg p-4 hover:border-indigo-300 hover:bg-indigo-50 cursor-pointer transition-colors">
-                      <h4 className="font-medium text-gray-900">
-                        Location Change
-                      </h4>
-                      <p className="text-sm text-gray-600 mt-1 line-clamp-2">
-                        We need to inform you about an important change to our
-                        event location. Please see the details below.
-                      </p>
-                    </div>
-                    <div className="border border-gray-200 rounded-lg p-4 hover:border-indigo-300 hover:bg-indigo-50 cursor-pointer transition-colors">
+                    <div
+                      className="border border-gray-200 rounded-lg p-4 hover:border-indigo-300 hover:bg-indigo-50 cursor-pointer transition-colors"
+                      onClick={() => {
+                        let subject = "❌ Cancellation Notice: Event Update";
+                        let body = `
+                      Dear Attendee,
+
+                      We regret to inform you that our event, "${event.title}", has been canceled due to unforeseen circumstances. We sincerely apologize for any inconvenience this may cause.
+
+                      If you have any questions or concerns, please feel free to reach out to us.
+
+                      Thank you for your understanding.
+
+                      Best regards,  
+                      The Virtumate Team
+                      `;
+
+                        handleSendEmailmsg(subject, body);
+                      }}
+                    >
                       <h4 className="font-medium text-gray-900">
                         Cancellation Notice
                       </h4>
                       <p className="text-sm text-gray-600 mt-1 line-clamp-2">
                         We regret to inform you that we need to cancel the
                         upcoming event. We apologize for any inconvenience.
+                      </p>
+                    </div>
+                    <div
+                      className="border border-gray-200 rounded-lg p-4 hover:border-indigo-300 hover:bg-indigo-50 cursor-pointer transition-colors"
+                      onClick={() => {
+                        let subject =
+                          "📋 Feedback Request: Your Thoughts Matter!";
+                        let body = `
+                      Dear Attendee,
+
+                      We hope you enjoyed our event, "${event.title}". Your feedback is invaluable to us, and we would greatly appreciate it if you could take a moment to share your thoughts.
+
+                      Please click the link below to provide your feedback:
+                      [Feedback Link]
+
+                      Thank you for your time and support!
+
+                      Best regards,  
+                      The Virtumate Team
+                      `;
+
+                        handleSendEmailmsg(subject, body);
+                      }}
+                    >
+                      <h4 className="font-medium text-gray-900">
+                        Feedback Request
+                      </h4>
+                      <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+                        We value your feedback! Please take a moment to share
+                        your thoughts on the event. Your input helps us improve
+                        future experiences.
                       </p>
                     </div>
                   </div>
@@ -1640,7 +2004,52 @@ const EventManagement = () => {
                           </p>
                         </div>
                         <div className="flex space-x-2">
-                          <button className="text-gray-400 hover:text-gray-600">
+                          <button
+                            className="text-gray-400 hover:text-gray-600"
+                            onClick={() => {
+                              let subject = "Event Details Confirmation";
+                              let body = `
+                              Dear Attendee,
+                              We are excited to confirm your registration for our event, "${
+                                event.title
+                              }". Here are the details:
+                              - Date: ${new Date(
+                                event.startTime
+                              ).toLocaleDateString()}
+                              - Time: ${new Date(
+                                event.startTime
+                              ).toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                              - Location: [Event Location]
+                              - Agenda: [Event Agenda]
+                              - Speaker: [Event Speaker]
+                              - Contact: [Contact Information]
+                              - Registration ID: ${id}
+                              - Registered Email: ${user?.email}
+                              - Registration Date: ${new Date(
+                                event.startTime
+                              ).toLocaleDateString()}
+                              - Registration Time: ${new Date(
+                                event.startTime
+                              ).toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                              We look forward to seeing you at the event! If you have any questions or need further assistance, feel free to reach out to us.
+                              Best regards,
+                              The Virtumate Team
+                              `;
+
+                              navigator.clipboard.writeText(
+                                `Subject: ${subject}\n\n${body}`
+                              );
+                              toast.success(
+                                "Email format copied to clipboard!"
+                              );
+                            }}
+                          >
                             <svg
                               className="h-5 w-5"
                               fill="none"
@@ -1695,206 +2104,131 @@ const EventManagement = () => {
             {/* Analytics Tab */}
             {activeTab === "analytics" && (
               <div>
-                <div className="mb-6">
-                  <h2 className="text-2xl font-bold text-gray-900">
-                    Event Analytics
-                  </h2>
-                  <p className="mt-1 text-gray-600">
-                    Track registration, engagement, and other metrics for your
-                    event
-                  </p>
-                </div>
-
-                {/* Analytics Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                  <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-                    <div className="flex items-center">
-                      <div className="flex-shrink-0 h-10 w-10 rounded-md bg-indigo-500 flex items-center justify-center">
-                        <svg
-                          className="h-6 w-6 text-white"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"
-                          />
-                        </svg>
-                      </div>
-                      <div className="ml-4">
-                        <h3 className="text-lg font-semibold text-gray-900">
-                          Registration Rate
-                        </h3>
-                        <div className="mt-2 flex items-baseline">
-                          <p className="text-3xl font-bold text-gray-900">
-                            60%
-                          </p>
-                          <p className="ml-2 text-sm text-green-600">+15%</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="mt-4">
-                      <div className="h-2 w-full bg-gray-200 rounded-full">
-                        <div
-                          className="h-2 bg-indigo-500 rounded-full"
-                          style={{ width: "60%" }}
-                        ></div>
-                      </div>
-                      <div className="mt-2 text-sm text-gray-600">
-                        12 out of 20 maxAttendees filled
-                      </div>
-                    </div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                  Event Analytics
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {/* Total Attendees */}
+                  <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                    <h3 className="text-lg font-medium text-gray-700 mb-2">
+                      Total Attendees
+                    </h3>
+                    <p className="text-3xl font-bold text-indigo-600">
+                      {event.registeredAttendees?.length || 0}
+                    </p>
                   </div>
 
-                  <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-                    <div className="flex items-center">
-                      <div className="flex-shrink-0 h-10 w-10 rounded-md bg-green-500 flex items-center justify-center">
-                        <svg
-                          className="h-6 w-6 text-white"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"
-                          />
-                        </svg>
-                      </div>
-                      <div className="ml-4">
-                        <h3 className="text-lg font-semibold text-gray-900">
-                          Response Rate
-                        </h3>
-                        <div className="mt-2 flex items-baseline">
-                          <p className="text-3xl font-bold text-gray-900">
-                            87%
-                          </p>
-                          <p className="ml-2 text-sm text-green-600">+5%</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="mt-4">
-                      <div className="h-2 w-full bg-gray-200 rounded-full">
-                        <div
-                          className="h-2 bg-green-500 rounded-full"
-                          style={{ width: "87%" }}
-                        ></div>
-                      </div>
-                      <div className="mt-2 text-sm text-gray-600">
-                        13 out of 15 invites responded
-                      </div>
-                    </div>
+                  {/* Attendance Rate */}
+                  <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                    <h3 className="text-lg font-medium text-gray-700 mb-2">
+                      Attendance Rate
+                    </h3>
+                    <p className="text-3xl font-bold text-indigo-600">
+                      {attendeedata.length > 0
+                        ? `${Math.round(
+                            (attendeedata.filter(
+                              (attendee) => attendee.attended
+                            ).length /
+                              attendeedata.length) *
+                              100
+                          )}%`
+                        : "0%"}
+                    </p>
                   </div>
 
-                  <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-                    <div className="flex items-center">
-                      <div className="flex-shrink-0 h-10 w-10 rounded-md bg-purple-500 flex items-center justify-center">
-                        <svg
-                          className="h-6 w-6 text-white"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                          />
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                          />
-                        </svg>
-                      </div>
-                      <div className="ml-4">
-                        <h3 className="text-lg font-semibold text-gray-900">
-                          Page Views
-                        </h3>
-                        <div className="mt-2 flex items-baseline">
-                          <p className="text-3xl font-bold text-gray-900">
-                            128
-                          </p>
-                          <p className="ml-2 text-sm text-green-600">+32%</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="mt-4">
-                      <div className="h-2 w-full bg-gray-200 rounded-full">
-                        <div
-                          className="h-2 bg-purple-500 rounded-full"
-                          style={{ width: "75%" }}
-                        ></div>
-                      </div>
-                      <div className="mt-2 text-sm text-gray-600">
-                        75% growth since last week
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Registration Timeline Chart (placeholder) */}
-                <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-8">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                    Registration Timeline
-                  </h3>
-                  <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
-                    <p className="text-gray-500">
-                      Chart visualization would appear here (showing
-                      registrations over time)
+                  {/* Remaining Spots */}
+                  <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                    <h3 className="text-lg font-medium text-gray-700 mb-2">
+                      Remaining Spots
+                    </h3>
+                    <p className="text-3xl font-bold text-indigo-600">
+                      {event.maxAttendees -
+                        (event.registeredAttendees?.length || 0)}
                     </p>
                   </div>
                 </div>
 
-                {/* Attendance Demographics (placeholder) */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                  <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                      Demographics
-                    </h3>
-                    <div className="h-48 bg-gray-50 rounded-lg flex items-center justify-center">
-                      <p className="text-gray-500">
-                        Demographics chart would appear here
-                      </p>
-                    </div>
-                  </div>
-                  <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                      Traffic Sources
-                    </h3>
-                    <div className="h-48 bg-gray-50 rounded-lg flex items-center justify-center">
-                      <p className="text-gray-500">
-                        Traffic sources chart would appear here
-                      </p>
-                    </div>
+                {/* Attendance Breakdown */}
+                <div className="mt-8">
+                  <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                    Attendance Breakdown
+                  </h3>
+                  <div className="overflow-hidden shadow-sm border border-gray-200 rounded-lg">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th
+                            scope="col"
+                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                          >
+                            Name
+                          </th>
+                          <th
+                            scope="col"
+                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                          >
+                            Email
+                          </th>
+                          <th
+                            scope="col"
+                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                          >
+                            Attendance
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {attendeedata.map((attendee) => (
+                          <tr key={attendee._id}>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              {attendee.name || "N/A"}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              {attendee.email || "N/A"}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              {attendee.attended ? (
+                                <span className="text-green-600 font-medium">
+                                  Present
+                                </span>
+                              ) : (
+                                <span className="text-red-600 font-medium">
+                                  Absent
+                                </span>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
 
-                {/* Export Analytics */}
-                <div className="flex justify-end">
-                  <button className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
-                    <svg
-                      className="h-5 w-5 mr-2 text-gray-500"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                      />
-                    </svg>
-                    Export Analytics Report
-                  </button>
+                {/* Engagement Metrics */}
+                <div className="mt-8">
+                  <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                    Engagement Metrics
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                      <h4 className="text-lg font-medium text-gray-700 mb-2">
+                        Emails Sent
+                      </h4>
+                      <p className="text-3xl font-bold text-indigo-600">--</p>
+                    </div>
+                    <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                      <h4 className="text-lg font-medium text-gray-700 mb-2">
+                        Feedback Received
+                      </h4>
+                      <p className="text-3xl font-bold text-indigo-600">--</p>
+                    </div>
+                    <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                      <h4 className="text-lg font-medium text-gray-700 mb-2">
+                        Resources Downloaded
+                      </h4>
+                      <p className="text-3xl font-bold text-indigo-600">--</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}

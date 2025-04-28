@@ -34,7 +34,6 @@ const Login = () => {
       const response = await login(formData.email, formData.password);
       console.log('Login attempt:', response);
       if (response) {
-        console.log('Login successful:', response);
         toast.dismiss(); // dismiss loading
         toast.success('Logged in successfully!', {
           duration: 2000});
@@ -151,7 +150,7 @@ const Login = () => {
               </div>
             </form>
 
-            <div className="mt-6">
+            {/* <div className="mt-6">
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-gray-300"></div>
@@ -182,11 +181,11 @@ const Login = () => {
                   </button>
                 </div>
               </div>
-            </div>
+            </div> */}
             
             <div className="mt-6 text-center">
               <p className="text-sm text-gray-600">
-                Don't have an account?{' '}
+                Don&apos;t have an account?{' '}
                 <Link to="/register" className="font-medium text-indigo-600 hover:text-indigo-500">
                   Sign up now
                 </Link>

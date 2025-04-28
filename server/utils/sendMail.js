@@ -16,6 +16,23 @@ const transporter = nodemailer.createTransport({
  * @param {string} text - Email body (plain text)
  */
 const sendMail = async (to, subject, text) => {
+
+  // Validate email address
+  // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  // if (!emailRegex.test(to)) {
+  //   console.error("❌ Invalid email address:", to);
+  //   return;
+  // }
+
+  // Validate subject and text
+  if (!subject || !text) {
+    console.error("❌ Subject and text are required for sending an email.");
+    return;
+  }
+  ;
+
+  // Send email
+  console.log(`📧 Sending email to ${to}...`);
   try {
     await transporter.sendMail({
       from: '"Event Platform" dhruvprajapati99090@gmail.com ', // Sender email
@@ -29,4 +46,4 @@ const sendMail = async (to, subject, text) => {
   }
 };
 
-module.exports = sendMail;
+module.exports = {sendMail} ;

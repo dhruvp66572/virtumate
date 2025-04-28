@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import axiosInstance from '../utils/axiosIntance';
+import toast from 'react-hot-toast';
+// import sendMail from '../../../server/utils/sendMail';
 
 const EventRegister = () => {
   const { id } = useParams();
@@ -17,25 +19,86 @@ const EventRegister = () => {
       return;
     }
     try {
+      let toastid = toast.loading('Registering for event...');
+
       const response = await axiosInstance.put(`/events/${id}/register`);
 
       if (response.data.status === 'success') {
-        alert('Registration successful!');
-        // Optionally redirect to event details page or show success message
-        // navigate(`/events/${id}`);
+        toast.success('You have successfully registered for the event!',{ id: toastid });
+
+        const emailBody = `
+          Hi ${user?.name},
+
+          Thank you for registering for the event! We are excited to have you join us.
+
+          Event Details:
+          - Event ID: ${id}
+          - Registered Email: ${user?.email}
+
+          If you have any questions or need further assistance, feel free to contact us.
+
+          Best regards,
+          The Event Team
+        `;
+
+        const emailSubject = `Registration Confirmation for Event ID: ${id}`;
+
+        await handleSendEmailmsg(emailSubject, emailBody);
+        // await sendMail(user?.email, emailSubject, emailBody);
+
+        navigate(`/events`);
         return;
       }
 
       if (response.data.status === 'error') {
-        alert(response.data.message);
+        toast.error(response.data.message, { id: toastid });       
         return;
       }
 
     } catch (error) {
       console.error('Error registering for event:', error);
-      alert('An error occurred. Please try again later.');
+      toast.error('An error occurred while registering for the event.');
     }
   }
+
+  const handleSendEmailmsg = async (subject, body) => {
+    try {
+      if (!subject) {
+        toast.error("Subject is required.");
+        return;
+      }
+      if (!body) {
+        toast.error("Body is required.");
+        return;
+      }
+
+      if (subject.length > 100) {
+        toast.error("Subject should not exceed 100 characters.");
+        return;
+      }
+
+      // Send email using the API
+      const toastId = toast.loading("Sending email...");
+      const response = await axiosInstance.post(
+        `/events/send-email`,
+        {
+          subject: subject,
+          body: body,
+          email: user?.email,
+        }
+      );
+      if (response.status === 200) {
+        toast.dismiss(toastId);
+        toast.success("Email sent successfully!");
+      }
+      console.log(response.data);
+    } catch (error) {
+      console.error("Error sending email:", error);
+
+      toast.dismiss();
+      toast.error(error.response.data.message);
+    }
+  };
   
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">    

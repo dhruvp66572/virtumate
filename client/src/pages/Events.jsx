@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axiosInstance from "../utils/axiosIntance";
+import { useAuth } from "../context/AuthContext";
 
 const EventsPage = () => {
   // State for search and filters
@@ -9,7 +10,8 @@ const EventsPage = () => {
   const [dateFilter, setDateFilter] = useState("all");
   const [events, setEvents] = useState([]);
   const navigate = useNavigate();
-
+  const { user } = useAuth(); // Get user details from Auth Context
+  console.log(user?.id);
   useEffect(() => {
     document.title = "Virtumate | Events";
 
@@ -100,18 +102,17 @@ const EventsPage = () => {
     return matchesSearch && matcheseventtype && matchesDate;
   });
 
-
   const handleJoin = async (id) => {
-      try {
-        const response = await axiosInstance.post(`/events/${id}/meeting/join`);
-        console.log(response.data);
-        const token = response.data.token;
-        localStorage.setItem("roomToken", token);
-        navigate(`/video-call/${id}`);
-      } catch (error) {
-        console.error("Error joining meeting", error);
-      }
-    };
+    try {
+      const response = await axiosInstance.post(`/events/${id}/meeting/join`);
+      console.log(response.data);
+      const token = response.data.token;
+      localStorage.setItem("roomToken", token);
+      navigate(`/video-call/${id}`);
+    } catch (error) {
+      console.error("Error joining meeting", error);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -399,7 +400,7 @@ const EventsPage = () => {
                         ) : ["draft"].includes(event.status) ? (
                           <span className="text-gray-500 px-4 py-2 rounded-lg bg-gray-200">
                             Draft
-                          </span>                                            
+                          </span>
                         ) : ["completed", "cancelled"].includes(
                             event.status
                           ) ? (
@@ -415,21 +416,23 @@ const EventsPage = () => {
                               : "Cancelled"}
                           </span>
                         ) : (
-                          <Link
-                            to={`/events/${event._id}/register`}
-                            className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors flex items-center"
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-4 w-4 mr-1"
-                              viewBox="0 0 20 20"
-                              fill="currentColor"
+                          <>
+                            <Link
+                              to={`/events/${event._id}/register`}
+                              className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors flex items-center"
                             >
-                              <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6z" />
-                              <path d="M16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z" />
-                            </svg>
-                            Register
-                          </Link>
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-4 w-4 mr-1"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                              >
+                                <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6z" />
+                                <path d="M16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z" />
+                              </svg>
+                              Register
+                            </Link>
+                          </>
                         )}
                       </div>
                     </div>

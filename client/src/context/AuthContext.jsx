@@ -53,7 +53,6 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
     setUser(null);
     setIsAuthenticated(false);
-    navigate("/");
   };
 
   return (

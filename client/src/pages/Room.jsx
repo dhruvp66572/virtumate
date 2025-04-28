@@ -12,6 +12,7 @@ import {
 import { LuScreenShareOff, LuScreenShare } from "react-icons/lu";
 
 import "../styles/Room.css";
+import toast from "react-hot-toast";
 
 const Room = () => {
   const { roomId } = useParams();
@@ -52,13 +53,13 @@ const Room = () => {
         console.error("Error accessing media devices:", error);
 
         if (error.name === "NotAllowedError") {
-          alert(
+          toast.error(
             "Please allow camera and microphone access in your browser settings."
           );
         } else if (error.name === "NotFoundError") {
-          alert("No camera found. Please connect a camera.");
+          toast.error("No camera found. Please connect a camera.");
         } else {
-          alert("An error occurred while accessing media devices.");
+          toast.error("An error occurred while accessing media devices.");
         }
       }
     };
@@ -173,7 +174,8 @@ const Room = () => {
     setPeers([]);
     peersRef.current = [];
     setStream(null);
-    alert("Thank you for joining the call!");
+    toast.success("Thank you for using Virtumate! You can now close this tab.");
+    toast.dismiss();
     navigate("/dashboard");    
   };
 

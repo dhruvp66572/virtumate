@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axiosInstance from "../utils/axiosIntance";
 import { useAuth } from "../context/AuthContext";
+import toast from "react-hot-toast";
 
 const MyEvents = () => {
   const { user } = useAuth();
@@ -27,24 +28,27 @@ const MyEvents = () => {
   }, [user?.id]);
 
   const handledelete = async (id) => {
-    try {
-      // First check if the user confirms deletion
-      const confirmed = window.confirm(
-        "Are you sure you want to delete this event?"
-      );
+    // First check if the user confirms deletion
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this event?"
+    );
 
-      if (confirmed) {
+    if (confirmed) {
+      const toastId = toast.loading("Deleting event...");
+      try {
         const response = await axiosInstance.delete(`/events/${id}`);
 
         if (response.status === 200) {
           // Remove the deleted event from state
           setEvents(events.filter((event) => event._id !== id));
-          alert("Event deleted successfully");
+          toast.dismiss(toastId);
+          toast.success("Event Deleted Successfully!");
         }
+      } catch (error) {
+        console.error("Error deleting event:", error);
+        toast.dismiss(toastId);
+        toast.error("Failed to create event ❌");
       }
-    } catch (error) {
-      console.error("Error deleting event:", error);
-      alert("Failed to delete event. Please try again.");
     }
   };
 
@@ -52,26 +56,26 @@ const MyEvents = () => {
     try {
       const response = await axiosInstance.post(`/events/${id}/meeting`);
       console.log(response.data.data);
-
-      alert("Meeting scheduled successfully");
+      toast.success("Meeting Scheduled!", {
+        duration: 3000, // 3 seconds
+      });
     } catch (error) {
       console.error("Error scheduling meeting", error);
     }
   };
 
-  const handleJoin = async (id) => {
-    try {
-      const response = await axiosInstance.post(`/events/${id}/meeting/join`);
-      console.log(response.data);
-      const token = response.data.token;
-      localStorage.setItem("roomToken", token);     
-      navigate(`/video-call/${id}`);
-    } catch (error) {
-      console.error("Error joining meeting", error);
-    }
-  };
+  // const handleJoin = async (id) => {
+  //   try {
+  //     const response = await axiosInstance.post(`/events/${id}/meeting/join`);
+  //     console.log(response.data);
+  //     const token = response.data.token;
+  //     localStorage.setItem("roomToken", token);
+  //     navigate(`/video-call/${id}`);
+  //   } catch (error) {
+  //     console.error("Error joining meeting", error);
+  //   }
+  // };
 
-  
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col">
       {/* Main Content */}
@@ -260,27 +264,50 @@ const MyEvents = () => {
                           Delete
                         </button>
 
-                        {/* Schedule Meeting */}
-                        <button
-                          onClick={() => handleSchedule(event._id)}
-                          className="w-full px-4 p  y-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center justify-center"
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-4 w-4 mr-2"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
+                        {!event.meetingDetails.roomName ? (
+                          <button
+                            onClick={() => handleSchedule(event._id)}
+                            className="w-full px-4 p  y-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center justify-center"
                           >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
-                          </svg>
-                          Schedule Meeting
-                        </button>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-4 w-4 mr-2"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                              />
+                            </svg>
+                            Schedule Meeting
+                          </button>
+                        ) : (
+                          //   <button
+                          //   onClick={() => handleSchedule(event._id)}
+                          //   className="w-full px-4 p  y-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center justify-center"
+                          // >
+                          //   <svg
+                          //     xmlns="http://www.w3.org/2000/svg"
+                          //     className="h-4 w-4 mr-2"
+                          //     fill="none"
+                          //     viewBox="0 0 24 24"
+                          //     stroke="currentColor"
+                          //   >
+                          //     <path
+                          //       strokeLinecap="round"
+                          //       strokeLinejoin="round"
+                          //       strokeWidth={2}
+                          //       d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                          //     />
+                          //   </svg>
+                          //   Stop Meeting
+                          // </button>
+                          ""
+                        )}
 
                         {/* Join Meeting */}
                         {/* <button
@@ -331,11 +358,11 @@ const MyEvents = () => {
                 No Events Yet
               </h3>
               <p className="text-gray-600 mb-6">
-                You haven't created any events yet. Start organizing your first
-                event now!
+                You haven&apos;t created any events yet. Start organizing your
+                first event now!
               </p>
               <Link
-                to="/events/create"
+                to="/event-create"
                 className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors inline-flex items-center"
               >
                 <svg

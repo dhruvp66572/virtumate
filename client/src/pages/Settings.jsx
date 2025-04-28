@@ -8,9 +8,14 @@ import {
   FaQuestionCircle,
   FaSignOutAlt,
 } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import toast from "react-hot-toast";
 
 const Settings = () => {
   const [activeTab, setActiveTab] = useState("profile");
+  const {logout } = useAuth();
+  const navigate = useNavigate();
 
   const renderContent = () => {
     switch (activeTab) {
@@ -31,6 +36,14 @@ const Settings = () => {
       // return <ProfileSettings />;
     }
   };
+
+  const handlelogout = () => {
+    let confirmbox = window.confirm("Are you sure you want to logout?");
+    if (!confirmbox) return; // If user clicks "Cancel", do nothing
+    toast.success("Logout successful!");
+    logout();
+    navigate("/");
+  }
 
   return (
     <div className="container mx-auto p-6">
@@ -97,8 +110,16 @@ const Settings = () => {
           >
             <FaQuestionCircle className="mr-3" /> Help & Support
           </button>
-          <button className="flex items-center w-full p-3 rounded-md text-red-500 hover:bg-red-50 transition">
-            <FaSignOutAlt className="mr-3" /> Log Out
+          <button className="flex items-center w-full p-3 rounded-md text-red-500 hover:bg-red-50 transition"  onClick={() => {
+                // Handle logout logic here
+                console.log("Logging out...");
+                handlelogout();
+              }}>
+            <FaSignOutAlt
+              className="mr-3"
+             
+            />{" "}
+            Log Out
           </button>
         </div>
         <div className="w-full md:w-3/4 bg-white rounded-lg shadow-md p-6">

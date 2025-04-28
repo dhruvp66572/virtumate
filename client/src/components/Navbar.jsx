@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import axiosInstance from "../utils/axiosIntance";
+import toast from "react-hot-toast";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -40,7 +41,10 @@ const Navbar = () => {
     };
   }, []);
   
-  const handleLogout = () => {
+  const handleLogout = () => {    
+    let confirmbox = window.confirm("Are you sure you want to logout?");
+    if (!confirmbox) return; // If user clicks "Cancel", do nothing
+    toast.success("Logout successful!");
     logout();
     navigate("/");
   };

@@ -50,6 +50,19 @@ const updateEventById = async (formData, id) => {
   }
 };
 
+// Change the status of an event by ID
+const changeEventStatusById = async (id, status) => {
+  try {
+    console.log(`Changing status of event with ID ${id} to ${status}`);
+    const response = await axiosInstance.patch(`/events/${id}/changestatus`, { status });
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.error(`Error changing status of event with ID ${id}:`, error);
+    throw error;
+  }
+};
+
 // Delete an event by ID
 const deleteEventById = async (id) => {
   try {
@@ -63,10 +76,13 @@ const deleteEventById = async (id) => {
   }
 };
 
+
+
 export {
   getAllEvents,
   getEventById,
   createEvent,
   updateEventById,
   deleteEventById,
+  changeEventStatusById
 };

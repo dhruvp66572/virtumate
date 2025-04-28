@@ -1,5 +1,5 @@
 const Event = require("../models/Event");
-const {generateToken} = require("../utils/livekitUtils")
+const { generateToken } = require("../utils/livekitUtils");
 const { User } = require("../models/User");
 const sendMail = require("../utils/sendMail");
 
@@ -48,8 +48,8 @@ const createEvent = async (req, res) => {
 const getEventById = async (req, res) => {
   try {
     const event = await Event.findById(req.params.id)
-      .populate("organizerId", "-password")
-      .populate("registeredAttendees.userId", "-password");
+      .populate("organizerId", "-password")    
+      .populate("registeredAttendees.userId", "name email")
 
     if (!event) {
       return res.status(404).json({
@@ -85,6 +85,35 @@ const updateEvent = async (req, res) => {
     }
     res.json({
       status: "success",
+      data: event,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: error.message,
+    });
+  }
+};
+
+// Change event status
+const changeEventStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+    const event = await Event.findById(req.params.id);
+
+    if (!event) {
+      return res.status(404).json({
+        status: "error",
+        message: "Event not found",
+      });
+    }
+
+    event.status = status;
+    await event.save();
+
+    res.json({
+      status: "success",
+      message: "Event status updated successfully",
       data: event,
     });
   } catch (error) {
@@ -147,16 +176,33 @@ const getEventAttendees = async (req, res) => {
 };
 
 // Send event email
-const sendEventEmail = async (req, res) => {
+const sendEmail = async (req, res) => {
   try {
-    const { subject, body, attendees } = req.body;
+    const { subject, body, email } = req.body;
 
-    // Logic to send email to all registered attendees
-    await sendMail("dhruvprajapati66572@gmail.com", subject, body);
+    if (!subject || !body || !email) {
+      return res.status(400).json({
+        status: "error",
+        message: "Subject, body, and email are required",
+      });
+    }
+        
+    // Validate email address
+    // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // if (!emailRegex.test(email)) {
+    //   return res.status(400).json({
+    //     status: "error",
+    //     message: "Invalid email address",
+    //   });
+    // }
+
+    // Send email to the user
+    await sendMail(email, subject, body);
+    
 
     res.json({
       status: "success",
-      message: "Email sent to all registered attendees",
+      message: "Email sent successfully",
     });
   } catch (error) {
     res.status(500).json({
@@ -166,6 +212,50 @@ const sendEventEmail = async (req, res) => {
   }
 };
 
+//get all email who registered for event
+const getAllEmail = async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.id).populate(
+      "registeredAttendees.userId",
+      "-password name email"
+    );
+   
+    if (!event) {
+      return res.status(404).json({
+        status: "error",
+        message: "Event not found",
+      });
+    }
+    const emails = await Promise.all(
+      event.registeredAttendees.map(async (attendee) => {
+      const user = await User.findById(attendee._id);
+
+        if(!user.email){
+          return res.status(404).json({
+            status: "error",
+            message: "User not found",
+          });
+        }
+    
+        const {subject, body} = req.body;
+        // Send email to the user
+        await sendMail(user.email, subject, body);        
+
+      return user.email; // Return the email of the user
+      })
+    );
+
+   res.json({
+      status: "success",
+      data: emails,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: error.message,
+    });
+  }
+};
 // Register for event
 const registerForEvent = async (req, res) => {
   try {
@@ -343,7 +433,7 @@ const endEvent = async (req, res) => {
   }
 };
 
-// 📌 Create & Schedule a Meeting 
+// 📌 Create & Schedule a Meeting
 const createeventmeeting = async (req, res) => {
   try {
     const event = await Event.findById(req.params.id);
@@ -355,7 +445,7 @@ const createeventmeeting = async (req, res) => {
     }
 
     // Logic to create and schedule a meeting
-   
+
     const meeting = {
       title: event.title,
       organizerId: req.user.id,
@@ -365,8 +455,12 @@ const createeventmeeting = async (req, res) => {
     };
 
     // Save meeting details to the event
+    if (!event.meetingDetails) {
+      event.meetingDetails = {};
+    }
+
     event.meetingDetails = meeting;
-    await event.save();  
+    await event.save();
 
     res.json({
       status: "success",
@@ -438,7 +532,9 @@ module.exports = {
   getEventRecording,
   startEvent,
   endEvent,
-  sendEventEmail,
+  sendEmail,
   createeventmeeting,
-  joinEventMeeting
+  joinEventMeeting,
+  changeEventStatus,
+  getAllEmail
 };

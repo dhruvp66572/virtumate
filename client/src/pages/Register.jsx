@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -11,8 +12,24 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await axios.post("http://localhost:5000/api/auth/register", { name, email, password });
-    navigate("/login"); // Redirect to login page after successful registration
+    toast.loading("Creating your account...");
+    try {
+      const res = await axios.post("http://localhost:5000/api/auth/register", { name, email, password });
+      if (res.status === 201) {
+        toast.success("Account created successfully!");
+        navigate("/login"); // Redirect to login page after successful registration
+      } else {
+        toast.error("Registration failed. Please try again.");
+      }
+    }
+    catch (error) {
+      console.error("Registration error:", error);
+      toast.error("Registration failed. Please try again.");
+    }
+    // Reset form fields after submission
+    setName("");
+    setEmail("");
+    setPassword("");
   };
 
   return (
@@ -81,7 +98,7 @@ const Register = () => {
           </button>
         </form>
 
-        <div className="mt-4 text-center text-gray-600">Or continue with</div>
+        {/* <div className="mt-4 text-center text-gray-600">Or continue with</div>
         <div className="flex space-x-4 justify-center mt-2">
           <button className="border px-4 py-2 rounded-md flex items-center space-x-2 hover:bg-gray-100">
             <img src="https://cdn-icons-png.flaticon.com/512/174/174848.png" alt="Google" className="w-5 h-5" />
@@ -91,7 +108,7 @@ const Register = () => {
             <img src="https://cdn-icons-png.flaticon.com/512/5968/5968764.png" alt="Facebook" className="w-5 h-5" />
             <span>Facebook</span>
           </button>
-        </div>
+        </div> */}
 
         <p className="mt-4 text-center text-gray-600">
           Already have an account? <Link to="/login" className="text-indigo-600 font-semibold">Sign in</Link>

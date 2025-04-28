@@ -259,10 +259,9 @@ const Dashboard = () => {
                       </div>
                     </div>
                   ))} */}
-                  {events.filter((event) => event.type === "Registered")
-                    .length > 0 ? (
+                  {events.filter(event => event.type === "Registered").length > 0 ? (
                     events
-                      .filter((event) => event.type === "Registered")
+                      .filter(event => event.type === "Registered")
                       .map((event) => (
                         <div
                           key={event._id}
@@ -276,17 +275,61 @@ const Dashboard = () => {
                               <p className="text-gray-600 text-sm mt-1">
                                 {event.date} • {event.time}
                               </p>
+                              <p className="text-gray-600 text-sm">
+                                {event.location}
+                              </p>
                             </div>
                             <div>
-                              <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-medium">
+                              <span
+                                className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
+                                  event.status === "Registered"
+                                    ? "bg-green-100 text-green-700"
+                                    : "bg-yellow-100 text-yellow-700"
+                                }`}
+                              >
                                 {event.status}
                               </span>
                             </div>
                           </div>
+                          <div className="mt-3 flex space-x-3">
+                            <Link
+                              to={`/event-details/${event._id}`}
+                              className="text-indigo-600 text-sm font-medium hover:text-indigo-800 transition-colors"
+                            >
+                              View Details
+                            </Link>
+                            <button className="text-indigo-600 text-sm font-medium hover:text-indigo-800 transition-colors" 
+                            
+                            onClick={() => {
+                              const addToGoogleCalendar = () => {
+                                const startDate = new Date(event.startTime)
+                                  .toISOString()
+                                  .replace(/-|:|\.\d+/g, "");
+                                const endDate = new Date(event.endTime)
+                                  .toISOString()
+                                  .replace(/-|:|\.\d+/g, "");
+                                const details = encodeURIComponent(
+                                  event.description || "No details provided"
+                                );
+                                const title = encodeURIComponent(
+                                  event.title || "Event"
+                                );
+                                const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startDate}/${endDate}&details=${details}`;
+                                window.open(url, "_blank");
+                              };
+  
+                              addToGoogleCalendar();
+                            }}
+                            >
+                              Add to Calendar
+                            </button>
+                          </div>
                         </div>
                       ))
                   ) : (
-                    <p className="text-gray-500">No organized events found.</p>
+                    <p className="text-gray-500">
+                      You have no upcoming events.
+                    </p>
                   )}
                 </div>
                 <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 rounded-b-xl">
@@ -323,9 +366,9 @@ const Dashboard = () => {
                   </h2>
                 </div>
                 <div className="p-4">
-                  {events.filter((event) => event.type === "schedule").length > 0 ? (
+                  {events.filter((event) => event.organizerId === user.id).length > 0 ? (
                      events
-                     .filter((event) => event.type === "Organized").map((event) => (
+                     .filter((event) => event.organizerId === user.id).map((event) => (
                       <div
                         key={event._id}
                         className="border-b border-gray-200 pb-6 mb-6 last:border-b-0 last:pb-0"
@@ -339,7 +382,7 @@ const Dashboard = () => {
                               📅 {event.date} • 🕒 {event.time}
                             </p>
                             <p className="text-gray-600 mt-1">
-                              👥 Attendees: {event.attendees || 0}
+                              👥 Attendees: {event.registeredAttendees.length || 0}
                             </p>
                           </div>
                           <div>

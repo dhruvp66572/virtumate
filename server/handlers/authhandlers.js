@@ -30,6 +30,10 @@ const loginUser = async (req, res) => {
 
     const token = createJWT(user);
 
+    user.lastLogin.push(new Date());
+    await user.save();
+    
+
     res.json({token});
 }
 

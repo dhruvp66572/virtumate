@@ -9,6 +9,8 @@ const eventRoutes = require('./routes/eventRoutes');
 const { Server } = require('socket.io');
 const http = require('http');
 const bodyParser = require('body-parser');
+const Event = require('./models/Event');
+const { User } = require('./models/User');
 
 // Load environment variables
 dotenv.config();
@@ -43,6 +45,36 @@ app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/admin/',adminRoutes);
 app.use('/api/events/', eventRoutes);
+app.get('/api/stats', async (req, res) => {
+  try {
+    // Count total events
+    const totalEvents = await Event.countDocuments();
+    
+    // Count active users
+    const activeUsers = await User.countDocuments({ status: 'active' });
+    
+    // Count completed events
+    const completedEvents = await Event.countDocuments({ 
+      status: 'completed'
+    });
+    
+    res.status(200).json({
+      status: 'success',
+      data: {
+        totalEvents,
+        activeUsers,
+        completedEvents
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching stats:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to fetch statistics'
+    });
+  }
+
+});
 
 // Socket.IO connection handling
 io.on('connection', (socket) => {

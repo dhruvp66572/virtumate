@@ -112,8 +112,15 @@ const Eventcreate = () => {
     e.preventDefault();
 
     if (formData.agenda.length < 0) {
-      alert("Please add at least one agenda item.");
-      return;
+      toast.error("Add Agenda", {
+        style: {
+          borderRadius: "10px",
+          background: "#ef4444", // red
+          color: "#fff",
+          fontWeight: "bold",
+        },
+        icon: "❌",
+      });
     }
 
     // Assuming you have an API endpoint to create events
@@ -135,7 +142,6 @@ const Eventcreate = () => {
 
       // Redirect to event page
       if (response.status === 201) {
-
         toast.dismiss();
         toast.success("Event created successfully!", {
           duration: 3000,
@@ -147,9 +153,8 @@ const Eventcreate = () => {
         });
 
         // Redirect to the event details pag
-        navigate(`/events/${response.data.data._id}`);
+        navigate(`/myevents`);
       }
-
     } catch (error) {
       console.error("Error creating event:", error);
       toast.dismiss();
@@ -161,16 +166,19 @@ const Eventcreate = () => {
           color: "#fff",
         },
       });
+      
       // Handle error (e.g., show a message to the user)
+
+
+
       return;
     }
-    alert("Event created successfully!");
   };
 
   // Form validation for each step
   const validateStep = (step) => {
     switch (step) {
-      case 1:
+      case 1:        
         return formData.title && formData.description && formData.eventType;
       case 2:
         return formData.startTime && formData.endTime; // Require start and end time
@@ -186,20 +194,28 @@ const Eventcreate = () => {
   const goToNextStep = (e) => {
     // Add this line to prevent form submission when clicking "Next"
     e.preventDefault();
-    
+
     if (validateStep(currentStep)) {
       setCurrentStep(currentStep + 1);
       window.scrollTo(0, 0);
     } else {
-      alert("Please fill in all required fields.");
+      toast.error('Please fill in all required fields.', {
+        style: {
+          borderRadius: '10px',
+          background: '#ef4444', // red
+          color: '#fff',
+          fontWeight: 'bold',
+        },
+        icon: '❌',
+      });      
     }
   };
-  
+
   // Go to previous step
   const goToPreviousStep = (e) => {
     // Also add this to the previous step function
     e.preventDefault();
-    
+
     setCurrentStep(currentStep - 1);
     window.scrollTo(0, 0);
   };
