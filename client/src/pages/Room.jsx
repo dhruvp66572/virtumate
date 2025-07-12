@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import io from "socket.io-client";
 import Peer from "simple-peer";
@@ -23,7 +23,7 @@ const Room = () => {
   const [muted, setMuted] = useState(false);
   const [videoOn, setVideoOn] = useState(true);
   const [screenSharing, setScreenSharing] = useState(false);
-  const [messages, setMessages] = useState([]);
+  // const [messages, setMessages] = useState([]);
   const [recording, setRecording] = useState(false);
   const userVideo = useRef();
   const screenStreamRef = useRef(null);
@@ -33,7 +33,7 @@ const Room = () => {
   const peersRef = useRef([]);
 
   useEffect(() => {
-    socketRef.current = io("http://localhost:5000", {
+    socketRef.current = io(import.meta.env.VITE_API_BASE_URL, {
       transports: ["websocket"], // Force WebSocket transport (avoids CORS issues)
       withCredentials: true, // Ensures proper cookie handling
     });

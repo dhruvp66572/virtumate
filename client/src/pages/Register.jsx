@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
+import axiosInstance from "../utils/axiosIntance";
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -14,7 +14,7 @@ const Register = () => {
     e.preventDefault();
     toast.loading("Creating your account...");
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/register", { name, email, password });
+      const res = await axiosInstance.post("/auth/register", { name, email, password });
       if (res.status === 201) {
         toast.success("Account created successfully!");
         navigate("/login"); // Redirect to login page after successful registration

@@ -10,16 +10,11 @@ export default defineConfig({
     },
   },
   define: {
-    global:{}
+    global: {}
   },
   server: {
-    host: "localhost",
+    host: true, // ← Allow external (0.0.0.0)
     port: 5173,
     strictPort: true,
-    hmr: {
-      protocol: "ws",
-      host: "localhost",
-    },
   },
-  
 })

@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
+import axiosInstance from "../utils/axiosIntance";
 
 const AuthContext = createContext();
 
@@ -33,7 +34,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", { email, password });
+      const res = await axiosInstance.post("/auth/login", { email, password });
 
       if (res.status === 200) {
         localStorage.setItem("token", res.data.token);

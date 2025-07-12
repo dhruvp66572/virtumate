@@ -24,7 +24,7 @@ const server = http.createServer(app);
 // Create Socket.IO instance
 const io = new Server(server, {
   cors: {
-    origin: process.env.CLIENT_URL || "http://localhost:5000",
+    origin: process.env.CLIENT_URL, // 🔹 Replace with your client URL
     methods: ["GET", "POST"]
   }
 });

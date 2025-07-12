@@ -1,7 +1,7 @@
 import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import AuthContext from "../context/AuthContext";
+import axiosInstance from "../utils/axiosIntance";
 
 const Login = ({ isOpen, toggleModal }) => {
   const { login } = useContext(AuthContext);
@@ -104,8 +104,8 @@ const Login = ({ isOpen, toggleModal }) => {
       }
 
       // const response = await registe(formData2);
-      const response = await axios.post(
-        "http://localhost:5000/api/auth/register",
+      const response = await axiosInstance.post(
+        "/auth/register",
         { name: formData2.name, email: formData2.email, password: formData2.password }
       );
 
@@ -285,7 +285,7 @@ const Login = ({ isOpen, toggleModal }) => {
         <p className="mt-4 text-center text-sm text-gray-600">
           {isLogin ? (
             <>
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <button
                 onClick={switchForm}
                 className="text-blue-500 hover:underline"
