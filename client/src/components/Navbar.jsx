@@ -56,7 +56,7 @@ const Navbar = () => {
   return (
     <nav className="bg-white shadow-md px-6 py-4">
       <div className="max-w-7xl mx-auto flex justify-between items-center">
-        <div className="flex items-center">
+      <div className="flex items-center">
           <Link to="/">
             <h2 className="text-2xl font-bold text-indigo-600">Virtumate</h2>
           </Link>

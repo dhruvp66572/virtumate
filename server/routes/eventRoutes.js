@@ -17,7 +17,8 @@ const {
   createeventmeeting,
   joinEventMeeting,
   changeEventStatus,
-  getAllEmail
+  getAllEmail,
+  checkoneevent
 } = require('../handlers/eventhandler');
 
 // Middleware to check if user is organizer
@@ -32,6 +33,7 @@ const {
 //   next();
 // };
 
+router.get('/check/:id',checkoneevent); // Assuming this is a public route
 // Protected routes - require authentication
 router.use(protect);
 

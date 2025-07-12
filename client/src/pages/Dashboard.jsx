@@ -161,7 +161,9 @@ const Dashboard = () => {
                 <h1 className="text-2xl font-bold">
                   Welcome back, {user?.name || "User"}
                 </h1>
-                <p className="mt-1">You have 3 upcoming events this month</p>
+                <p className="mt-2 text-sm">
+                  Here’s what’s happening in your account today.
+                </p>
               </div>
               <div className="flex items-center gap-4">
                 <div>

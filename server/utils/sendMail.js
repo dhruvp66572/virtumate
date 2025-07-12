@@ -4,8 +4,8 @@ const nodemailer = require("nodemailer");
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "dhruvprajapati99090@gmail.com ", // 🔹 Replace with your Gmail
-    pass: "mrjd wqob liog ywml", // 🔹 Generate an App Password (not your actual password)
+    user: process.env.EMAIL_ID, // 🔹 Replace with your Gmail
+    pass: process.env.EMAIL_PASSWORD, // 🔹 Generate an App Password (not your actual password)
   },
 });
 
@@ -16,6 +16,8 @@ const transporter = nodemailer.createTransport({
  * @param {string} text - Email body (plain text)
  */
 const sendMail = async (to, subject, text) => {
+
+  console.log("Sending email to in mail function :", to);
 
   // Validate email address
   // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -46,4 +48,4 @@ const sendMail = async (to, subject, text) => {
   }
 };
 
-module.exports = {sendMail} ;
+module.exports = sendMail ;

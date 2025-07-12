@@ -23,12 +23,13 @@ const App = () => {
   const { isAuthenticated } = useAuth(); // Get auth state
 
   return (
-    <>     
+    <>
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/video-call/:roomName" element={<VideoCall />} />
 
         {/* Protected Routes */}
         {isAuthenticated ? (
@@ -41,7 +42,6 @@ const App = () => {
             <Route path="/myevents/:id" element={<EventManagement />} />
             <Route path="/event-details/:id" element={<EventView />} />
             <Route path="/events/:id/register" element={<EventRegister />} />
-            <Route path="/video-call/:roomName" element={<VideoCall />} />
             <Route path="/attendees" element={<h1>Attendees</h1>} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/messages" element={<h1>Messages</h1>} />
@@ -57,10 +57,7 @@ const App = () => {
           <Route path="*" element={<Navigate to="/" />} />
         )}
       </Routes>
-      <Toaster
-        position="top-right"
-        reverseOrder={false}        
-      />
+      <Toaster position="top-right" reverseOrder={false} />
     </>
   );
 };

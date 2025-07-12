@@ -48,8 +48,8 @@ const createEvent = async (req, res) => {
 const getEventById = async (req, res) => {
   try {
     const event = await Event.findById(req.params.id)
-      .populate("organizerId", "-password")    
-      .populate("registeredAttendees.userId", "name email")
+      .populate("organizerId", "-password")
+      .populate("registeredAttendees.userId", "name email");
 
     if (!event) {
       return res.status(404).json({
@@ -186,7 +186,7 @@ const sendEmail = async (req, res) => {
         message: "Subject, body, and email are required",
       });
     }
-        
+
     // Validate email address
     // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     // if (!emailRegex.test(email)) {
@@ -198,7 +198,6 @@ const sendEmail = async (req, res) => {
 
     // Send email to the user
     await sendMail(email, subject, body);
-    
 
     res.json({
       status: "success",
@@ -214,40 +213,41 @@ const sendEmail = async (req, res) => {
 
 //get all email who registered for event
 const getAllEmail = async (req, res) => {
+  console.log("getAllEmail function called"); // Debugging: Check if function is called
   try {
     const event = await Event.findById(req.params.id).populate(
       "registeredAttendees.userId",
       "-password name email"
     );
-   
+
     if (!event) {
       return res.status(404).json({
         status: "error",
         message: "Event not found",
       });
     }
-    const emails = await Promise.all(
+    await Promise.all(
       event.registeredAttendees.map(async (attendee) => {
-      const user = await User.findById(attendee._id);
-
-        if(!user.email){
+        const user = await User.findById(attendee._id);
+        console.log(user.email); // Debugging: Check if userId is populated
+        if (!user.email) {
           return res.status(404).json({
             status: "error",
             message: "User not found",
           });
         }
-    
-        const {subject, body} = req.body;
-        // Send email to the user
-        await sendMail(user.email, subject, body);        
 
-      return user.email; // Return the email of the user
+        console.log("Sending email to:", user.email); // Debugging: Check if email is sent
+
+
+        const { subject, body } = req.body;
+        // Send email to the user
+        await sendMail(user.email, subject, body);
       })
     );
 
-   res.json({
-      status: "success",
-      data: emails,
+    res.json({
+      status: "success"      
     });
   } catch (error) {
     res.status(500).json({
@@ -519,6 +519,38 @@ const joinEventMeeting = async (req, res) => {
   }
 };
 
+const checkoneevent = async (req, res) => {
+  try {
+    let event = await Event.findById(req.params.id).populate('registeredAttendees._id', 'name email');
+    if (!event) {
+      return res.status(404).json({
+        status: "error",
+        message: "Event not found",
+      });
+    }
+    let registeredAttendee = event.registeredAttendees.map(attendee => ({
+      userId: attendee._id._id,
+      name: attendee._id?.name,
+      email: attendee._id?.email,
+      attended: attendee.attended,
+      feedbackProvided: attendee.feedbackProvided,
+      registrationTime: attendee.registrationTime
+    }));
+
+    // Return populated registeredAttendees
+    return res.json({
+      status: "success",
+      registeredAttendees: registeredAttendee
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: error.message,
+    });
+  }
+};
+
 // Export all handlers
 module.exports = {
   getAllEvents,
@@ -536,5 +568,6 @@ module.exports = {
   createeventmeeting,
   joinEventMeeting,
   changeEventStatus,
-  getAllEmail
+  getAllEmail,
+  checkoneevent,
 };

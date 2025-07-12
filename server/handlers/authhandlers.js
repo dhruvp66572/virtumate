@@ -38,6 +38,8 @@ const loginUser = async (req, res) => {
 }
 
 const logoutUser = async (req, res) => {
+    // Assuming you want to handle logout by clearing the token on the client side
+    // In a real application, you might want to invalidate the token on the server side    
     res.json({message: "Logged out successfully"});
 }
 

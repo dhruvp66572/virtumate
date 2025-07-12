@@ -51,12 +51,14 @@ const EventRegister = () => {
       }
 
       if (response.data.status === 'error') {
+        toast.dismiss(toastid);
         toast.error(response.data.message, { id: toastid });       
         return;
       }
 
     } catch (error) {
       console.error('Error registering for event:', error);
+      toast.dismiss();
       toast.error('An error occurred while registering for the event.');
     }
   }
