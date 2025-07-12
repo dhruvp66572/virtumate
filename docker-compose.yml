@@ -16,10 +16,8 @@ services:
       context: ./client
       dockerfile: DOCKERFILE
       args:
-        VITE_API_BASE_URL: /api
+        VITE_API_BASE_URL: http://139.59.46.124:4000/
     container_name: virtumate-frontend
-    volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
     ports:
       - "80:80"
     depends_on:
