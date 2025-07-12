@@ -1,10 +1,9 @@
-version: "3.9"
 
 services:
   api:
     build:
       context: ./server
-      dockerfile: Dockerfile
+      dockerfile: DOCKERFILE
     container_name: virtumate-backend
     ports:
       - "4000:4000"
@@ -15,7 +14,7 @@ services:
   web:
     build:
       context: ./client
-      dockerfile: Dockerfile
+      dockerfile: DOCKERFILE
       args:
         VITE_API_BASE_URL: /api
     container_name: virtumate-frontend
