@@ -1,51 +1,47 @@
-const nodemailer = require("nodemailer");
+// sendMail.js
+const {Resend} = require('resend');
 
-// Configure email transporter
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_ID, // 🔹 Replace with your Gmail
-    pass: process.env.EMAIL_PASSWORD, // 🔹 Generate an App Password (not your actual password)
-  },
-});
 
-/**
- * Send an email
- * @param {string} to - Recipient email
- * @param {string} subject - Email subject
- * @param {string} text - Email body (plain text)
- */
-const sendMail = async (to, subject, text) => {
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-  console.log("Sending email to in mail function :", to);
-
-  // Validate email address
-  // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  // if (!emailRegex.test(to)) {
-  //   console.error("❌ Invalid email address:", to);
-  //   return;
-  // }
-
-  // Validate subject and text
-  if (!subject || !text) {
-    console.error("❌ Subject and text are required for sending an email.");
+const sendMail = async (toList, subject, text) => {
+  const pLimit = await import('p-limit').then((mod) => mod.default);
+  const limit = pLimit(2); // Limit concurrency
+  if (!subject || !text || !Array.isArray(toList) || toList.length === 0) {
+    console.error("❌ Invalid input to sendMail");
     return;
   }
-  ;
 
-  // Send email
-  console.log(`📧 Sending email to ${to}...`);
-  try {
-    await transporter.sendMail({
-      from: '"Event Platform" dhruvprajapati99090@gmail.com ', // Sender email
-      to,
-      subject,
-      text,
-    });
-    console.log(`✅ Email sent to ${to}`);
-  } catch (error) {
-    console.error("❌ Error sending email:", error);
-  }
+  const sendEmail = async (email) => {
+    try {      
+      const res = await resend.emails.send({
+        to: await email,
+        // from: 'Event Platform <noreply@virtumate.io>',
+        from: 'Virtumate <noreply@virtumate.email.dhruvprajapati.tech>', 
+        subject,
+        html: `<p>${text}</p>`,
+        text
+      });
+      console.log(`✅ Email sent to`, await email);
+      console.log(`Email details:`, {
+        to: await email,
+        subject,
+        text
+      });
+      console.log(`Response:`, res);
+      if (res.status !== 202) {
+        console.error(`❌ Failed to send email to ${await email}:`, res);
+        return null;
+      }
+      return res;
+    } catch (err) {
+      console.error(`❌ Failed to send to ${await email}:`, err.message);
+      return null;
+    }
+  };
+
+  const tasks = toList.map(email => limit(() => sendEmail(email)));
+  return await Promise.all(tasks);
 };
 
-module.exports = sendMail ;
+module.exports = sendMail;

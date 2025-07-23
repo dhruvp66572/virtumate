@@ -181,6 +181,7 @@ const EventManagement = () => {
 
       // Send email using the API
       const toastId = toast.loading("Sending email...");
+      console.log(event._id);
       const response = await axiosInstance.post(
         `/events/${event._id}/getallregisteredemail`,
         {

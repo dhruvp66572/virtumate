@@ -13,6 +13,10 @@ const {
   updateprofile
 } = require('../handlers/authhandlers');
 
+router.get('/', (req, res) => {
+  res.send('Welcome to the Auth API');
+});
+
 // Auth routes
 router.post('/register', createUser);
 router.post('/login', loginUser);

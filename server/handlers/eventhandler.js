@@ -213,7 +213,6 @@ const sendEmail = async (req, res) => {
 
 //get all email who registered for event
 const getAllEmail = async (req, res) => {
-  console.log("getAllEmail function called"); // Debugging: Check if function is called
   try {
     const event = await Event.findById(req.params.id).populate(
       "registeredAttendees.userId",
@@ -226,8 +225,9 @@ const getAllEmail = async (req, res) => {
         message: "Event not found",
       });
     }
-    await Promise.all(
-      event.registeredAttendees.map(async (attendee) => {
+
+    const { subject, body } = req.body;
+    const emailList = event.registeredAttendees.map(async (attendee) => {
         const user = await User.findById(attendee._id);
         console.log(user.email); // Debugging: Check if userId is populated
         if (!user.email) {
@@ -236,26 +236,23 @@ const getAllEmail = async (req, res) => {
             message: "User not found",
           });
         }
+        return user.email;
+      });
 
-        console.log("Sending email to:", user.email); // Debugging: Check if email is sent
+    if (emailList.length === 0) {
+      return res.status(404).json({ status: "error", message: "No valid emails found" });
+    }
 
+    await sendMail(emailList, subject, body);
 
-        const { subject, body } = req.body;
-        // Send email to the user
-        await sendMail(user.email, subject, body);
-      })
-    );
-
-    res.json({
-      status: "success"      
-    });
+    res.json({ status: "success", message: "Emails sent" });
   } catch (error) {
-    res.status(500).json({
-      status: "error",
-      message: error.message,
-    });
+    console.error("Email error:", error.message);
+    res.status(500).json({ status: "error", message: error.message });
   }
 };
+
+
 // Register for event
 const registerForEvent = async (req, res) => {
   try {

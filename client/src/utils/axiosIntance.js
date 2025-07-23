@@ -4,9 +4,14 @@ import axios from 'axios';
 
 const baseurl = import.meta.env.VITE_API_BASE_URL;
 
+// Ensure baseurl is defined
+if (!baseurl) {
+  throw new Error("VITE_API_BASE_URL is not defined in your environment variables.");
+}
+
 // Create an Axios instance with default settings
 const axiosInstance = axios.create({
-  baseURL: `${baseurl}/api`, // Replace with your API base URL
+  baseURL: `http://localhost:4000/api`, // Replace with your API base URL
   timeout: 10000, // Set a timeout for requests
   headers: {
     'Content-Type': 'application/json',
@@ -41,7 +46,7 @@ axiosInstance.interceptors.response.use(
       // Clear token and redirect to login
       localStorage.removeItem('token');
       window.location.href = '/login';
-    }
+}
     return Promise.reject(error);
   }
 );
