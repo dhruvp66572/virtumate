@@ -1,4 +1,5 @@
 import * as React from "react";
+import PropTypes from "prop-types";
 import { buttonVariants, sizeVariants } from "./buttonVariants";
 //import { cn } from "../../lib/utils"
 
@@ -19,5 +20,12 @@ const Button = React.forwardRef(
   }
 );
 Button.displayName = "Button";
+
+Button.propTypes = {
+  className: PropTypes.string,
+  variant: PropTypes.oneOf(['default', 'outline']),
+  size: PropTypes.oneOf(['default', 'sm', 'lg']),
+  children: PropTypes.node.isRequired,
+};
 
 export { Button };

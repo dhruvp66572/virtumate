@@ -407,7 +407,7 @@ const HelpSupport = () => (
         </div>
         <h3 className="text-lg font-medium mb-2">Report a Bug</h3>
         <p className="text-gray-600 mb-4">
-          Let us know if something isn't working correctly or you encounter
+          Let us know if something isn&apos;t working correctly or you encounter
           issues
         </p>
         <button className="text-blue-600 font-medium hover:underline flex items-center">

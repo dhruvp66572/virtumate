@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import axiosInstance from "../utils/axiosIntance";
 import {
-  changeEventStatusById,
   updateEventById,
 } from "../handlers/event_handler";
 import toast from "react-hot-toast";

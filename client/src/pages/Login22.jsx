@@ -1,5 +1,6 @@
 import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import PropTypes from "prop-types";
 import AuthContext from "../context/AuthContext";
 import axiosInstance from "../utils/axiosIntance";
 
@@ -308,6 +309,11 @@ const Login = ({ isOpen, toggleModal }) => {
       </div>
     </div>
   );
+};
+
+Login.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  toggleModal: PropTypes.func.isRequired,
 };
 
 export default Login;

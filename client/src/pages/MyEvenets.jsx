@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import axiosInstance from "../utils/axiosIntance";
 import { useAuth } from "../context/useAuth";
 import toast from "react-hot-toast";
@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 const MyEvents = () => {
   const { user } = useAuth();
   const [events, setEvents] = useState([]);
-  const navigate = useNavigate();
+  // const navigate = useNavigate(); // Commented out as currently unused
 
   useEffect(() => {
     document.title = "Virtumate | Events";
