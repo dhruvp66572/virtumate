@@ -44,6 +44,12 @@ mongoose.connect(process.env.MONGO_CONNECTION )
 app.get('/', (req, res) => {
   res.send('Welcome to the Virtumate API');
 });
+
+// Simple health check
+app.get('/health', (req, res) => {
+  res.json({ status: 'OK', time: new Date().toISOString() });
+});
+
 app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/admin',adminRoutes);

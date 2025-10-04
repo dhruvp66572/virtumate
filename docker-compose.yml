@@ -1,27 +1,19 @@
 
 services:
   api:
-    build:
-      context: ./server
-      dockerfile: DOCKERFILE
+    image: ghcr.io/dhruvp66572/virtumate-server:latest
     container_name: virtumate-backend
     ports:
       - "4000:4000"
-    env_file:
-      - .env.production
+    environment:
+      - NODE_ENV=production
     restart: always
 
   web:
-    build:
-      context: ./client
-      dockerfile: DOCKERFILE
-      args:
-        VITE_API_BASE_URL: http://139.59.46.124:4000
+    image: ghcr.io/dhruvp66572/virtumate-client:latest
     container_name: virtumate-frontend
     ports:
       - "80:80"
     depends_on:
       - api
-    env_file:
-      - .env.production
     restart: always
