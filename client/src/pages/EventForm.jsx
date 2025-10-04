@@ -17,11 +17,14 @@ const EventForm = ({ onClose }) => {
   const modalRef = useRef(null);
 
   // Handle click outside
-  const handleClickOutside = useCallback((event) => {
-    if (modalRef.current && !modalRef.current.contains(event.target)) {
-      onClose();
-    }
-  }, [onClose]);
+  const handleClickOutside = useCallback(
+    (event) => {
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        onClose();
+      }
+    },
+    [onClose]
+  );
 
   // Add event listener on mount and remove on unmount
   useEffect(() => {
