@@ -23,8 +23,8 @@ Button.displayName = "Button";
 
 Button.propTypes = {
   className: PropTypes.string,
-  variant: PropTypes.oneOf(['default', 'outline']),
-  size: PropTypes.oneOf(['default', 'sm', 'lg']),
+  variant: PropTypes.oneOf(["default", "outline"]),
+  size: PropTypes.oneOf(["default", "sm", "lg"]),
   children: PropTypes.node.isRequired,
 };
 

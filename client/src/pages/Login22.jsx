@@ -105,10 +105,11 @@ const Login = ({ isOpen, toggleModal }) => {
       }
 
       // const response = await registe(formData2);
-      const response = await axiosInstance.post(
-        "/auth/register",
-        { name: formData2.name, email: formData2.email, password: formData2.password }
-      );
+      const response = await axiosInstance.post("/auth/register", {
+        name: formData2.name,
+        email: formData2.email,
+        password: formData2.password,
+      });
 
       if (response.status === 200) {
         setMessage2(

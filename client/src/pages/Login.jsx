@@ -1,65 +1,72 @@
-import { useContext, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import AuthContext from '../context/AuthContext';
-import toast from 'react-hot-toast';
+import { useContext, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import AuthContext from "../context/AuthContext";
+import toast from "react-hot-toast";
 
 const Login = () => {
-  const {login } = useContext(AuthContext);
+  const { login } = useContext(AuthContext);
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
+    email: "",
+    password: "",
   });
-  
+
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    
+
     // Validate form data (basic validation)
     if (!formData.email || !formData.password) {
-      toast.error('Please fill in all fields.');
+      toast.error("Please fill in all fields.");
       return;
     }
 
-
     try {
-      toast.loading('Logging in...');
+      toast.loading("Logging in...");
       const response = await login(formData.email, formData.password);
-      console.log('Login attempt:', response);
+      console.log("Login attempt:", response);
       if (response) {
         toast.dismiss(); // dismiss loading
-        toast.success('Logged in successfully!', {
-          duration: 2000});
-        navigate('/dashboard');
-      }
-      else {
+        toast.success("Logged in successfully!", {
+          duration: 2000,
+        });
+        navigate("/dashboard");
+      } else {
         toast.dismiss(); // dismiss loading
-        toast.error('Invalid credentials. Please try again.');
+        toast.error("Invalid credentials. Please try again.");
       }
     } catch (error) {
-      console.error('Login failed:', error);
+      console.error("Login failed:", error);
     }
 
-    console.log('Login attempt:', formData);
+    console.log("Login attempt:", formData);
   };
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <div className="pt-6 px-6 sm:px-8">
         <button
-          onClick={() => navigate('/')}
+          onClick={() => navigate("/")}
           className="flex items-center text-indigo-600 hover:text-indigo-800 transition-colors"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5 mr-1"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fillRule="evenodd"
+              d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
+              clipRule="evenodd"
+            />
           </svg>
           Back
         </button>
@@ -92,11 +99,14 @@ const Login = () => {
               Sign in to your account to manage and discover events
             </p>
           </div>
-          
+
           <div className="mt-8 bg-white py-8 px-4 shadow-lg sm:rounded-lg sm:px-10 border border-gray-200">
             <form className="space-y-6" onSubmit={handleSubmit}>
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Email address
                 </label>
                 <div className="mt-1">
@@ -114,7 +124,10 @@ const Login = () => {
               </div>
 
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Password
                 </label>
                 <div className="mt-1">
@@ -127,7 +140,6 @@ const Login = () => {
                     onChange={handleChange}
                     className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                     placeholder="Enter your password"
-
                   />
                 </div>
               </div>
@@ -140,13 +152,19 @@ const Login = () => {
                     type="checkbox"
                     className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
                   />
-                  <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
+                  <label
+                    htmlFor="remember-me"
+                    className="ml-2 block text-sm text-gray-700"
+                  >
                     Remember me
                   </label>
                 </div>
 
                 <div className="text-sm">
-                  <Link to="/forgot-password" className="font-medium text-indigo-600 hover:text-indigo-500">
+                  <Link
+                    to="/forgot-password"
+                    className="font-medium text-indigo-600 hover:text-indigo-500"
+                  >
                     Forgot your password?
                   </Link>
                 </div>
@@ -194,11 +212,14 @@ const Login = () => {
                 </div>
               </div>
             </div> */}
-            
+
             <div className="mt-6 text-center">
               <p className="text-sm text-gray-600">
-                Don&apos;t have an account?{' '}
-                <Link to="/register" className="font-medium text-indigo-600 hover:text-indigo-500">
+                Don&apos;t have an account?{" "}
+                <Link
+                  to="/register"
+                  className="font-medium text-indigo-600 hover:text-indigo-500"
+                >
                   Sign up now
                 </Link>
               </p>
