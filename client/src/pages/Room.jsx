@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import io from "socket.io-client";
 import Peer from "simple-peer";
+import PropTypes from "prop-types";
 import { IoMdMic, IoMdMicOff } from "react-icons/io";
 import {
   FaVideo,
@@ -167,7 +168,7 @@ const Room = () => {
     a.click();
   };
 
-  const endCall = () => {
+  const endCall = useCallback(() => {
     if (socketRef.current) socketRef.current.disconnect();
     if (stream) stream.getTracks().forEach((track) => track.stop());
     peersRef.current.forEach(({ peer }) => peer.destroy());
@@ -177,7 +178,7 @@ const Room = () => {
     toast.success("Thank you for using Virtumate! You can now close this tab.");
     toast.dismiss();
     navigate("/dashboard");
-  };
+  }, [stream, navigate]);
 
   return (
     <div className="video-call-container">
@@ -247,6 +248,11 @@ const Video = ({ peer, id }) => {
       <div className="participant-name">User {id}</div>
     </div>
   );
+};
+
+Video.propTypes = {
+  peer: PropTypes.object.isRequired,
+  id: PropTypes.string.isRequired,
 };
 
 export default Room;

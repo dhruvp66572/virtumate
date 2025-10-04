@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
 import axiosInstance from "../utils/axiosIntance";
 
 const EventView = () => {
   const { id } = useParams();
 
-  const fetchEvent = async () => {
+  const fetchEvent = useCallback(async () => {
     try {
       const response = await axiosInstance.get(`/events/${id}`);
       console.log(response.data);
@@ -14,7 +14,7 @@ const EventView = () => {
       console.error(`Error fetching event with ID ${id}:`, error);
       throw error;
     }
-  };
+  }, [id]);
 
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);

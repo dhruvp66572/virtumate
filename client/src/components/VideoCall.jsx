@@ -3,7 +3,7 @@ import {
   VideoConference,
   useParticipants,
 } from "@livekit/components-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import "@livekit/components-styles";
 import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
@@ -146,7 +146,7 @@ const CallContent = () => {
 
   const { roomName } = useParams();
 
-  const fetchEvent = async () => {
+  const fetchEvent = useCallback(async () => {
     try {
       const response = await axiosInstance.get(`/events/${roomName}`);
       console.log(response.data);
@@ -155,7 +155,7 @@ const CallContent = () => {
       console.error(`Error fetching event with ID ${roomName}:`, error);
       throw error;
     }
-  };
+  }, [roomName]);
 
   const [loading, setLoading] = useState(true);
 

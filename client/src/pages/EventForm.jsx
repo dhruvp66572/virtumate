@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
+import PropTypes from "prop-types";
 import "../assets/css/EventForm.css";
 
 const EventForm = ({ onClose }) => {
@@ -16,11 +17,11 @@ const EventForm = ({ onClose }) => {
   const modalRef = useRef(null);
 
   // Handle click outside
-  const handleClickOutside = (event) => {
+  const handleClickOutside = useCallback((event) => {
     if (modalRef.current && !modalRef.current.contains(event.target)) {
       onClose();
     }
-  };
+  }, [onClose]);
 
   // Add event listener on mount and remove on unmount
   useEffect(() => {
@@ -176,6 +177,10 @@ const EventForm = ({ onClose }) => {
       </div>
     </div>
   );
+};
+
+EventForm.propTypes = {
+  onClose: PropTypes.func.isRequired,
 };
 
 export default EventForm;

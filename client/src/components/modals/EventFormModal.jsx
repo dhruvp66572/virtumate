@@ -1,4 +1,5 @@
 import { useState } from "react";
+import PropTypes from "prop-types";
 
 const EventFormModal = ({ title, event = {}, onSubmit, onClose }) => {
   const [formData, setFormData] = useState({
@@ -230,6 +231,13 @@ const EventFormModal = ({ title, event = {}, onSubmit, onClose }) => {
       </div>
     </div>
   );
+};
+
+EventFormModal.propTypes = {
+  title: PropTypes.string.isRequired,
+  event: PropTypes.object,
+  onSubmit: PropTypes.func.isRequired,
+  onClose: PropTypes.func.isRequired,
 };
 
 export default EventFormModal;

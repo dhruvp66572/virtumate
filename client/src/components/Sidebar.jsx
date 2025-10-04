@@ -1,7 +1,8 @@
 import { BarChart, Calendar, HelpCircle, Home, Menu, MessageSquare, Settings, Users, X } from "lucide-react";
 import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
 
-const Sidebar = ({ isOpen, toggleSidebar, activeTab }) => {
+const Sidebar = ({ isOpen, toggleSidebar }) => {
     const menuItems = [
       { icon: <Home size={20} />, label: 'Dashboard', path: '/dashboard' },
       { icon: <Calendar size={20} />, label: 'Events' , path: '/events'},
@@ -49,5 +50,10 @@ const Sidebar = ({ isOpen, toggleSidebar, activeTab }) => {
       </div>
     );
   };
+
+Sidebar.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  toggleSidebar: PropTypes.func.isRequired,
+};
 
 export default Sidebar;
