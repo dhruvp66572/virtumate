@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "../utils/axiosIntance";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/useAuth";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
@@ -33,7 +33,7 @@ const ProfilePage = () => {
     };
     fetchdata();
     console.log("Profile data fetched:", formData);
-  }, [user?.id]); // Only depend on user.id to prevent infinite loops
+  }, [user?.id, formData]); // Only depend on user.id to prevent infinite loops
 
   const [activeTab, setActiveTab] = useState("profile");
 

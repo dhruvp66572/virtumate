@@ -29,7 +29,7 @@ const EventForm = ({ onClose }) => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [onClose]);
+  }, [onClose, handleClickOutside]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

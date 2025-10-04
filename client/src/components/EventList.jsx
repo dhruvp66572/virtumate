@@ -1,3 +1,5 @@
+import PropTypes from 'prop-types';
+
 const EventList = ({ events, onEdit, onDelete }) => {
     if (events.length === 0) {
       return (
@@ -154,5 +156,11 @@ const EventList = ({ events, onEdit, onDelete }) => {
       </div>
     );
   };
+
+EventList.propTypes = {
+  events: PropTypes.array.isRequired,
+  onEdit: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
+};
 
   export default EventList;

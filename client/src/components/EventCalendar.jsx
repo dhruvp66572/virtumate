@@ -1,3 +1,5 @@
+import PropTypes from 'prop-types';
+
 const EventCalendar = ({ events, onEventClick }) => {
     // Group events by date
     const eventsByDate = events.reduce((acc, event) => {
@@ -135,5 +137,10 @@ const EventCalendar = ({ events, onEventClick }) => {
       </div>
     );
   };
+
+EventCalendar.propTypes = {
+  events: PropTypes.array.isRequired,
+  onEventClick: PropTypes.func.isRequired,
+};
 
 export default EventCalendar;

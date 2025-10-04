@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/useAuth";
 import axiosInstance from "../utils/axiosIntance";
 
 const Dashboard = () => {
@@ -64,7 +64,7 @@ const Dashboard = () => {
     };
 
     fetchEvents();
-  }, [user?.id, token]);
+  }, [user?.id, token, user]);
 
   // Mock data for upcoming events
   // const upcomingEvents = [

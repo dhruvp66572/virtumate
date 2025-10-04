@@ -6,7 +6,7 @@ import {
   updateEventById,
 } from "../handlers/event_handler";
 import toast from "react-hot-toast";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/useAuth";
 
 const EventManagement = () => {
   // Get the event ID from URL parameters

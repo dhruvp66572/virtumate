@@ -1,16 +1,6 @@
 import * as React from "react"
+import { buttonVariants, sizeVariants } from "./buttonVariants"
 //import { cn } from "../../lib/utils"
-
-const buttonVariants = {
-  default: "bg-white text-gray-900 hover:bg-gray-100 transition-colors",
-  outline: "border border-white text-white hover:bg-white/10",
-}
-
-const sizeVariants = {
-  default: "px-4 py-2",
-  sm: "px-3 py-1.5 text-sm",
-  lg: "px-6 py-3 text-lg"
-}
 
 const Button = React.forwardRef(({ 
   className, 
@@ -31,4 +21,4 @@ const Button = React.forwardRef(({
 })
 Button.displayName = "Button"
 
-export { Button, buttonVariants }
+export { Button }

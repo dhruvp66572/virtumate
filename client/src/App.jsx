@@ -1,4 +1,3 @@
-import Navbar from "./components/Navbar"; // Ensure Navbar is always visible
 import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
@@ -12,8 +11,7 @@ import Eventcreate from "./pages/Eventcreate";
 import EventView from "./pages/EventView";
 import EventRegister from "./pages/EventRegister";
 import ProfilePage from "./pages/ProfilePage";
-import { useAuth } from "./context/AuthContext";
-import Footer from "./components/Footer";
+import { useAuth } from "./context/useAuth";
 import MyEvenets from "./pages/MyEvenets";
 import Settings from "./pages/Settings";
 import VideoCall from "./components/VideoCall";

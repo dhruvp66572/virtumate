@@ -26,7 +26,7 @@ const EventView = () => {
         setLoading(false);
       })
       .catch((error) => console.error("Error loading event:", error));
-  }, [id]);
+  }, [id, fetchEvent]);
 
   if (loading) {
     return (

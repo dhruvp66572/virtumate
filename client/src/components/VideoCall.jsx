@@ -166,7 +166,7 @@ const CallContent = () => {
         setLoading(false);
       })
       .catch((error) => console.error("Error loading event:", error));
-  }, [roomName]);
+  }, [roomName, fetchEvent]);
 
   if (loading) {
     return (

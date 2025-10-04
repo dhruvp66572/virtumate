@@ -99,7 +99,7 @@ const Room = () => {
     });
 
     return () => endCall();
-  }, [roomId]);
+  }, [roomId, endCall, stream]);
 
   const createPeer = (userToSignal, callerID, stream) => {
     const peer = new Peer({ initiator: true, trickle: false, stream });

@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/useAuth";
 import axiosInstance from "../utils/axiosIntance";
 import toast from "react-hot-toast";
 
@@ -25,7 +25,7 @@ const Navbar = () => {
       }
     };
     fetchdata();
-  }, [user?.id]);
+  }, [user?.id, user]);
 
   // Handle clicks outside of dropdown
   useEffect(() => {
