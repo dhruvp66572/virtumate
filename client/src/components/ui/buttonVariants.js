@@ -6,5 +6,5 @@ export const buttonVariants = {
 export const sizeVariants = {
   default: "px-4 py-2",
   sm: "px-3 py-1.5 text-sm",
-  lg: "px-6 py-3 text-lg"
+  lg: "px-6 py-3 text-lg",
 };

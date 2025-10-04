@@ -6,7 +6,7 @@ import axiosInstance from "../utils/axiosIntance";
 const Dashboard = () => {
   // const upcomingEvents = [];
   // const createdEvents = [];
-   const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const [events, setEvents] = useState([]);
   const { user, token } = useAuth(); // Get user details from Auth Context
@@ -39,7 +39,6 @@ const Dashboard = () => {
 
         const organizedEvents = response.data.data.organized || [];
         const registeredEvents = response.data.data.attended || [];
-        
 
         console.log("Organized Events:", organizedEvents);
         console.log("Registered Events:", registeredEvents);
@@ -137,17 +136,16 @@ const Dashboard = () => {
   // ];
 
   const handleJoin = async (id) => {
-      try {
-        const response = await axiosInstance.post(`/events/${id}/meeting/join`);
-        console.log(response.data);
-        const token = response.data.token;
-        localStorage.setItem("roomToken", token);     
-        navigate(`/video-call/${id}`);
-      } catch (error) {
-        console.error("Error joining meeting", error);
-      }
-    };
-  
+    try {
+      const response = await axiosInstance.post(`/events/${id}/meeting/join`);
+      console.log(response.data);
+      const token = response.data.token;
+      localStorage.setItem("roomToken", token);
+      navigate(`/video-call/${id}`);
+    } catch (error) {
+      console.error("Error joining meeting", error);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -195,7 +193,7 @@ const Dashboard = () => {
                 Registered Events
               </h3>
               <p className="text-3xl font-bold text-gray-800 mt-2">
-                {events.filter(event => event.type === "Registered").length}
+                {events.filter((event) => event.type === "Registered").length}
               </p>
             </div>
             <div className="bg-white rounded-xl shadow p-6 border-t-4 border-purple-500">
@@ -203,7 +201,7 @@ const Dashboard = () => {
                 Events Created
               </h3>
               <p className="text-3xl font-bold text-gray-800 mt-2">
-                {events.filter(event => event.type === "Organized").length}
+                {events.filter((event) => event.type === "Organized").length}
               </p>
             </div>
             <div className="bg-white rounded-xl shadow p-6 border-t-4 border-pink-500">
@@ -261,9 +259,10 @@ const Dashboard = () => {
                       </div>
                     </div>
                   ))} */}
-                  {events.filter(event => event.type === "Registered").length > 0 ? (
+                  {events.filter((event) => event.type === "Registered")
+                    .length > 0 ? (
                     events
-                      .filter(event => event.type === "Registered")
+                      .filter((event) => event.type === "Registered")
                       .map((event) => (
                         <div
                           key={event._id}
@@ -300,28 +299,28 @@ const Dashboard = () => {
                             >
                               View Details
                             </Link>
-                            <button className="text-indigo-600 text-sm font-medium hover:text-indigo-800 transition-colors" 
-                            
-                            onClick={() => {
-                              const addToGoogleCalendar = () => {
-                                const startDate = new Date(event.startTime)
-                                  .toISOString()
-                                  .replace(/-|:|\.\d+/g, "");
-                                const endDate = new Date(event.endTime)
-                                  .toISOString()
-                                  .replace(/-|:|\.\d+/g, "");
-                                const details = encodeURIComponent(
-                                  event.description || "No details provided"
-                                );
-                                const title = encodeURIComponent(
-                                  event.title || "Event"
-                                );
-                                const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startDate}/${endDate}&details=${details}`;
-                                window.open(url, "_blank");
-                              };
-  
-                              addToGoogleCalendar();
-                            }}
+                            <button
+                              className="text-indigo-600 text-sm font-medium hover:text-indigo-800 transition-colors"
+                              onClick={() => {
+                                const addToGoogleCalendar = () => {
+                                  const startDate = new Date(event.startTime)
+                                    .toISOString()
+                                    .replace(/-|:|\.\d+/g, "");
+                                  const endDate = new Date(event.endTime)
+                                    .toISOString()
+                                    .replace(/-|:|\.\d+/g, "");
+                                  const details = encodeURIComponent(
+                                    event.description || "No details provided"
+                                  );
+                                  const title = encodeURIComponent(
+                                    event.title || "Event"
+                                  );
+                                  const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startDate}/${endDate}&details=${details}`;
+                                  window.open(url, "_blank");
+                                };
+
+                                addToGoogleCalendar();
+                              }}
                             >
                               Add to Calendar
                             </button>
@@ -368,52 +367,55 @@ const Dashboard = () => {
                   </h2>
                 </div>
                 <div className="p-4">
-                  {events.filter((event) => event.organizerId === user.id).length > 0 ? (
-                     events
-                     .filter((event) => event.organizerId === user.id).map((event) => (
-                      <div
-                        key={event._id}
-                        className="border-b border-gray-200 pb-6 mb-6 last:border-b-0 last:pb-0"
-                      >
-                        <div className="flex justify-between items-center">
-                          <div>
-                            <h2 className="text-xl font-semibold text-indigo-600">
-                              {event.title}
-                            </h2>
-                            <p className="text-gray-600 mt-1">
-                              📅 {event.date} • 🕒 {event.time}
-                            </p>
-                            <p className="text-gray-600 mt-1">
-                              👥 Attendees: {event.registeredAttendees.length || 0}
-                            </p>
+                  {events.filter((event) => event.organizerId === user.id)
+                    .length > 0 ? (
+                    events
+                      .filter((event) => event.organizerId === user.id)
+                      .map((event) => (
+                        <div
+                          key={event._id}
+                          className="border-b border-gray-200 pb-6 mb-6 last:border-b-0 last:pb-0"
+                        >
+                          <div className="flex justify-between items-center">
+                            <div>
+                              <h2 className="text-xl font-semibold text-indigo-600">
+                                {event.title}
+                              </h2>
+                              <p className="text-gray-600 mt-1">
+                                📅 {event.date} • 🕒 {event.time}
+                              </p>
+                              <p className="text-gray-600 mt-1">
+                                👥 Attendees:{" "}
+                                {event.registeredAttendees.length || 0}
+                              </p>
+                            </div>
+                            <div>
+                              <span
+                                className={`inline-block px-4 py-1 rounded-full text-sm font-medium ${
+                                  event.status === "active"
+                                    ? "bg-green-100 text-green-700"
+                                    : "bg-red-100 text-red-700"
+                                }`}
+                              >
+                                {event.status}
+                              </span>
+                            </div>
                           </div>
-                          <div>
-                            <span
-                              className={`inline-block px-4 py-1 rounded-full text-sm font-medium ${
-                                event.status === "active"
-                                  ? "bg-green-100 text-green-700"
-                                  : "bg-red-100 text-red-700"
-                              }`}
-                            >
-                              {event.status}
-                            </span>
-                          </div>
-                        </div>
 
-                        <div className="mt-4 flex justify-between items-center">
-                          <Link
-                            to={`/myevents/${event._id}`}
-                            className="text-indigo-600 font-medium hover:text-indigo-800 transition"
-                          >
-                            Manage Event →
-                          </Link>
-                          <p className="text-sm text-gray-500">
-                            Created on:{" "}
-                            {new Date(event.createdAt).toLocaleDateString()}
-                          </p>
+                          <div className="mt-4 flex justify-between items-center">
+                            <Link
+                              to={`/myevents/${event._id}`}
+                              className="text-indigo-600 font-medium hover:text-indigo-800 transition"
+                            >
+                              Manage Event →
+                            </Link>
+                            <p className="text-sm text-gray-500">
+                              Created on:{" "}
+                              {new Date(event.createdAt).toLocaleDateString()}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    ))
+                      ))
                   ) : (
                     <p className="text-gray-500">
                       You have not organized any events yet.
@@ -451,35 +453,37 @@ const Dashboard = () => {
                   </h2>
                 </div>
                 <div className="p-4">
-                  {events.filter(event => event.status === "live").map((event) => (
-                    <div
-                      key={event.id}
-                      className="mb-4 border-b border-gray-100 pb-4 last:border-0 last:pb-0"
-                    >
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <h3 className="font-medium text-lg text-indigo-600">
-                            {event.title}
-                          </h3>
-                          <p className="text-gray-600 text-sm mt-1">
-                            {event.date} • {event.time}
-                          </p>
-                          <p className="text-gray-600 text-sm">
-                            {event.eventType}
-                          </p>
-                        </div>
-                        <div>
-                          <button
-                          onClick={() => handleJoin(event._id)}
-                         rel="noopener noreferrer"
-                            className="text-indigo-600 text-sm font-medium hover:text-indigo-800 transition-colors"
-                          >
-                            Join Now
-                          </button>
+                  {events
+                    .filter((event) => event.status === "live")
+                    .map((event) => (
+                      <div
+                        key={event.id}
+                        className="mb-4 border-b border-gray-100 pb-4 last:border-0 last:pb-0"
+                      >
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <h3 className="font-medium text-lg text-indigo-600">
+                              {event.title}
+                            </h3>
+                            <p className="text-gray-600 text-sm mt-1">
+                              {event.date} • {event.time}
+                            </p>
+                            <p className="text-gray-600 text-sm">
+                              {event.eventType}
+                            </p>
+                          </div>
+                          <div>
+                            <button
+                              onClick={() => handleJoin(event._id)}
+                              rel="noopener noreferrer"
+                              className="text-indigo-600 text-sm font-medium hover:text-indigo-800 transition-colors"
+                            >
+                              Join Now
+                            </button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               </div>
 

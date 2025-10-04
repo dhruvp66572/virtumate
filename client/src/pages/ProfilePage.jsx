@@ -24,9 +24,8 @@ const ProfilePage = () => {
     const fetchdata = async () => {
       try {
         const response = await axiosInstance.get(`/users/${user.id}`);
-        console.log('token', response.data); // Update the token in local storage
+        console.log("token", response.data); // Update the token in local storage
         setFormData(response.data.data);
-      
       } catch (error) {
         console.error("Error fetching profile data:", error);
       }
@@ -59,8 +58,8 @@ const ProfilePage = () => {
         };
         reader.readAsDataURL(file);
 
-        console.log(reader)
-      }    
+        console.log(reader);
+      }
     } catch (e) {
       console.log(e);
     }
@@ -70,11 +69,11 @@ const ProfilePage = () => {
     e.preventDefault();
     // Logic to save the updated profile (e.g., API call)
     try {
-      console.log(formData)
+      console.log(formData);
       let response = await axiosInstance.put(`/users/${user.id}`, formData);
-      
+
       if (response.status === 200) {
-        setFormData(response.data.data);        
+        setFormData(response.data.data);
         const token = response.data.token;
         localStorage.setItem("token", token);
         toast.success("Profile updated successfully!");
@@ -310,7 +309,9 @@ const ProfilePage = () => {
                       <div>
                         <h3
                           className="text-lg font-semibold text-indigo-600 cursor-pointer hover:underline"
-                          onClick={() => navigate(`/event-details/${event._id}`)}
+                          onClick={() =>
+                            navigate(`/event-details/${event._id}`)
+                          }
                         >
                           {event.title}
                         </h3>
@@ -347,7 +348,7 @@ const ProfilePage = () => {
           {activeTab === "Logs" && (
             <div className="bg-white rounded-lg shadow-lg p-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">
-               Last Login Logs
+                Last Login Logs
               </h2>
               {formData.lastLogin.length > 0 ? (
                 <ul className="space-y-6">

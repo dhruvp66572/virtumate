@@ -188,7 +188,7 @@ const EventManagement = () => {
           subject: subject,
           body: body,
         }
-      );      
+      );
       if (response.status === 200) {
         toast.dismiss(toastId);
         toast.success("Email sent successfully!");

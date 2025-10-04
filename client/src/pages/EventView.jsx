@@ -432,7 +432,7 @@ const EventView = () => {
                   ) : ["ongoing"].includes(event.status) ? (
                     <span className="text-green-500 px-4 py-2 rounded-lg bg-green-100">
                       Ongoing
-                    </span>  
+                    </span>
                   ) : ["completed", "cancelled"].includes(event.status) ? (
                     <span
                       className={`text-white px-4 py-2 rounded-lg ${
@@ -460,7 +460,6 @@ const EventView = () => {
                       Register
                     </Link>
                   )}
-                 
                 </div>
               </div>
             </div>

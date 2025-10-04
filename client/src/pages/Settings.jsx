@@ -27,7 +27,7 @@ const Settings = () => {
   const [activeTab, setActiveTab] = useState("notifications");
   const { logout } = useAuth();
   const navigate = useNavigate();
-  
+
   const handlelogout = () => {
     let confirmbox = window.confirm("Are you sure you want to logout?");
     if (!confirmbox) return;
@@ -54,9 +54,9 @@ const Settings = () => {
   };
 
   return (
-    <div className="container mx-auto p-6 max-w-6xl">  
+    <div className="container mx-auto p-6 max-w-6xl">
       <div className="flex flex-col md:flex-row gap-8">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.3 }}
@@ -74,9 +74,11 @@ const Settings = () => {
               }`}
               onClick={() => setActiveTab("notifications")}
             >
-              <FaBell className="mr-3 text-lg" /> 
+              <FaBell className="mr-3 text-lg" />
               <span className="flex-1 text-left">Notifications</span>
-              {activeTab === "notifications" && <FaChevronRight className="ml-2" />}
+              {activeTab === "notifications" && (
+                <FaChevronRight className="ml-2" />
+              )}
             </button>
             <button
               className={`flex items-center w-full p-3 rounded-lg mb-2 transition-all duration-200 ${
@@ -86,7 +88,7 @@ const Settings = () => {
               }`}
               onClick={() => setActiveTab("privacy")}
             >
-              <FaLock className="mr-3 text-lg" /> 
+              <FaLock className="mr-3 text-lg" />
               <span className="flex-1 text-left">Privacy & Security</span>
               {activeTab === "privacy" && <FaChevronRight className="ml-2" />}
             </button>
@@ -98,9 +100,11 @@ const Settings = () => {
               }`}
               onClick={() => setActiveTab("appearance")}
             >
-              <FaPalette className="mr-3 text-lg" /> 
+              <FaPalette className="mr-3 text-lg" />
               <span className="flex-1 text-left">Appearance</span>
-              {activeTab === "appearance" && <FaChevronRight className="ml-2" />}
+              {activeTab === "appearance" && (
+                <FaChevronRight className="ml-2" />
+              )}
             </button>
             <button
               className={`flex items-center w-full p-3 rounded-lg mb-2 transition-all duration-200 ${
@@ -110,7 +114,7 @@ const Settings = () => {
               }`}
               onClick={() => setActiveTab("language")}
             >
-              <FaGlobe className="mr-3 text-lg" /> 
+              <FaGlobe className="mr-3 text-lg" />
               <span className="flex-1 text-left">Language</span>
               {activeTab === "language" && <FaChevronRight className="ml-2" />}
             </button>
@@ -122,21 +126,21 @@ const Settings = () => {
               }`}
               onClick={() => setActiveTab("help")}
             >
-              <FaQuestionCircle className="mr-3 text-lg" /> 
+              <FaQuestionCircle className="mr-3 text-lg" />
               <span className="flex-1 text-left">Help & Support</span>
               {activeTab === "help" && <FaChevronRight className="ml-2" />}
             </button>
             <div className="border-t my-3"></div>
-            <button 
+            <button
               className="flex items-center w-full p-3 rounded-lg text-red-500 hover:bg-red-50 transition-all duration-200"
               onClick={handlelogout}
             >
-              <FaSignOutAlt className="mr-3 text-lg" /> 
+              <FaSignOutAlt className="mr-3 text-lg" />
               <span className="font-medium">Log Out</span>
             </button>
           </div>
         </motion.div>
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
@@ -150,12 +154,14 @@ const Settings = () => {
 };
 
 const NotificationSettings = () => (
-  <motion.div 
+  <motion.div
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
     transition={{ duration: 0.3 }}
   >
-    <h2 className="text-2xl font-semibold mb-6 text-gray-800 border-b pb-3">Notification Settings</h2>
+    <h2 className="text-2xl font-semibold mb-6 text-gray-800 border-b pb-3">
+      Notification Settings
+    </h2>
     <div className="space-y-6">
       <div className="flex items-center justify-between p-5 border rounded-xl hover:shadow-md transition-all duration-200 bg-gray-50">
         <div className="flex items-start">
@@ -174,7 +180,7 @@ const NotificationSettings = () => (
           <div className="w-12 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
         </label>
       </div>
-      
+
       <div className="flex items-center justify-between p-5 border rounded-xl hover:shadow-md transition-all duration-200 bg-gray-50">
         <div className="flex items-start">
           <div className="p-3 bg-purple-100 text-purple-600 rounded-full mr-4">
@@ -192,7 +198,7 @@ const NotificationSettings = () => (
           <div className="w-12 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
         </label>
       </div>
-      
+
       <div className="flex items-center justify-between p-5 border rounded-xl hover:shadow-md transition-all duration-200 bg-gray-50">
         <div className="flex items-start">
           <div className="p-3 bg-green-100 text-green-600 rounded-full mr-4">
@@ -210,7 +216,7 @@ const NotificationSettings = () => (
           <div className="w-12 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
         </label>
       </div>
-      
+
       <button className="bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center mt-6">
         <FaCheck className="mr-2" /> Save Preferences
       </button>
@@ -224,7 +230,9 @@ const PrivacySettings = () => (
     animate={{ opacity: 1 }}
     transition={{ duration: 0.3 }}
   >
-    <h2 className="text-2xl font-semibold mb-6 text-gray-800 border-b pb-3">Privacy & Security Settings</h2>
+    <h2 className="text-2xl font-semibold mb-6 text-gray-800 border-b pb-3">
+      Privacy & Security Settings
+    </h2>
     <div className="space-y-6">
       <div className="flex items-center justify-between p-5 border rounded-xl hover:shadow-md transition-all duration-200 bg-gray-50">
         <div className="flex items-start">
@@ -243,7 +251,7 @@ const PrivacySettings = () => (
           <div className="w-12 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
         </label>
       </div>
-      
+
       <div className="flex items-center justify-between p-5 border rounded-xl hover:shadow-md transition-all duration-200 bg-gray-50">
         <div className="flex items-start">
           <div className="p-3 bg-amber-100 text-amber-600 rounded-full mr-4">
@@ -251,7 +259,9 @@ const PrivacySettings = () => (
           </div>
           <div>
             <h3 className="text-lg font-medium">Profile Visibility</h3>
-            <p className="text-gray-600 mt-1">Control who can see your profile</p>
+            <p className="text-gray-600 mt-1">
+              Control who can see your profile
+            </p>
           </div>
         </div>
         <select className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
@@ -260,7 +270,7 @@ const PrivacySettings = () => (
           <option>Private</option>
         </select>
       </div>
-      
+
       <button className="bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center mt-6">
         <FaCheck className="mr-2" /> Save Settings
       </button>
@@ -274,7 +284,9 @@ const AppearanceSettings = () => (
     animate={{ opacity: 1 }}
     transition={{ duration: 0.3 }}
   >
-    <h2 className="text-2xl font-semibold mb-6 text-gray-800 border-b pb-3">Appearance Settings</h2>
+    <h2 className="text-2xl font-semibold mb-6 text-gray-800 border-b pb-3">
+      Appearance Settings
+    </h2>
     <div className="space-y-8">
       <div>
         <h3 className="text-lg font-medium mb-4">Theme</h3>
@@ -293,7 +305,7 @@ const AppearanceSettings = () => (
           </button>
         </div>
       </div>
-      
+
       <div>
         <h3 className="text-lg font-medium mb-4">Font Size</h3>
         <div className="p-5 border rounded-xl bg-gray-50">
@@ -315,7 +327,7 @@ const AppearanceSettings = () => (
           </div>
         </div>
       </div>
-      
+
       <button className="bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center mt-6">
         <FaCheck className="mr-2" /> Save Preferences
       </button>
@@ -329,7 +341,9 @@ const LanguageSettings = () => (
     animate={{ opacity: 1 }}
     transition={{ duration: 0.3 }}
   >
-    <h2 className="text-2xl font-semibold mb-6 text-gray-800 border-b pb-3">Language Settings</h2>
+    <h2 className="text-2xl font-semibold mb-6 text-gray-800 border-b pb-3">
+      Language Settings
+    </h2>
     <div className="space-y-6">
       <div className="p-5 border rounded-xl bg-gray-50">
         <h3 className="text-lg font-medium mb-3 flex items-center">
@@ -343,7 +357,7 @@ const LanguageSettings = () => (
           <option>Japanese</option>
         </select>
       </div>
-      
+
       <button className="bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center mt-6">
         <FaCheck className="mr-2" /> Save Preferences
       </button>
@@ -357,7 +371,9 @@ const HelpSupport = () => (
     animate={{ opacity: 1 }}
     transition={{ duration: 0.3 }}
   >
-    <h2 className="text-2xl font-semibold mb-6 text-gray-800 border-b pb-3">Help & Support</h2>
+    <h2 className="text-2xl font-semibold mb-6 text-gray-800 border-b pb-3">
+      Help & Support
+    </h2>
     <div className="grid md:grid-cols-2 gap-6">
       <div className="p-5 border rounded-xl bg-white hover:shadow-md transition-all duration-200">
         <div className="bg-blue-100 text-blue-600 rounded-full w-12 h-12 flex items-center justify-center mb-4">
@@ -371,7 +387,7 @@ const HelpSupport = () => (
           View FAQs <FaChevronRight className="ml-1" size={12} />
         </button>
       </div>
-      
+
       <div className="p-5 border rounded-xl bg-white hover:shadow-md transition-all duration-200">
         <div className="bg-green-100 text-green-600 rounded-full w-12 h-12 flex items-center justify-center mb-4">
           <FaEnvelope size={24} />
@@ -384,14 +400,15 @@ const HelpSupport = () => (
           Contact Us <FaChevronRight className="ml-1" size={12} />
         </button>
       </div>
-      
+
       <div className="p-5 border rounded-xl bg-white hover:shadow-md transition-all duration-200 md:col-span-2">
         <div className="bg-amber-100 text-amber-600 rounded-full w-12 h-12 flex items-center justify-center mb-4">
           <FaShieldAlt size={24} />
         </div>
         <h3 className="text-lg font-medium mb-2">Report a Bug</h3>
         <p className="text-gray-600 mb-4">
-          Let us know if something isn't working correctly or you encounter issues
+          Let us know if something isn't working correctly or you encounter
+          issues
         </p>
         <button className="text-blue-600 font-medium hover:underline flex items-center">
           Report Bug <FaChevronRight className="ml-1" size={12} />

@@ -166,10 +166,8 @@ const Eventcreate = () => {
           color: "#fff",
         },
       });
-      
+
       // Handle error (e.g., show a message to the user)
-
-
 
       return;
     }
@@ -178,7 +176,7 @@ const Eventcreate = () => {
   // Form validation for each step
   const validateStep = (step) => {
     switch (step) {
-      case 1:        
+      case 1:
         return formData.title && formData.description && formData.eventType;
       case 2:
         return formData.startTime && formData.endTime; // Require start and end time
@@ -199,15 +197,15 @@ const Eventcreate = () => {
       setCurrentStep(currentStep + 1);
       window.scrollTo(0, 0);
     } else {
-      toast.error('Please fill in all required fields.', {
+      toast.error("Please fill in all required fields.", {
         style: {
-          borderRadius: '10px',
-          background: '#ef4444', // red
-          color: '#fff',
-          fontWeight: 'bold',
+          borderRadius: "10px",
+          background: "#ef4444", // red
+          color: "#fff",
+          fontWeight: "bold",
         },
-        icon: '❌',
-      });      
+        icon: "❌",
+      });
     }
   };
 

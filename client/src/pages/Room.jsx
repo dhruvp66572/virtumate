@@ -176,7 +176,7 @@ const Room = () => {
     setStream(null);
     toast.success("Thank you for using Virtumate! You can now close this tab.");
     toast.dismiss();
-    navigate("/dashboard");    
+    navigate("/dashboard");
   };
 
   return (
