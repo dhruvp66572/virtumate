@@ -1,6 +1,6 @@
 // src/api/eventService.js
 
-import axiosInstance from "../utils/axiosIntance";
+import axiosInstance from "../utils/axiosInstance";
 
 // Fetch all events
 const getAllEvents = async () => {

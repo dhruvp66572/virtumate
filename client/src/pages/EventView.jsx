@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
-import axiosInstance from "../utils/axiosIntance";
+import axiosInstance from "../utils/axiosInstance";
 
 const EventView = () => {
   const { id } = useParams();

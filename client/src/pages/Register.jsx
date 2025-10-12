@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
-import axiosInstance from "../utils/axiosIntance";
+import axiosInstance from "../utils/axiosInstance";
 
 const Register = () => {
   const [name, setName] = useState("");

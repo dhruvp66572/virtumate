@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import axiosInstance from "../utils/axiosIntance";
+import axiosInstance from "../utils/axiosInstance";
 import { useAuth } from "../context/useAuth";
 import toast from "react-hot-toast";
 
@@ -267,7 +267,7 @@ const MyEvents = () => {
                         {!event.meetingDetails.roomName ? (
                           <button
                             onClick={() => handleSchedule(event._id)}
-                            className="w-full px-4 p  y-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center justify-center"
+                            className="w-full px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center justify-center"
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -288,7 +288,7 @@ const MyEvents = () => {
                         ) : (
                           //   <button
                           //   onClick={() => handleSchedule(event._id)}
-                          //   className="w-full px-4 p  y-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center justify-center"
+                          //   className="w-full px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center justify-center"
                           // >
                           //   <svg
                           //     xmlns="http://www.w3.org/2000/svg"

@@ -2,7 +2,7 @@ import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import AuthContext from "../context/AuthContext";
-import axiosInstance from "../utils/axiosIntance";
+import axiosInstance from "../utils/axiosInstance";
 
 const Login = ({ isOpen, toggleModal }) => {
   const { login } = useContext(AuthContext);

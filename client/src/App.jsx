@@ -12,7 +12,7 @@ import EventView from "./pages/EventView";
 import EventRegister from "./pages/EventRegister";
 import ProfilePage from "./pages/ProfilePage";
 import { useAuth } from "./context/useAuth";
-import MyEvenets from "./pages/MyEvenets";
+import MyEvents from "./pages/MyEvents";
 import Settings from "./pages/Settings";
 import VideoCall from "./components/VideoCall";
 import { Toaster } from "react-hot-toast";
@@ -36,7 +36,7 @@ const App = () => {
             <Route path="/events" element={<Events />} />
             <Route path="/room/:roomId" element={<Room />} />
             <Route path="/event-create" element={<Eventcreate />} />
-            <Route path="/myevents" element={<MyEvenets />} />
+            <Route path="/myevents" element={<MyEvents />} />
             <Route path="/myevents/:id" element={<EventManagement />} />
             <Route path="/event-details/:id" element={<EventView />} />
             <Route path="/events/:id/register" element={<EventRegister />} />

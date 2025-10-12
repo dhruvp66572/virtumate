@@ -7,7 +7,7 @@ import { useState, useEffect, useCallback } from "react";
 import "@livekit/components-styles";
 import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
-import axiosInstance from "../utils/axiosIntance";
+import axiosInstance from "../utils/axiosInstance";
 
 const VideoCall = () => {
   const token = localStorage.getItem("roomToken");

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axiosInstance from "../utils/axiosIntance";
+import axiosInstance from "../utils/axiosInstance";
 import { useAuth } from "../context/useAuth";
 
 const EventsPage = () => {
@@ -20,7 +20,7 @@ const EventsPage = () => {
       try {
         const response = await axiosInstance.get("/events");
         const event = response.data.data;
-        setEvents(event.filter((event) => event.status != "draft"));
+        setEvents(event.filter((event) => event.status !== "draft"));
       } catch (error) {
         console.error("Error fetching events:", error);
       }

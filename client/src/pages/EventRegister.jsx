@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
-import axiosInstance from "../utils/axiosIntance";
+import axiosInstance from "../utils/axiosInstance";
 import toast from "react-hot-toast";
 // import sendMail from '../../../server/utils/sendMail';
 
